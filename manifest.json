@@ -1,19 +1,24 @@
 {
-  "name": "MiCuz FC — AI Analyzer",
+  "name": "MiCuz FC \u2014 Analyst Suite",
   "short_name": "MiCuz FC",
-  "description": "AI football analyzer for Marol MiCuz FC, MFL Season 2",
+  "description": "MFL Season 2 match analysis, squad intelligence and opposition scouting for MiCuz FC",
   "start_url": "/index.html",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#000000",
   "theme_color": "#FFD700",
+  "orientation": "any",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%23000'/><circle cx='96' cy='96' r='80' fill='%23FFD700'/><text x='96' y='118' text-anchor='middle' font-family='serif' font-weight='900' font-size='60' fill='%23000'>MC</text></svg>",
+      "src": "icon192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
-  ],
-  "categories": ["sports","productivity"]
+  ]
 }
