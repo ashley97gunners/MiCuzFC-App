@@ -404,6 +404,40 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
 /* TIER-2 notice */
 .tier2-notice{background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(168,85,247,.9)}
 
+
+/* ══ SEASON STATS ══ */
+.ss-hero{background:linear-gradient(135deg,#0A0A0A,#0D0D00);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+.ss-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 80%,rgba(255,215,0,.08),transparent 60%);pointer-events:none}
+.ss-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.ss-kpi{background:var(--s1);border:1px solid var(--bf);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.ss-kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+.ss-kv{font-family:'Bebas Neue',cursive;font-size:36px;color:var(--gold);line-height:1;margin-bottom:4px}
+.ss-kl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.ss-chart-wrap{background:var(--s1);border:1px solid var(--bf);border-radius:14px;padding:16px;margin-bottom:16px}
+.ss-chart-title{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;color:var(--muted);margin-bottom:12px}
+.ss-chart-canvas{width:100%!important;max-height:220px}
+.ss-form-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bf)}
+.ss-form-row:last-child{border-bottom:none}
+.ss-form-md{font-family:'Bebas Neue',cursive;font-size:14px;color:var(--gold);width:48px;flex-shrink:0}
+.ss-form-opp{flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ss-form-score{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--text);width:40px;text-align:center;flex-shrink:0}
+.ss-form-res{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.ss-form-res.W{background:rgba(0,209,118,.15);color:var(--green)}
+.ss-form-res.D{background:rgba(255,215,0,.12);color:var(--gold)}
+.ss-form-res.L{background:rgba(255,59,59,.12);color:var(--red)}
+.ss-player-table{width:100%;border-collapse:collapse}
+.ss-player-table th{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:6px 8px;text-align:left;border-bottom:1px solid var(--bf)}
+.ss-player-table td{font-size:12px;padding:8px 8px;border-bottom:1px solid var(--bf)}
+.ss-player-table tr:last-child td{border-bottom:none}
+.ss-player-table tr:hover td{background:var(--gold-faint)}
+.ss-bar-wrap{width:80px;height:4px;background:var(--s3);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:6px}
+.ss-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--gold-dim))}
+.ss-no-data{text-align:center;padding:48px 20px}
+.ss-no-data .ss-nd-icon{font-size:36px;margin-bottom:12px}
+.ss-no-data .ss-nd-title{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--gold);margin-bottom:6px}
+.ss-no-data .ss-nd-sub{font-size:12px;color:var(--muted);line-height:1.7}
+@media(min-width:768px){.ss-kpi-grid{grid-template-columns:repeat(8,1fr)}.ss-kv{font-size:28px}}
+
 @media(max-width:360px){.tgrid{grid-template-columns:repeat(2,1fr)}.frow{grid-template-columns:1fr}.frow3{grid-template-columns:1fr 1fr}}
 </style>
 </head>
@@ -440,6 +474,7 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
     <div class="sb-section">Media</div>
     <div class="sb-item" onclick="go('social')" id="si-social"><span class="sb-icon">📸</span><span class="sb-label">Social Graphics</span></div>
     <div class="sb-item" onclick="go('drive')" id="si-drive"><span class="sb-icon">📁</span><span class="sb-label">Drive</span></div>
+    <div class="sb-item" onclick="go('season')" id="si-season"><span class="sb-icon">📈</span><span class="sb-label">Season Stats</span></div>
     <div class="sb-item" onclick="go('chat')" id="si-chat"><span class="sb-icon">🤖</span><span class="sb-label">AI Analyst</span></div>
   </nav>
 
@@ -942,6 +977,108 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
       </div>
     </div>
 
+
+    <!-- ══════════ SEASON STATS ══════════ -->
+    <div class="screen" id="sc-season">
+      <div class="ss-hero">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <img src="" id="ssHeroLogo" style="width:44px;height:44px;object-fit:cover;border-radius:50%;border:2px solid rgba(255,215,0,.4)">
+          <div>
+            <div style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:2px;color:var(--gold);line-height:1">MiCuz FC</div>
+            <div style="font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px">MFL Season 2 · Season Stats</div>
+          </div>
+          <div style="margin-left:auto;text-align:right">
+            <div id="ssFormStrip" style="display:flex;gap:4px;justify-content:flex-end;margin-bottom:4px"></div>
+            <div style="font-size:10px;color:var(--muted)">Last 5</div>
+          </div>
+        </div>
+        <div class="ss-kpi-grid" id="ssKpiGrid"></div>
+      </div>
+
+      <div id="ssNoData" class="card ss-no-data" style="display:none">
+        <div class="ss-nd-icon">📊</div>
+        <div class="ss-nd-title">No Season Data Yet</div>
+        <div class="ss-nd-sub">Upload match reports via the Drive screen after each game.<br>Season stats, trends and player leaderboards populate automatically.</div>
+      </div>
+
+      <div id="ssContent">
+        <div class="split-screen">
+          <div>
+            <div class="sh"><span>Results &amp; Form</span></div>
+            <div class="ss-chart-wrap mb16">
+              <div class="ss-chart-title">Goals Scored vs Conceded Per Match</div>
+              <canvas id="ssGoalsChart" class="ss-chart-canvas"></canvas>
+            </div>
+
+            <div class="sh"><span>Match by Match</span></div>
+            <div class="card mb16" id="ssFormTable"></div>
+
+            <div class="sh"><span>Possession Trend</span></div>
+            <div class="ss-chart-wrap mb16">
+              <div class="ss-chart-title">Possession % Across Season</div>
+              <canvas id="ssPossChart" class="ss-chart-canvas"></canvas>
+            </div>
+          </div>
+
+          <div>
+            <div class="sh"><span>Team Performance Radar</span></div>
+            <div class="ss-chart-wrap mb16" style="display:flex;flex-direction:column;align-items:center">
+              <div class="ss-chart-title" style="width:100%">Season Average — 6 Axes</div>
+              <canvas id="ssRadarChart" style="max-width:260px;max-height:260px"></canvas>
+            </div>
+
+            <div class="sh"><span>Pressing &amp; Distance Trend</span></div>
+            <div class="ss-chart-wrap mb16">
+              <div class="ss-chart-title">Pressing Intensity % Per Match</div>
+              <canvas id="ssPressingChart" class="ss-chart-canvas"></canvas>
+            </div>
+
+            <div class="sh"><span>Pass Completion Trend</span></div>
+            <div class="ss-chart-wrap mb16">
+              <div class="ss-chart-title">Pass Completion % Per Match</div>
+              <canvas id="ssPassChart" class="ss-chart-canvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="sh"><span>Player Season Leaderboard</span></div>
+        <div class="card mb16">
+          <div class="dscroll mb12" id="ssLeaderTabs">
+            <div class="dchip active" onclick="setLeaderTab('rating',this)">Rating</div>
+            <div class="dchip" onclick="setLeaderTab('goals',this)">Goals</div>
+            <div class="dchip" onclick="setLeaderTab('distance',this)">Distance</div>
+            <div class="dchip" onclick="setLeaderTab('passes',this)">Pass %</div>
+            <div class="dchip" onclick="setLeaderTab('sprints',this)">Sprints</div>
+            <div class="dchip" onclick="setLeaderTab('defending',this)">Defending</div>
+          </div>
+          <div id="ssLeaderContent"></div>
+        </div>
+
+        <div class="sh"><span>Season Shot Map</span></div>
+        <div class="card mb16">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px">All shots across all matches</div>
+          <div class="shotmap-goal" id="ssSeasonShotMap">
+            <svg viewBox="0 0 700 240" fill="none" id="ssShotMapSvg">
+              <rect width="700" height="240" fill="#1a3a1a"/>
+              <rect x="50" y="20" width="600" height="200" stroke="rgba(255,255,255,0.5)" stroke-width="3" fill="rgba(255,255,255,0.02)"/>
+              <line x1="250" y1="20" x2="250" y2="220" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <line x1="450" y1="20" x2="450" y2="220" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <line x1="50" y1="87" x2="650" y2="87" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <line x1="50" y1="153" x2="650" y2="153" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <text x="150" y="250" fill="rgba(255,255,255,.3)" font-size="10" text-anchor="middle">Left</text>
+              <text x="350" y="250" fill="rgba(255,255,255,.3)" font-size="10" text-anchor="middle">Centre</text>
+              <text x="550" y="250" fill="rgba(255,255,255,.3)" font-size="10" text-anchor="middle">Right</text>
+            </svg>
+          </div>
+          <div style="display:flex;gap:16px;margin-top:8px">
+            <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#00D176">⬤ GOAL</span>
+            <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#FFD700">○ ON TARGET</span>
+            <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#FF3B3B">× OFF</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ══════════ AI ANALYST ══════════ -->
     <div class="screen" id="sc-chat" style="display:flex;flex-direction:column;padding:0">
       <div style="padding:16px 16px 0;flex-shrink:0">
@@ -974,6 +1111,7 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
   <button class="nb" id="nb-match" onclick="go('match')"><span class="ni">⚽</span><span class="nl">Match</span></button>
   <button class="nb" id="nb-analysis" onclick="go('analysis')"><span class="ni">📊</span><span class="nl">Analysis</span></button>
   <button class="nb" id="nb-opp" onclick="go('opp')"><span class="ni">🔍</span><span class="nl">Intel</span></button>
+  <button class="nb" id="nb-season" onclick="go('season')"><span class="ni">📈</span><span class="nl">Season</span></button>
   <button class="nb" id="nb-chat" onclick="go('chat')"><span class="ni">🤖</span><span class="nl">AI</span></button>
 </nav>
 
@@ -1307,6 +1445,7 @@ function go(id){
   if(id==='analysis') renderAnalysis();
   if(id==='profiles') renderProfiles();
   if(id==='social') populateSgSelect();
+  if(id==='season'){ if(window.Chart) renderSeasonStats(); else { loadChartJs(); setTimeout(renderSeasonStats,800); } }
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -1957,6 +2096,342 @@ function buildContext(){
   ctx+=`STARTING 5: #14 Kishore (GK), #29 Joshua (DEF), #12 Dhanush (DEF), #22 Victor (Freeplay/Captain), #11 Sheldon (FWD)\n`;
   return ctx;
 }
+
+
+// ══════════════════════════════════════════════════════════════════
+//  SEASON STATS
+// ══════════════════════════════════════════════════════════════════
+let ssCharts = {};
+let leaderTab = 'rating';
+
+function renderSeasonStats() {
+  // Set logo
+  const logoEl = document.getElementById('ssHeroLogo');
+  if (logoEl && typeof LOGOS !== 'undefined') logoEl.src = LOGOS.micuz;
+
+  if (!MATCHES.length) {
+    document.getElementById('ssNoData').style.display = 'block';
+    document.getElementById('ssContent').style.display = 'none';
+    document.getElementById('ssKpiGrid').innerHTML = '';
+    renderKPIs([]);
+    return;
+  }
+  document.getElementById('ssNoData').style.display = 'none';
+  document.getElementById('ssContent').style.display = 'block';
+
+  renderKPIs(MATCHES);
+  renderFormStrip(MATCHES);
+  renderFormTable(MATCHES);
+  renderGoalsChart(MATCHES);
+  renderPossChart(MATCHES);
+  renderPressingChart(MATCHES);
+  renderPassChart(MATCHES);
+  renderSeasonRadar(MATCHES);
+  renderLeaderboard(MATCHES);
+  renderSeasonShotMap(MATCHES);
+}
+
+function renderKPIs(matches) {
+  const w = matches.filter(m=>m.result==='Win').length;
+  const d = matches.filter(m=>m.result==='Draw').length;
+  const l = matches.filter(m=>m.result==='Loss').length;
+  const gf = matches.reduce((s,m)=>s+parseInt(m.goalsFor||0),0);
+  const ga = matches.reduce((s,m)=>s+parseInt(m.goalsAgainst||0),0);
+  const played = matches.length;
+  const pts = w*3 + d;
+  const avgRating = played ? (matches.reduce((s,m)=>s+(m.matchRating||0),0)/played).toFixed(1) : '—';
+  const avgPoss = played ? Math.round(matches.reduce((s,m)=>s+(m.teamStats?.possession||50),0)/played) : '—';
+  const kpis = [
+    {v:played, l:'Played'}, {v:w, l:'Wins'}, {v:d, l:'Draws'}, {v:l, l:'Losses'},
+    {v:pts, l:'Points'}, {v:gf+':'+ga, l:'Goals'}, {v:(gf-ga>=0?'+':'')+(gf-ga), l:'GD'},
+    {v:avgPoss+'%', l:'Avg Poss'}
+  ];
+  document.getElementById('ssKpiGrid').innerHTML = kpis.map(k=>`
+    <div class="ss-kpi"><div class="ss-kv">${k.v}</div><div class="ss-kl">${k.l}</div></div>`).join('');
+}
+
+function renderFormStrip(matches) {
+  const last5 = matches.slice(-5);
+  const el = document.getElementById('ssFormStrip');
+  el.innerHTML = last5.map(m=>`
+    <div class="ss-form-res ${m.result?.[0]||'D'}" style="width:24px;height:24px;border-radius:4px;font-size:10px">
+      ${m.result?.[0]||'?'}
+    </div>`).join('');
+}
+
+function renderFormTable(matches) {
+  const el = document.getElementById('ssFormTable');
+  el.innerHTML = matches.map(m=>`
+    <div class="ss-form-row" style="animation:up .3s ease">
+      <div class="ss-form-md">${m.matchday||'—'}</div>
+      <div class="ss-form-opp">${m.opponent||'—'}</div>
+      <div class="ss-form-score">${m.goalsFor||0}–${m.goalsAgainst||0}</div>
+      <div class="ss-form-res ${m.result?.[0]||'D'}">${m.result?.[0]||'?'}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);width:32px;text-align:right;flex-shrink:0">${m.matchRating||'—'}</div>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:12px;padding:12px">No matches yet</div>';
+}
+
+function destroyChart(id) {
+  if (ssCharts[id]) { ssCharts[id].destroy(); delete ssCharts[id]; }
+}
+
+function ssChartDefaults() {
+  return {
+    color: '#EBEBEB',
+    plugins: { legend: { display:false } },
+    scales: {
+      x: { ticks:{ color:'#585858', font:{size:10} }, grid:{ color:'rgba(255,215,0,.06)' } },
+      y: { ticks:{ color:'#585858', font:{size:10} }, grid:{ color:'rgba(255,215,0,.06)' } }
+    }
+  };
+}
+
+function renderGoalsChart(matches) {
+  destroyChart('goals');
+  const ctx = document.getElementById('ssGoalsChart')?.getContext('2d');
+  if (!ctx) return;
+  const labels = matches.map(m=>m.matchday||'?');
+  ssCharts.goals = new Chart(ctx, {
+    type:'bar',
+    data: {
+      labels,
+      datasets:[
+        { label:'Scored', data: matches.map(m=>m.goalsFor||0),
+          backgroundColor:'rgba(255,215,0,0.7)', borderColor:'#FFD700', borderWidth:1, borderRadius:4 },
+        { label:'Conceded', data: matches.map(m=>m.goalsAgainst||0),
+          backgroundColor:'rgba(255,59,59,0.5)', borderColor:'#FF3B3B', borderWidth:1, borderRadius:4 }
+      ]
+    },
+    options: { ...ssChartDefaults(), responsive:true,
+      plugins:{ legend:{ display:true, labels:{ color:'#888', font:{size:10}, boxWidth:10 } } } }
+  });
+}
+
+function renderPossChart(matches) {
+  destroyChart('poss');
+  const ctx = document.getElementById('ssPossChart')?.getContext('2d');
+  if (!ctx) return;
+  const labels = matches.map(m=>m.matchday||'?');
+  const poss = matches.map(m=>m.teamStats?.possession||m.possession||50);
+  ssCharts.poss = new Chart(ctx, {
+    type:'line',
+    data: { labels, datasets:[{
+      label:'Possession %', data:poss,
+      borderColor:'#FFD700', backgroundColor:'rgba(255,215,0,0.08)',
+      tension:0.4, fill:true, pointBackgroundColor:'#FFD700', pointRadius:4
+    }]},
+    options: { ...ssChartDefaults(), responsive:true,
+      scales:{ ...ssChartDefaults().scales, y:{ ...ssChartDefaults().scales.y, min:0, max:100,
+        ticks:{ callback:v=>v+'%', color:'#585858', font:{size:10} } } } }
+  });
+}
+
+function renderPressingChart(matches) {
+  destroyChart('press');
+  const ctx = document.getElementById('ssPressingChart')?.getContext('2d');
+  if (!ctx) return;
+  const labels = matches.map(m=>m.matchday||'?');
+  const press = matches.map(m=>m.teamStats?.pressingIntensity||0);
+  ssCharts.press = new Chart(ctx, {
+    type:'line',
+    data: { labels, datasets:[{
+      label:'Pressing %', data:press,
+      borderColor:'#FF8C00', backgroundColor:'rgba(255,140,0,0.08)',
+      tension:0.4, fill:true, pointBackgroundColor:'#FF8C00', pointRadius:4
+    }]},
+    options: { ...ssChartDefaults(), responsive:true,
+      scales:{ ...ssChartDefaults().scales, y:{ ...ssChartDefaults().scales.y, min:0, max:100,
+        ticks:{ callback:v=>v+'%', color:'#585858', font:{size:10} } } } }
+  });
+}
+
+function renderPassChart(matches) {
+  destroyChart('pass');
+  const ctx = document.getElementById('ssPassChart')?.getContext('2d');
+  if (!ctx) return;
+  const labels = matches.map(m=>m.matchday||'?');
+  const pass = matches.map(m=>m.teamStats?.passCompletion||0);
+  ssCharts.pass = new Chart(ctx, {
+    type:'line',
+    data: { labels, datasets:[{
+      label:'Pass %', data:pass,
+      borderColor:'#4D9EFF', backgroundColor:'rgba(77,158,255,0.08)',
+      tension:0.4, fill:true, pointBackgroundColor:'#4D9EFF', pointRadius:4
+    }]},
+    options: { ...ssChartDefaults(), responsive:true,
+      scales:{ ...ssChartDefaults().scales, y:{ ...ssChartDefaults().scales.y, min:0, max:100,
+        ticks:{ callback:v=>v+'%', color:'#585858', font:{size:10} } } } }
+  });
+}
+
+function renderSeasonRadar(matches) {
+  destroyChart('radar');
+  const ctx = document.getElementById('ssRadarChart')?.getContext('2d');
+  if (!ctx || !matches.length) return;
+  const avg = key => {
+    const vals = matches.map(m=>m.teamStats?.[key]||0).filter(v=>v>0);
+    return vals.length ? vals.reduce((s,v)=>s+v,0)/vals.length : 0;
+  };
+  const poss   = avg('possession');
+  const pass   = avg('passCompletion');
+  const press  = avg('pressingIntensity');
+  const shots  = matches.reduce((s,m)=>s+(m.teamStats?.shots||0),0) / matches.length;
+  const tackle = matches.reduce((s,m)=>s+((m.teamStats?.tacklesWon||0)/(m.teamStats?.tackles||1)*100),0)/matches.length;
+  const goals  = matches.reduce((s,m)=>s+(m.goalsFor||0),0)/matches.length;
+  ssCharts.radar = new Chart(ctx, {
+    type:'radar',
+    data:{
+      labels:['POSSESSION','PASSING','PRESSING','SHOOTING','DEFENDING','GOALS/GAME'],
+      datasets:[{
+        data:[poss, pass, press, Math.min(shots/5*100,100), tackle, Math.min(goals/3*100,100)],
+        borderColor:'#FFD700', backgroundColor:'rgba(255,215,0,0.12)',
+        pointBackgroundColor:'#FFD700', pointRadius:4, borderWidth:2
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{ legend:{ display:false } },
+      scales:{ r:{
+        min:0, max:100,
+        ticks:{ display:false },
+        grid:{ color:'rgba(255,215,0,0.1)' },
+        angleLines:{ color:'rgba(255,215,0,0.15)' },
+        pointLabels:{ color:'#888', font:{size:9} }
+      }}
+    }
+  });
+}
+
+function setLeaderTab(tab, el) {
+  leaderTab = tab;
+  document.querySelectorAll('#ssLeaderTabs .dchip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderLeaderboard(MATCHES);
+}
+
+function renderLeaderboard(matches) {
+  const el = document.getElementById('ssLeaderContent');
+  // Aggregate player stats across all matches
+  const agg = {};
+  matches.forEach(m=>{
+    (m.players||[]).forEach(p=>{
+      const k = p.num+'_'+p.name;
+      if (!agg[k]) agg[k] = { num:p.num, name:p.name, pos:p.pos, apps:0,
+        rating:0, goals:0, distance:0, passes:0, passComp:0, sprints:0,
+        tackles:0, tacklesWon:0, interceptions:0 };
+      agg[k].apps++;
+      agg[k].rating     += p.rating||0;
+      agg[k].goals      += p.goals||0;
+      agg[k].distance   += p.distance||0;
+      agg[k].passes     += p.passes||0;
+      agg[k].passComp   += p.passesCompleted||0;
+      agg[k].sprints    += p.sprints||0;
+      agg[k].tackles    += p.tackles||0;
+      agg[k].tacklesWon += p.tacklesWon||0;
+      agg[k].interceptions += p.interceptions||0;
+    });
+  });
+  const players = Object.values(agg).map(p=>({
+    ...p,
+    avgRating: p.apps ? (p.rating/p.apps).toFixed(1) : 0,
+    avgPass:   p.passes ? Math.round(p.passComp/p.passes*100) : 0,
+    defending: p.tacklesWon + p.interceptions
+  }));
+
+  const sortMap = {
+    rating:   (a,b)=>b.avgRating-a.avgRating,
+    goals:    (a,b)=>b.goals-a.goals,
+    distance: (a,b)=>b.distance-a.distance,
+    passes:   (a,b)=>b.avgPass-a.avgPass,
+    sprints:  (a,b)=>b.sprints-a.sprints,
+    defending:(a,b)=>b.defending-a.defending
+  };
+  const valMap = {
+    rating:   p=>[p.avgRating, '/10'],
+    goals:    p=>[p.goals, ' goals'],
+    distance: p=>[p.distance.toFixed(1), ' km'],
+    passes:   p=>[p.avgPass, '%'],
+    sprints:  p=>[p.sprints, ' spr'],
+    defending:p=>[p.defending, ' D+I']
+  };
+
+  const sorted = [...players].sort(sortMap[leaderTab]||sortMap.rating);
+  const maxVal = sorted.length ? parseFloat(valMap[leaderTab](sorted[0])[0]) : 1;
+
+  if (!sorted.length) {
+    el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:12px">Upload match reports to see player stats.</div>';
+    return;
+  }
+
+  el.innerHTML = `<table class="ss-player-table">
+    <thead><tr>
+      <th>#</th><th>Player</th><th>Apps</th>
+      <th>${leaderTab==='rating'?'Avg Rating':leaderTab==='goals'?'Goals':leaderTab==='distance'?'Distance km':leaderTab==='passes'?'Pass %':leaderTab==='sprints'?'Sprints':'D+I'}</th>
+    </tr></thead>
+    <tbody>
+      ${sorted.map((p,i)=>{
+        const [val, unit] = valMap[leaderTab](p);
+        const pct = maxVal ? Math.min(parseFloat(val)/maxVal*100,100) : 0;
+        return `<tr style="animation:up .3s ease ${i*0.04}s both">
+          <td style="color:var(--gold);font-family:'Bebas Neue',cursive;font-size:16px">${p.num}</td>
+          <td><div style="font-weight:600">${p.name}</div><div style="font-size:10px;color:var(--muted)">${p.pos}</div></td>
+          <td style="color:var(--muted)">${p.apps}</td>
+          <td>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:${i===0?'var(--gold)':'var(--text)'}">${val}</span>
+            <span style="font-size:10px;color:var(--muted)">${unit}</span>
+            <div class="ss-bar-wrap"><div class="ss-bar" style="width:${pct}%"></div></div>
+          </td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>`;
+}
+
+function renderSeasonShotMap(matches) {
+  const svg = document.getElementById('ssShotMapSvg');
+  if (!svg) return;
+  // Remove old shots
+  svg.querySelectorAll('.ss-shot').forEach(e=>e.remove());
+  const allShots = [];
+  matches.forEach(m=>{
+    (m.players||[]).forEach(p=>{
+      (p.shotMap||[]).forEach(s=>allShots.push(s));
+    });
+  });
+  // Goal face is 700x240, shot x/y are 0-1 normalised
+  // Map to SVG coords: x 50-650 (600px wide), y 20-220 (200px tall)
+  allShots.forEach((s,i)=>{
+    const sx = 50 + (s.x||0.5)*600;
+    const sy = 20 + (s.y||0.5)*200;
+    const el = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    el.setAttribute('cx', sx.toFixed(1));
+    el.setAttribute('cy', sy.toFixed(1));
+    el.setAttribute('r', s.goal?9:7);
+    el.setAttribute('class','ss-shot');
+    if (s.goal) {
+      el.setAttribute('fill','rgba(0,209,118,0.8)');
+    } else if (s.on_target||s.onTarget) {
+      el.setAttribute('fill','none');
+      el.setAttribute('stroke','#FFD700');
+      el.setAttribute('stroke-width','2');
+    } else {
+      el.setAttribute('fill','none');
+      el.setAttribute('stroke','#FF3B3B');
+      el.setAttribute('stroke-width','2');
+    }
+    el.setAttribute('opacity','0.85');
+    svg.appendChild(el);
+  });
+}
+
+// Load Chart.js for season stats (CDN)
+(function loadChartJs() {
+  if (window.Chart) return;
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+  s.onload = () => { if (document.getElementById('sc-season')?.classList.contains('active')) renderSeasonStats(); };
+  document.head.appendChild(s);
+})();
 
 // ══════════════════════════════════════════════════════════════════
 //  TOAST
