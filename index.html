@@ -838,7 +838,7 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
         <div class="sh"><span>Match Setup</span></div>
         <div class="frow">
           <div class="fgroup"><label>Matchday</label>
-            <select id="eMD"><option>MD1</option><option>MD2</option><option>MD3</option><option>MD4</option><option>MD5</option><option>MD6</option><option>MD7</option><option>MD8</option><option>MD9</option><option>Playoff QF</option><option>Playoff SF</option><option>Final</option></select>
+            <select id="eMD"><option>S1 MD</option><option>MD1</option><option>MD2</option><option>MD3</option><option>MD4</option><option>MD5</option><option>MD6</option><option>MD7</option><option>MD8</option><option>MD9</option><option>Playoff QF</option><option>Playoff SF</option><option>Final</option></select>
           </div>
           <div class="fgroup"><label>Opposition</label>
             <select id="eOpp">
@@ -1874,10 +1874,18 @@ function saveEntry(){
     }
   };
   const idx=MATCHES.findIndex(m=>m.matchday===md);
-  if(idx>=0) MATCHES[idx]={...MATCHES[idx],...match};
-  else MATCHES.push(match);
+  if(idx>=0){
+    // Update existing match — preserve pipeline data, update score and tier2
+    MATCHES[idx].goalsFor     = gf;
+    MATCHES[idx].goalsAgainst = ga;
+    MATCHES[idx].result       = res;
+    MATCHES[idx].tier2        = match.tier2;
+    MATCHES[idx].opponent     = opp;
+  } else {
+    MATCHES.push(match);
+  }
   saveMatches();
-  toast('Match data saved ✓');
+  toast('Match data saved ✓ — '+md+' vs '+opp+' '+gf+'-'+ga+' '+res);
   renderHome();
 }
 
@@ -1899,10 +1907,8 @@ function handleUpload(input){
   reader.readAsText(file);
 }
 function mapTracksToPlayers(data){
-  // Map pipeline Track IDs to real MiCuz FC squad players
-  // Starting 5: Kishore(GK), Joshua(DEF), Dhanush(DEF), Victor(FP), Sheldon(FWD)
-  // Subs by frame count order
-  const LINEUP = [
+  // S2 squad (current season)
+  const S2_LINEUP = [
     {num:22, name:'Victor Shriyan',   pos:'Freeplay'},
     {num:14, name:'Kishore Shetty',   pos:'Goalkeeper'},
     {num:29, name:'Joshua Lopez',     pos:'Defender'},
@@ -1910,7 +1916,28 @@ function mapTracksToPlayers(data){
     {num:11, name:'Sheldon Rego',     pos:'Forward'},
     {num:7,  name:'Reuben Pereira',   pos:'Forward'},
     {num:19, name:'Merwyn DSouza',    pos:'Forward'},
+    {num:9,  name:'Melwin Vaz',       pos:'Forward'},
+    {num:25, name:'Keith Briganza',   pos:'Defender'},
+    {num:69, name:'Dylan Rodrigues',  pos:'Goalkeeper'},
+    {num:8,  name:'Denver Rodrigues', pos:'Defender'},
   ];
+  // S1 squad for MiCuz FC (from MFL Instagram team lineups)
+  const S1_LINEUP = [
+    {num:22, name:'Victor Shriyan',   pos:'Freeplay'},
+    {num:10, name:'Ashish Kothari',   pos:'Midfielder'},
+    {num:8,  name:'Hrishkesh Hirve',  pos:'Defender'},
+    {num:99, name:'Akhil Raj',        pos:'Defender'},
+    {num:7,  name:'Merwyn DSouza',    pos:'Forward'},
+    {num:17, name:'Ronan Machado',    pos:'Forward'},
+    {num:1,  name:'Dylan Rodrigues',  pos:'Goalkeeper'},
+    {num:6,  name:'Raphael Viegas',   pos:'Midfielder'},
+    {num:18, name:'Karthik Konar',    pos:'Forward'},
+    {num:5,  name:'Adrian Moraes',    pos:'Defender'},
+    {num:0,  name:'Nishant Patel',    pos:'Midfielder'},
+  ];
+  // Detect which squad to use based on matchday label
+  const isS1 = data.matchday && data.matchday.toLowerCase().includes('s1');
+  const LINEUP = isS1 ? S1_LINEUP : S2_LINEUP;
   if(!data.players?.length) return data;
   // Sort by distance descending (most active first)
   const sorted = [...data.players].sort((a,b)=>b.distance-a.distance);
@@ -1927,12 +1954,34 @@ function mapTracksToPlayers(data){
 function ingestReport(data){
   // Accepts report.json produced by convert_report.py
   if(!data.matchday){toast('Unrecognised report format — ensure convert_report.py was used');return;}
+  // Preserve manually-corrected score if it already exists for this matchday
+  const existingIdx = MATCHES.findIndex(m=>m.matchday===data.matchday);
+  if(existingIdx>=0){
+    const existing = MATCHES[existingIdx];
+    // If existing match has a non-zero score that differs from incoming, keep the existing score
+    if(existing.goalsFor > 0 || existing.goalsAgainst > 0){
+      data.goalsFor     = existing.goalsFor;
+      data.goalsAgainst = existing.goalsAgainst;
+      data.result       = existing.result;
+    }
+    // Preserve any tier2 data already entered
+    if(existing.tier2 && (existing.tier2.goalScorers?.length || existing.tier2.yellowCards > 0)){
+      data.tier2 = existing.tier2;
+    }
+  }
   data = mapTracksToPlayers(data);
+  // Merge: keep existing data for fields not in new upload
   const idx=MATCHES.findIndex(m=>m.matchday===data.matchday);
-  if(idx>=0) MATCHES[idx]={...MATCHES[idx],...data};
-  else MATCHES.push(data);
+  if(idx>=0){
+    // Deep merge — new data wins except for manually-preserved fields above
+    MATCHES[idx]={...MATCHES[idx],...data};
+  } else {
+    MATCHES.push(data);
+  }
   saveMatches();
-  toast(`Imported: ${data.matchday} vs ${data.opponent} ✓`);
+  const scoreNote = (data.goalsFor===0 && data.goalsAgainst===0) 
+    ? ' — Enter correct score in Data Entry' : '';
+  toast('Imported: '+data.matchday+' vs '+data.opponent+' ✓'+scoreNote);
   renderHome();
 }
 function importFromDrive(){
