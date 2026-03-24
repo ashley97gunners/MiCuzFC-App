@@ -165,7 +165,11 @@ def convert_players(tracking: dict) -> list:
     }
     """
     out = []
-    raw_players = tracking.get("players", [])
+    # Handle raw pipeline list output
+    if isinstance(tracking, list):
+        raw_players = tracking
+    else:
+        raw_players = tracking.get("players", [])
     for rp in raw_players:
         jersey = safe_int(rp.get("jersey", rp.get("number", rp.get("num", 0))))
         ref    = SQUAD_REF.get(jersey, {"name": f"Player #{jersey}", "pos": "—"})
@@ -212,7 +216,7 @@ def convert_players(tracking: dict) -> list:
     return out
 
 
-def convert_team_stats(teams: dict, home_team: str = "MiCuz FC") -> tuple:
+def convert_team_stats(teams, home_team: str = "MiCuz FC") -> tuple:
     """
     Extract team-level stats from tracking_data_teams.json.
 
@@ -251,9 +255,49 @@ def convert_team_stats(teams: dict, home_team: str = "MiCuz FC") -> tuple:
       ]
     }
     """
-    raw_teams = teams.get("teams", teams)
-    home = raw_teams.get("home", raw_teams.get("micuz", raw_teams.get("MiCuz FC", {})))
-    away = raw_teams.get("away", raw_teams.get("opposition", {}))
+    # Handle both dict format (expected) and list format (raw pipeline output)
+    if isinstance(teams, list):
+        team_a = [d for d in teams if str(d.get("team","")).upper() in ("A","0","HOME") or d.get("team_id") == 0]
+        team_b = [d for d in teams if str(d.get("team","")).upper() in ("B","1","AWAY") or d.get("team_id") == 1]
+        if not team_a and not team_b:
+            # Try splitting by first/second half of unique track IDs
+            track_ids = list(set(d.get("tracker_id", d.get("track_id", 0)) for d in teams))
+            mid = len(track_ids) // 2
+            team_a_ids = set(track_ids[:mid])
+            team_a = [d for d in teams if d.get("tracker_id", d.get("track_id")) in team_a_ids]
+            team_b = [d for d in teams if d.get("tracker_id", d.get("track_id")) not in team_a_ids]
+        ball_a = sum(1 for d in team_a if d.get("has_ball") or d.get("ball_possession"))
+        ball_b = sum(1 for d in team_b if d.get("has_ball") or d.get("ball_possession"))
+        total_ball = ball_a + ball_b
+        home_poss = round(ball_a / total_ball * 100, 1) if total_ball else 50.0
+        home = {
+            "possession_pct": home_poss, "goals": 0,
+            "shots": 0, "shots_on_target": 0,
+            "passes_attempted": sum(1 for d in team_a if d.get("pass_made")),
+            "passes_completed": sum(1 for d in team_a if d.get("pass_success")),
+            "interceptions": sum(1 for d in team_a if d.get("interception")),
+            "tackles": sum(1 for d in team_a if d.get("tackle")),
+            "tackles_won": sum(1 for d in team_a if d.get("tackle_won")),
+            "sprint_count": sum(1 for d in team_a if d.get("sprint")),
+            "distance_km": safe_float(sum(safe_float(d.get("distance",0)) for d in team_a)) / 1000,
+            "pressing_intensity": 50.0, "pressing_events": 0
+        }
+        away = {
+            "possession_pct": round(100 - home_poss, 1), "goals": 0,
+            "shots": 0, "shots_on_target": 0,
+            "passes_attempted": sum(1 for d in team_b if d.get("pass_made")),
+            "passes_completed": sum(1 for d in team_b if d.get("pass_success")),
+            "interceptions": sum(1 for d in team_b if d.get("interception")),
+            "tackles": sum(1 for d in team_b if d.get("tackle")),
+            "tackles_won": sum(1 for d in team_b if d.get("tackle_won")),
+            "sprint_count": sum(1 for d in team_b if d.get("sprint")),
+            "distance_km": safe_float(sum(safe_float(d.get("distance",0)) for d in team_b)) / 1000,
+            "pressing_intensity": 50.0, "pressing_events": 0
+        }
+    else:
+        raw_teams = teams.get("teams", teams)
+        home = raw_teams.get("home", raw_teams.get("micuz", raw_teams.get("MiCuz FC", {})))
+        away = raw_teams.get("away", raw_teams.get("opposition", {}))
 
     poss_home = safe_float(home.get("possession_pct", home.get("possession", 50)))
     poss_away = round(100 - poss_home, 1)
