@@ -387,7 +387,7 @@ Examples:
     parser.add_argument("--teams",    required=True,  help="Path to tracking_data_teams.json")
     parser.add_argument("--matchday", default="MD1",  help="Matchday label (e.g. MD1, Playoff QF)")
     parser.add_argument("--opponent", default="Opposition", help="Opponent team name")
-    parser.add_argument("--date",     default=date.today().strftime("%-d %b %Y"), help="Match date (e.g. '28 Mar 2026')")
+    parser.add_argument("--date",     default=date.today().strftime("%d %b %Y"), help="Match date (e.g. '28 Mar 2026')")
     parser.add_argument("--type",     default="League", help="Match type: League | Playoff QF | Playoff SF | Final")
     parser.add_argument("--out",      default="report.json", help="Output file path")
     return parser.parse_args()
