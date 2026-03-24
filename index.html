@@ -1502,7 +1502,7 @@ function renderMatchList(){
     <div class="card mb8" style="cursor:pointer;transition:border-color .2s" onclick="openMatch(${i})" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--bf)'">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div style="display:flex;align-items:center;gap:10px">
-          \${(()=>{const oid=OPPOSITION.find(o=>m.opponent&&m.opponent.toLowerCase().includes(o.id.replace(/_/g,' ').split(' ')[0]))?.id;return oid&&LOGOS[oid]?'<img src="'+LOGOS[oid]+'" style="width:36px;height:36px;object-fit:contain;border-radius:6px;flex-shrink:0">' :'<div style="width:36px;height:36px;background:var(--s3);border-radius:6px;flex-shrink:0"></div>';})()}
+          <div style="width:36px;height:36px;background:var(--s3);border-radius:6px;flex-shrink:0;overflow:hidden" id="mlogo_\${i}"></div>
           <div><div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1.5px;color:var(--gold)">${m.matchday}</div>
           <div style="font-size:13px;font-weight:600">MiCuz FC vs ${m.opponent}</div>
           <div style="font-size:11px;color:var(--muted)">${m.date||''}</div>
@@ -1514,8 +1514,22 @@ function renderMatchList(){
         </div>
       </div>
     </div>`).join('');
+  // Inject logos post-render
+  setTimeout(()=>{
+    document.querySelectorAll('.mcard-logo').forEach(el=>{
+      const i=parseInt(el.dataset.idx);
+      const m=MATCHES[i];
+      if(!m) return;
+      const oid=OPPOSITION.find(o=>m.opponent&&m.opponent.toLowerCase().includes(o.id.split('_')[0]))?.id;
+      if(oid&&LOGOS[oid]){
+        const img=document.createElement('img');
+        img.src=LOGOS[oid];
+        img.style.cssText='width:36px;height:36px;object-fit:contain;border-radius:6px';
+        el.appendChild(img);
+      }
+    });
+  },100);
 }
-
 function openMatch(idx){
   currentMatch=MATCHES[idx];
   document.getElementById('matchList').style.display='none';
@@ -1570,18 +1584,41 @@ function closeDrill(){
 //  ANALYSIS
 // ══════════════════════════════════════════════════════════════════
 function renderAnalysis(){
-  // Player chips
   const chips=document.getElementById('playerChips');
-  chips.innerHTML=SQUAD.map((p,i)=>`<div class="dchip ${i===0?'active':''}" onclick="selectPlayer(this,'${p.name}')">${p.num} ${p.name.split(' ')[0]}</div>`).join('');
+  // Use real pipeline players if available, else squad
+  const analysisPlayers = MATCHES.length && MATCHES[MATCHES.length-1].players?.length
+    ? MATCHES[MATCHES.length-1].players
+    : SQUAD.map(p=>({name:p.name,num:p.num}));
+  chips.innerHTML=analysisPlayers.map((p,i)=>`<div class="dchip ${i===0?'active':''}" onclick="selectAnalysisPlayer(this,'${p.name}',${i})">${p.num||'#'} ${p.name.split(' ')[0]}</div>`).join('');
+  currentAnalysisPlayerIdx=0;
   drawRadar(currentPlayer);
   renderRadarLegend(currentPlayer);
+  renderRealHeatmap(analysisPlayers[0]?.name);
+  renderRealPassMap(analysisPlayers[0]?.name);
 }
+function selectAnalysisPlayer(el,name,idx){
+  document.querySelectorAll('#playerChips .dchip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  currentAnalysisPlayerIdx=idx;
+  // Try to find in squad for radar
+  currentPlayer=SQUAD.find(p=>p.name===name)||SQUAD[0];
+  // Use pipeline radar if available
+  const mp = MATCHES.length ? MATCHES[MATCHES.length-1].players?.[idx] : null;
+  if(mp && mp.radar) drawRadarFromData(mp.radar);
+  else drawRadar(currentPlayer);
+  renderRadarLegend(currentPlayer);
+  renderRealHeatmap(name,idx);
+  renderRealPassMap(name,idx);
+}
+let currentAnalysisPlayerIdx=0;
 function selectPlayer(el,name){
   document.querySelectorAll('#playerChips .dchip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   currentPlayer=SQUAD.find(p=>p.name===name)||SQUAD[0];
   drawRadar(currentPlayer);
   renderRadarLegend(currentPlayer);
+  renderRealHeatmap(name);
+  renderRealPassMap(name);
 }
 function setHalf(h){
   currentHalf=h;
@@ -2432,6 +2469,155 @@ function renderSeasonShotMap(matches) {
   s.onload = () => { if (document.getElementById('sc-season')?.classList.contains('active')) renderSeasonStats(); };
   document.head.appendChild(s);
 })();
+
+
+// ── Real pipeline heatmap renderer ──────────────────────────────
+function renderRealHeatmap(playerName, idx){
+  const svg = document.getElementById('heatmapSvg');
+  if(!svg) return;
+  // Remove old real heatmap blobs
+  svg.querySelectorAll('.real-hblob').forEach(e=>e.remove());
+  // Get match player data
+  const match = MATCHES.length ? MATCHES[MATCHES.length-1] : null;
+  if(!match) return;
+  const pidx = idx !== undefined ? idx : 0;
+  const player = match.players?.[pidx];
+  if(!player || !player.heatmap?.length) return;
+  // Hide sample blobs
+  svg.querySelectorAll('.hblob').forEach(e=>e.style.opacity='0');
+  // Pitch SVG is 680x520
+  const W=680, H=520;
+  // Create gradients for real data
+  player.heatmap.forEach((point, i) => {
+    const [nx, ny, intensity] = point;
+    const x = 10 + nx * 660;
+    const y = 10 + ny * 500;
+    const r = 70 + intensity * 30;
+    const gradId = 'rh_' + i;
+    // Add gradient def
+    const defs = svg.querySelector('defs') || (() => {
+      const d = document.createElementNS('http://www.w3.org/2000/svg','defs');
+      svg.insertBefore(d, svg.firstChild);
+      return d;
+    })();
+    const grad = document.createElementNS('http://www.w3.org/2000/svg','radialGradient');
+    grad.setAttribute('id', gradId);
+    grad.setAttribute('cx','50%'); grad.setAttribute('cy','50%'); grad.setAttribute('r','50%');
+    const s1 = document.createElementNS('http://www.w3.org/2000/svg','stop');
+    s1.setAttribute('offset','0%');
+    const col = intensity > 0.8 ? '#FF3B3B' : '#FFD700';
+    s1.setAttribute('stop-color', col);
+    s1.setAttribute('stop-opacity', String(intensity * 0.7));
+    const s2 = document.createElementNS('http://www.w3.org/2000/svg','stop');
+    s2.setAttribute('offset','100%');
+    s2.setAttribute('stop-color', col);
+    s2.setAttribute('stop-opacity','0');
+    grad.appendChild(s1); grad.appendChild(s2);
+    defs.appendChild(grad);
+    const ellipse = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+    ellipse.setAttribute('cx', x.toFixed(1));
+    ellipse.setAttribute('cy', y.toFixed(1));
+    ellipse.setAttribute('rx', r.toFixed(1));
+    ellipse.setAttribute('ry', (r*0.8).toFixed(1));
+    ellipse.setAttribute('fill', 'url(#'+gradId+')');
+    ellipse.setAttribute('class','real-hblob');
+    svg.appendChild(ellipse);
+  });
+  // Update label
+  const lbl = document.querySelector('#heatmapPitch div[style*="bottom"]');
+  if(lbl) lbl.textContent = (player.name||'Player') + ' · REAL DATA';
+}
+
+function renderRealPassMap(playerName, idx){
+  const svg = document.getElementById('passMapSvg');
+  if(!svg) return;
+  svg.querySelectorAll('.real-pass').forEach(e=>e.remove());
+  const match = MATCHES.length ? MATCHES[MATCHES.length-1] : null;
+  if(!match) return;
+  const pidx = idx !== undefined ? idx : 0;
+  const player = match.players?.[pidx];
+  if(!player || !player.passMap?.length) return;
+  // Pitch 680x520
+  player.passMap.forEach((pass, i) => {
+    const x1 = 10 + pass.x1*660; const y1 = 10 + pass.y1*500;
+    const x2 = 10 + pass.x2*660; const y2 = 10 + pass.y2*500;
+    const col = pass.success ? '#00D176' : '#FF3B3B';
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1.toFixed(1)); line.setAttribute('y1',y1.toFixed(1));
+    line.setAttribute('x2',x2.toFixed(1)); line.setAttribute('y2',y2.toFixed(1));
+    line.setAttribute('stroke',col); line.setAttribute('stroke-width','2');
+    line.setAttribute('opacity','0.8');
+    line.setAttribute('class','real-pass');
+    if(!pass.success) line.setAttribute('stroke-dasharray','6,3');
+    svg.appendChild(line);
+  });
+}
+
+function drawRadarFromData(radarData){
+  const canvas=document.getElementById('radarChart');
+  if(!canvas||!canvas.getContext) return;
+  const ctx=canvas.getContext('2d');
+  const W=220,H=220,cx=110,cy=110,r=80;
+  ctx.clearRect(0,0,W,H);
+  const axes=['Involvement','Shooting','Goal Threat','Speed','Defending','Stamina'];
+  const vals=[
+    radarData.involvement||0, radarData.shooting||0, radarData.goalThreat||0,
+    radarData.speed||0, radarData.defending||0, radarData.stamina||0
+  ];
+  const n=axes.length;
+  for(let ring=1;ring<=5;ring++){
+    ctx.beginPath();
+    for(let i=0;i<n;i++){
+      const angle=((2*Math.PI*i)/n)-(Math.PI/2);
+      const x=cx+Math.cos(angle)*(r*ring/5);
+      const y=cy+Math.sin(angle)*(r*ring/5);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle='rgba(255,215,0,0.1)';ctx.lineWidth=1;ctx.stroke();
+  }
+  for(let i=0;i<n;i++){
+    const angle=((2*Math.PI*i)/n)-(Math.PI/2);
+    ctx.beginPath();ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(angle)*r,cy+Math.sin(angle)*r);
+    ctx.strokeStyle='rgba(255,215,0,0.15)';ctx.lineWidth=1;ctx.stroke();
+  }
+  ctx.beginPath();
+  for(let i=0;i<n;i++){
+    const angle=((2*Math.PI*i)/n)-(Math.PI/2);
+    const v=vals[i]/100;
+    const x=cx+Math.cos(angle)*(r*v);
+    const y=cy+Math.sin(angle)*(r*v);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.closePath();
+  ctx.fillStyle='rgba(255,215,0,0.18)';ctx.fill();
+  ctx.strokeStyle='#FFD700';ctx.lineWidth=2;ctx.stroke();
+  for(let i=0;i<n;i++){
+    const angle=((2*Math.PI*i)/n)-(Math.PI/2);
+    const v=vals[i]/100;
+    ctx.beginPath();
+    ctx.arc(cx+Math.cos(angle)*(r*v),cy+Math.sin(angle)*(r*v),4,0,Math.PI*2);
+    ctx.fillStyle='#FFD700';ctx.fill();
+  }
+  ctx.font='bold 9px "DM Sans"';
+  ctx.fillStyle='rgba(255,255,255,0.6)';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  for(let i=0;i<n;i++){
+    const angle=((2*Math.PI*i)/n)-(Math.PI/2);
+    const lx=cx+Math.cos(angle)*(r+14);
+    const ly=cy+Math.sin(angle)*(r+14);
+    ctx.fillText(axes[i].toUpperCase().slice(0,4),lx,ly);
+  }
+  // Update legend with real values
+  const labels=['Involvement','Shooting','Goal Threat','Speed','Defending','Stamina'];
+  const el=document.getElementById('radarLegend');
+  if(el) el.innerHTML=labels.map((l,i)=>`
+    <div style="text-align:center;padding:6px;background:var(--s2);border-radius:8px;border:1px solid var(--bf)">
+      <div style="font-family:'Bebas Neue',cursive;font-size:18px;color:var(--gold)">${vals[i]}</div>
+      <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">${l}</div>
+    </div>`).join('');
+}
 
 // ══════════════════════════════════════════════════════════════════
 //  TOAST
