@@ -583,20 +583,33 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
           <div class="sh"><span>Individual Heatmap</span></div>
           <div class="card mb16">
             <div class="heatmap-pitch" id="heatmapPitch">
-              <svg viewBox="0 0 680 520" fill="none" xmlns="http://www.w3.org/2000/svg" id="heatmapSvg">
-                <!-- Pitch markings -->
-                <rect width="680" height="520" fill="#1a3a1a"/>
-                <rect x="10" y="10" width="660" height="500" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
-                <line x1="340" y1="10" x2="340" y2="510" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-                <circle cx="340" cy="260" r="60" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
-                <circle cx="340" cy="260" r="4" fill="rgba(255,255,255,0.4)"/>
-                <!-- Penalty areas -->
-                <rect x="10" y="160" width="120" height="200" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
-                <rect x="550" y="160" width="120" height="200" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
-                <!-- Goals -->
-                <rect x="10" y="210" width="20" height="100" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" fill="rgba(255,255,255,0.03)"/>
-                <rect x="650" y="210" width="20" height="100" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" fill="rgba(255,255,255,0.03)"/>
-                <!-- Heatmap blobs (sample data — replaced by pipeline) -->
+              <svg viewBox="0 0 680 420" fill="none" xmlns="http://www.w3.org/2000/svg" id="heatmapSvg">
+                <!-- 5-a-side pitch: Five Nine Turf Marol ~28m x 18m -->
+                <rect width="680" height="420" fill="#1a3a1a"/>
+                <!-- Pitch outline -->
+                <rect x="20" y="20" width="640" height="380" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
+                <!-- Halfway line -->
+                <line x1="340" y1="20" x2="340" y2="400" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                <!-- Centre circle (small for 5-a-side) -->
+                <circle cx="340" cy="210" r="45" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                <circle cx="340" cy="210" r="4" fill="rgba(255,255,255,0.4)"/>
+                <!-- Left penalty area -->
+                <rect x="20" y="130" width="100" height="160" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                <!-- Right penalty area -->
+                <rect x="560" y="130" width="100" height="160" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                <!-- Left goal -->
+                <rect x="20" y="170" width="18" height="80" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
+                <!-- Right goal -->
+                <rect x="642" y="170" width="18" height="80" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
+                <!-- Corner arcs -->
+                <path d="M 20 20 Q 35 20 35 35" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+                <path d="M 660 20 Q 660 35 645 35" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+                <path d="M 20 400 Q 35 400 35 385" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+                <path d="M 660 400 Q 645 400 645 385" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+                <!-- Penalty spots -->
+                <circle cx="120" cy="210" r="3" fill="rgba(255,255,255,0.4)"/>
+                <circle cx="560" cy="210" r="3" fill="rgba(255,255,255,0.4)"/>
+                <!-- Heatmap blobs (replaced by real data) -->
                 <radialGradient id="h1" cx="50%" cy="50%" r="50%">
                   <stop offset="0%" stop-color="#FFD700" stop-opacity="0.55"/>
                   <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
@@ -606,10 +619,9 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
                   <stop offset="100%" stop-color="#FF3B3B" stop-opacity="0"/>
                 </radialGradient>
                 <ellipse cx="400" cy="180" rx="100" ry="80" fill="url(#h1)" class="hblob"/>
-                <ellipse cx="300" cy="280" rx="70" ry="60" fill="url(#h2)" class="hblob"/>
-                <ellipse cx="450" cy="320" rx="85" ry="70" fill="url(#h1)" class="hblob" opacity="0.6"/>
+                <ellipse cx="300" cy="250" rx="70" ry="60" fill="url(#h2)" class="hblob"/>
               </svg>
-              <div style="position:absolute;bottom:6px;right:8px;font-size:9px;color:rgba(255,255,255,.4);font-family:'JetBrains Mono',monospace">PIPELINE DATA</div>
+              <div style="position:absolute;bottom:6px;right:8px;font-size:9px;color:rgba(255,255,255,.4);font-family:'JetBrains Mono',monospace">5-A-SIDE · FIVE NINE TURF</div>
             </div>
           </div>
 
@@ -626,12 +638,15 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
           <div class="sh"><span>Pass Map</span></div>
           <div class="card mb16">
             <div class="heatmap-pitch">
-              <svg viewBox="0 0 680 520" fill="none" xmlns="http://www.w3.org/2000/svg" id="passMapSvg">
-                <rect width="680" height="520" fill="#1a3a1a"/>
-                <rect x="10" y="10" width="660" height="500" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
-                <line x1="340" y1="10" x2="340" y2="510" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-                <circle cx="340" cy="260" r="60" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
-                <!-- Sample passes: green=success, red=fail -->
+              <svg viewBox="0 0 680 420" fill="none" xmlns="http://www.w3.org/2000/svg" id="passMapSvg">
+                <rect width="680" height="420" fill="#1a3a1a"/>
+                <rect x="20" y="20" width="640" height="380" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
+                <line x1="340" y1="20" x2="340" y2="400" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                <circle cx="340" cy="210" r="45" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                <rect x="20" y="130" width="100" height="160" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                <rect x="560" y="130" width="100" height="160" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                <rect x="20" y="170" width="18" height="80" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
+                <rect x="642" y="170" width="18" height="80" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
                 <defs>
                   <marker id="arrowG" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
                     <path d="M0,0 L0,6 L6,3 z" fill="#00D176"/>
@@ -640,13 +655,6 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
                     <path d="M0,0 L0,6 L6,3 z" fill="#FF3B3B"/>
                   </marker>
                 </defs>
-                <line x1="200" y1="260" x2="380" y2="180" stroke="#00D176" stroke-width="2" opacity="0.7" marker-end="url(#arrowG)"/>
-                <line x1="380" y1="180" x2="520" y2="220" stroke="#00D176" stroke-width="2" opacity="0.7" marker-end="url(#arrowG)"/>
-                <line x1="300" y1="300" x2="480" y2="140" stroke="#FF3B3B" stroke-width="2" opacity="0.6" marker-end="url(#arrowR)" stroke-dasharray="6,3"/>
-                <line x1="200" y1="200" x2="420" y2="300" stroke="#00D176" stroke-width="2" opacity="0.7" marker-end="url(#arrowG)"/>
-                <circle cx="200" cy="260" r="5" fill="#00D176" opacity="0.8"/>
-                <circle cx="380" cy="180" r="5" fill="#00D176" opacity="0.8"/>
-                <circle cx="520" cy="220" r="5" fill="#00D176" opacity="0.8"/>
               </svg>
               <div style="position:absolute;bottom:6px;left:8px;display:flex;gap:8px">
                 <span style="font-size:9px;color:#00D176;font-family:'JetBrains Mono',monospace">● SUCCESS</span>
@@ -662,9 +670,15 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
             <div class="heatmap-pitch" style="aspect-ratio:68/35;margin-bottom:12px">
               <svg viewBox="0 0 680 350" fill="none">
                 <rect width="680" height="350" fill="#1a3a1a"/>
+                <!-- 5-a-side half pitch for shot map -->
                 <rect x="10" y="10" width="660" height="330" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
-                <rect x="550" y="110" width="120" height="130" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
-                <rect x="650" y="140" width="20" height="70" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" fill="rgba(255,255,255,0.03)"/>
+                <line x1="10" y1="175" x2="670" y2="175" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                <!-- Penalty area -->
+                <rect x="500" y="100" width="160" height="150" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="rgba(255,255,255,0.02)"/>
+                <!-- 5-a-side goal (smaller) -->
+                <rect x="638" y="140" width="22" height="70" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
+                <!-- Penalty spot -->
+                <circle cx="560" cy="175" r="3" fill="rgba(255,255,255,0.4)"/>
                 <!-- Shot markers: ⬤ goal, ○ on target, × off target -->
                 <circle cx="520" cy="175" r="8" fill="#00D176" opacity="0.9"/>
                 <circle cx="490" cy="155" r="7" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.8"/>
@@ -676,21 +690,30 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
             <!-- Goal face view -->
             <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Goal Face</div>
             <div class="shotmap-goal">
-              <svg viewBox="0 0 700 240" fill="none">
-                <rect width="700" height="240" fill="#1a3a1a"/>
-                <!-- Goal frame -->
-                <rect x="50" y="20" width="600" height="200" stroke="rgba(255,255,255,0.5)" stroke-width="3" fill="rgba(255,255,255,0.02)"/>
-                <!-- Goal zones -->
-                <line x1="250" y1="20" x2="250" y2="220" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-                <line x1="450" y1="20" x2="450" y2="220" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-                <line x1="50" y1="87" x2="650" y2="87" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-                <line x1="50" y1="153" x2="650" y2="153" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-                <!-- Shot dots -->
-                <circle cx="180" cy="55" r="10" fill="#00D176" opacity="0.9"/>
-                <circle cx="360" cy="110" r="10" fill="none" stroke="#FFD700" stroke-width="2.5"/>
-                <circle cx="530" cy="55" r="10" fill="#00D176" opacity="0.9"/>
-                <circle cx="120" cy="180" r="10" fill="none" stroke="#FF3B3B" stroke-width="2.5"/>
-                <circle cx="580" cy="190" r="10" fill="none" stroke="#FF3B3B" stroke-width="2.5"/>
+              <svg viewBox="0 0 700 280" fill="none" id="goalFaceSvg">
+                <rect width="700" height="280" fill="#1a3a1a"/>
+                <!-- 5-a-side goal face: ~3m wide x 2m high -->
+                <!-- Outer frame (pitch surroundings) -->
+                <rect x="0" y="0" width="700" height="280" fill="#1a3a1a"/>
+                <!-- Crossbar and posts -->
+                <rect x="100" y="40" width="500" height="200" stroke="rgba(255,255,255,0.6)" stroke-width="3" fill="rgba(255,255,255,0.02)"/>
+                <!-- Net lines horizontal -->
+                <line x1="100" y1="88" x2="600" y2="88" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="100" y1="136" x2="600" y2="136" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="100" y1="184" x2="600" y2="184" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <!-- Net lines vertical -->
+                <line x1="183" y1="40" x2="183" y2="240" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="266" y1="40" x2="266" y2="240" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="350" y1="40" x2="350" y2="240" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="433" y1="40" x2="433" y2="240" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="516" y1="40" x2="516" y2="240" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <!-- Zone labels -->
+                <text x="141" y="270" fill="rgba(255,255,255,.25)" font-size="9" text-anchor="middle" font-family="JetBrains Mono">LEFT</text>
+                <text x="350" y="270" fill="rgba(255,255,255,.25)" font-size="9" text-anchor="middle" font-family="JetBrains Mono">CENTRE</text>
+                <text x="558" y="270" fill="rgba(255,255,255,.25)" font-size="9" text-anchor="middle" font-family="JetBrains Mono">RIGHT</text>
+                <text x="50" y="75" fill="rgba(255,255,255,.2)" font-size="9" text-anchor="middle" font-family="JetBrains Mono">HIGH</text>
+                <text x="50" y="145" fill="rgba(255,255,255,.2)" font-size="9" text-anchor="middle" font-family="JetBrains Mono">MID</text>
+                <text x="50" y="215" fill="rgba(255,255,255,.2)" font-size="9" text-anchor="middle" font-family="JetBrains Mono">LOW</text>
               </svg>
             </div>
             <div style="display:flex;gap:12px;margin-top:8px">
@@ -700,23 +723,7 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
             </div>
           </div>
 
-          <div class="sh"><span>Pressing Zone Map</span></div>
-          <div class="card mb16">
-            <div class="heatmap-pitch" style="aspect-ratio:68/35">
-              <svg viewBox="0 0 680 350" fill="none">
-                <rect width="680" height="350" fill="#1a3a1a"/>
-                <rect x="10" y="10" width="660" height="330" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
-                <!-- Pressing intensity zones -->
-                <rect x="10" y="10" width="220" height="330" fill="rgba(255,59,59,0.12)" rx="0"/>
-                <rect x="230" y="10" width="220" height="330" fill="rgba(255,140,0,0.08)" rx="0"/>
-                <rect x="450" y="10" width="220" height="330" fill="rgba(0,209,118,0.06)" rx="0"/>
-                <text x="70" y="180" fill="rgba(255,59,59,0.7)" font-size="14" font-family="'Bebas Neue',cursive" letter-spacing="2">HIGH</text>
-                <text x="285" y="180" fill="rgba(255,140,0,0.7)" font-size="14" font-family="'Bebas Neue',cursive" letter-spacing="2">MID</text>
-                <text x="510" y="180" fill="rgba(0,209,118,0.7)" font-size="14" font-family="'Bebas Neue',cursive" letter-spacing="2">LOW</text>
-                <text x="30" y="20" fill="rgba(255,255,255,0.3)" font-size="9" font-family="'JetBrains Mono',monospace">PRESS ZONE</text>
-              </svg>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>
@@ -842,7 +849,12 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
           </div>
           <div class="fgroup"><label>Opposition</label>
             <select id="eOpp">
+              <optgroup label="Season 2">
               <option>Marol Bloodline</option><option>Marol City Warriors</option><option>Cecilians Of Marol</option><option>Marol Bluelock</option><option>Ruthless Marol</option><option>Dazzlers of Marol</option><option>Chakra United Marol</option><option>Marol East Side FC</option><option>Lvl One Marol</option>
+              </optgroup>
+              <optgroup label="Season 1 (Test/Archive)">
+              <option>Marol City FC</option><option>Classic 7 Marol</option><option>Flora Falcons Marol</option><option>Marol Messi-ahs</option><option>Marol Bluelock FC</option><option>TBGC Marol</option><option>Marol Maverick FC</option>
+              </optgroup>
             </select>
           </div>
         </div>
@@ -1520,12 +1532,24 @@ function renderMatchList(){
       const i=parseInt(el.dataset.idx);
       const m=MATCHES[i];
       if(!m) return;
-      const oid=OPPOSITION.find(o=>m.opponent&&m.opponent.toLowerCase().includes(o.id.split('_')[0]))?.id;
+      // Try to find logo by matching opponent name to opposition ID
+      const oid=OPPOSITION.find(o=>{
+        if(!m.opponent) return false;
+        const oppLower = m.opponent.toLowerCase();
+        const idWords = o.id.replace(/_/g,' ').split(' ');
+        return idWords.some(w=>w.length>3&&oppLower.includes(w));
+      })?.id;
+      el.innerHTML='';
       if(oid&&LOGOS[oid]){
         const img=document.createElement('img');
         img.src=LOGOS[oid];
         img.style.cssText='width:36px;height:36px;object-fit:contain;border-radius:6px';
         el.appendChild(img);
+      } else {
+        // Fallback: show opponent initials
+        const initials=(m.opponent||'OPP').split(' ').map(w=>w[0]).join('').slice(0,3).toUpperCase();
+        el.style.cssText='width:36px;height:36px;background:var(--s3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,cursive;font-size:11px;color:var(--muted);flex-shrink:0';
+        el.textContent=initials;
       }
     });
   },100);
@@ -1949,6 +1973,38 @@ function mapTracksToPlayers(data){
   });
   // Put back in original order
   data.players = data.players.map(p => sorted.find(s=>s===p)||p);
+  
+  // Fix distance if it looks like raw pixels (>500km = definitely pixels)
+  if(data.teamStats){
+    const dist = data.teamStats.distanceCovered;
+    if(dist > 100){
+      // Convert from pixel-accumulated value to realistic km
+      // Real 5-a-side 20 min = ~1.5km per player average
+      const nPlayers = data.players.length || 5;
+      const avgDist = data.players.reduce((s,p)=>s+(p.distance||0),0) / nPlayers;
+      data.teamStats.distanceCovered = Math.round(avgDist * nPlayers * 10) / 10;
+      data.teamStats.distancePerPlayer = Math.round(avgDist * 10) / 10;
+    }
+    // Fix maxSpeed - compute from players
+    if(!data.teamStats.maxSpeed || data.teamStats.maxSpeed === 0){
+      const topSpd = Math.max(...(data.players.map(p=>p.maxSpeed||0)));
+      data.teamStats.maxSpeed = topSpd > 0 ? topSpd : 0;
+    }
+  }
+  // Fix player ratings that are near-zero
+  data.players.forEach(p => {
+    if(p.rating < 1.0 && p.distance > 0){
+      // Recalculate based on available data
+      const stamina = Math.min(Math.round(p.distance / 2.0 * 100), 100);
+      p.radar.stamina = stamina;
+      p.radar.involvement = Math.min(Math.round((p.passes||0) / 20 * 100), 100);
+      p.radar.speed = Math.min(Math.round((p.maxSpeed||0) / 22 * 100), 100);
+      p.rating = Math.max(
+        Math.round((stamina * 0.35 + (p.radar.speed||0) * 0.25 + (p.radar.involvement||0) * 0.20 + 20) / 10 * 10) / 10,
+        3.0
+      );
+    }
+  });
   return data;
 }
 function ingestReport(data){
@@ -2024,20 +2080,19 @@ function generateGraphic(){
   grad.addColorStop(1,'rgba(255,215,0,0)');
   ctx.fillStyle=grad;
   ctx.fillRect(0,0,W,6);
-  // Club badge — MiCuz FC logo
+  // Club badge — MiCuz FC logo (top left, clear of text)
   (()=>{
     const img = new Image();
     img.onload = () => {
       ctx.save();
       ctx.beginPath();
-      ctx.arc(120,120,58,0,Math.PI*2);
+      ctx.arc(100,100,52,0,Math.PI*2);
       ctx.closePath();
       ctx.clip();
-      ctx.drawImage(img, 62, 62, 116, 116);
+      ctx.drawImage(img, 48, 48, 104, 104);
       ctx.restore();
-      // Gold ring
       ctx.beginPath();
-      ctx.arc(120,120,60,0,Math.PI*2);
+      ctx.arc(100,100,54,0,Math.PI*2);
       ctx.strokeStyle='#FFD700';
       ctx.lineWidth=3;
       ctx.stroke();
@@ -2045,14 +2100,14 @@ function generateGraphic(){
     img.src = LOGOS.micuz;
     img.complete && img.onload();
   })();
-  // Club name
+  // Club name - pushed right to avoid logo overlap
   ctx.fillStyle='#FFD700';
-  ctx.font='72px "Bebas Neue",cursive';
+  ctx.font='64px "Bebas Neue",cursive';
   ctx.textAlign='left';
-  ctx.fillText('MICUZ FC',200,120);
-  ctx.font='24px "DM Sans",sans-serif';
+  ctx.fillText('MICUZ FC',230,115);
+  ctx.font='20px "DM Sans",sans-serif';
   ctx.fillStyle='rgba(255,215,0,0.6)';
-  ctx.fillText('MAROL FOOTBALL LEAGUE · SEASON 2',200,155);
+  ctx.fillText('MAROL FOOTBALL LEAGUE · SEASON 2',230,148);
   // Divider
   ctx.strokeStyle='rgba(255,215,0,0.3)';
   ctx.lineWidth=2;
@@ -2067,10 +2122,35 @@ function generateGraphic(){
     ctx.font='40px "Bebas Neue",cursive';
     ctx.fillStyle='#FFD700';
     ctx.textAlign='left';
-    ctx.fillText('MICUZ FC',120,480);
+    ctx.fillText('MICUZ FC',140,480);
     ctx.fillStyle='#888';
     ctx.textAlign='right';
-    ctx.fillText((m.opponent||'').toUpperCase(),W-120,480);
+    ctx.fillText((m.opponent||'').toUpperCase(),W-140,480);
+    // Opponent logo
+    const oppId=OPPOSITION.find(o=>{
+      if(!m.opponent) return false;
+      const ol=m.opponent.toLowerCase();
+      return o.id.replace(/_/g,' ').split(' ').some(w=>w.length>3&&ol.includes(w));
+    })?.id;
+    if(oppId&&LOGOS[oppId]){
+      const oppImg=new Image();
+      oppImg.onload=()=>{
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(W-100,430,45,0,Math.PI*2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(oppImg,W-145,385,90,90);
+        ctx.restore();
+        ctx.beginPath();
+        ctx.arc(W-100,430,47,0,Math.PI*2);
+        ctx.strokeStyle='rgba(255,255,255,0.3)';
+        ctx.lineWidth=2;
+        ctx.stroke();
+      };
+      oppImg.src=LOGOS[oppId];
+      oppImg.complete&&oppImg.onload();
+    }
     // Result badge
     const rc=m.result==='Win'?'#00D176':m.result==='Loss'?'#FF3B3B':'#FFD700';
     ctx.fillStyle=rc+'22';
@@ -2086,7 +2166,23 @@ function generateGraphic(){
     // Matchday
     ctx.font='22px "DM Sans",sans-serif';
     ctx.fillStyle='rgba(255,255,255,0.5)';
+    ctx.textAlign='center';
     ctx.fillText(`${m.matchday} · ${m.date||'MFL 2026'}`,W/2,600);
+    // Goal scorers from tier2
+    const scorers = m.tier2?.goalScorers||[];
+    if(scorers.length){
+      ctx.font='bold 22px "DM Sans",sans-serif';
+      ctx.fillStyle='rgba(255,215,0,0.85)';
+      ctx.textAlign='left';
+      scorers.forEach((s,i)=>{
+        ctx.fillText('⚽  '+s.player+"  "+s.minute+"'", 120, 628+(i*30));
+      });
+    } else {
+      ctx.font='18px "DM Sans",sans-serif';
+      ctx.fillStyle='rgba(255,255,255,0.3)';
+      ctx.textAlign='center';
+      ctx.fillText('Add goal scorers via Data Entry screen',W/2,635);
+    }
     // Divider
     ctx.strokeStyle='rgba(255,215,0,0.2)';
     ctx.lineWidth=1;
@@ -2587,12 +2683,12 @@ function renderRealHeatmap(playerName, idx){
   // Hide sample blobs
   svg.querySelectorAll('.hblob').forEach(e=>e.style.opacity='0');
   // Pitch SVG is 680x520
-  const W=680, H=520;
+  const W=680, H=420; // 5-a-side pitch dimensions
   // Create gradients for real data
   player.heatmap.forEach((point, i) => {
     const [nx, ny, intensity] = point;
-    const x = 10 + nx * 660;
-    const y = 10 + ny * 500;
+    const x = 20 + nx * 640; // 5-a-side pitch: 20px margin, 640px wide
+    const y = 20 + ny * 380; // 5-a-side pitch: 20px margin, 380px tall
     const r = 70 + intensity * 30;
     const gradId = 'rh_' + i;
     // Add gradient def
@@ -2640,8 +2736,8 @@ function renderRealPassMap(playerName, idx){
   if(!player || !player.passMap?.length) return;
   // Pitch 680x520
   player.passMap.forEach((pass, i) => {
-    const x1 = 10 + pass.x1*660; const y1 = 10 + pass.y1*500;
-    const x2 = 10 + pass.x2*660; const y2 = 10 + pass.y2*500;
+    const x1 = 20 + pass.x1*640; const y1 = 20 + pass.y1*380;
+    const x2 = 20 + pass.x2*640; const y2 = 20 + pass.y2*380;
     const col = pass.success ? '#00D176' : '#FF3B3B';
     const line = document.createElementNS('http://www.w3.org/2000/svg','line');
     line.setAttribute('x1',x1.toFixed(1)); line.setAttribute('y1',y1.toFixed(1));
