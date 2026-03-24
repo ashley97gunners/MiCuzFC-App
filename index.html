@@ -1555,7 +1555,7 @@ function openMatch(idx){
     {v:ts.passes??'-',l:'Passes'},{v:(ts.passCompletion??'-')+'%',l:'Pass %'},
     {v:ts.tackles??'-',l:'Tackles'},{v:ts.interceptions??'-',l:'Intercepts'},
     {v:ts.sprints??'-',l:'Sprints'},{v:(ts.distanceCovered??'-')+'km',l:'Distance'},
-    {v:ts.pressureEvents??'-',l:'Pressures'}
+    {v:(ts.maxSpeed??'-')+'km/h',l:'Max Speed'}
   ].map(t=>`<div class="tile"><div class="tv">${t.v}</div><div class="tl">${t.l}</div></div>`).join('');
   // Players
   const players=currentMatch.players||[];
@@ -1586,10 +1586,11 @@ function closeDrill(){
 function renderAnalysis(){
   const chips=document.getElementById('playerChips');
   // Use real pipeline players if available, else squad
-  const analysisPlayers = MATCHES.length && MATCHES[MATCHES.length-1].players?.length
-    ? MATCHES[MATCHES.length-1].players
-    : SQUAD.map(p=>({name:p.name,num:p.num}));
-  chips.innerHTML=analysisPlayers.map((p,i)=>`<div class="dchip ${i===0?'active':''}" onclick="selectAnalysisPlayer(this,'${p.name}',${i})">${p.num||'#'} ${p.name.split(' ')[0]}</div>`).join('');
+  const latestMatch = MATCHES.length ? MATCHES[MATCHES.length-1] : null;
+  const analysisPlayers = latestMatch?.players?.length
+    ? latestMatch.players
+    : SQUAD.map(p=>({name:p.name,num:p.num,pos:p.pos}));
+  chips.innerHTML=analysisPlayers.map((p,i)=>`<div class="dchip ${i===0?'active':''}" onclick="selectAnalysisPlayer(this,'${p.name}',${i})">#${p.num||i+1} ${p.name.split(' ')[0]}</div>`).join('');
   currentAnalysisPlayerIdx=0;
   drawRadar(currentPlayer);
   renderRadarLegend(currentPlayer);
@@ -1897,9 +1898,36 @@ function handleUpload(input){
   };
   reader.readAsText(file);
 }
+function mapTracksToPlayers(data){
+  // Map pipeline Track IDs to real MiCuz FC squad players
+  // Starting 5: Kishore(GK), Joshua(DEF), Dhanush(DEF), Victor(FP), Sheldon(FWD)
+  // Subs by frame count order
+  const LINEUP = [
+    {num:22, name:'Victor Shriyan',   pos:'Freeplay'},
+    {num:14, name:'Kishore Shetty',   pos:'Goalkeeper'},
+    {num:29, name:'Joshua Lopez',     pos:'Defender'},
+    {num:12, name:'Dhanush Nadar',    pos:'Defender'},
+    {num:11, name:'Sheldon Rego',     pos:'Forward'},
+    {num:7,  name:'Reuben Pereira',   pos:'Forward'},
+    {num:19, name:'Merwyn DSouza',    pos:'Forward'},
+  ];
+  if(!data.players?.length) return data;
+  // Sort by distance descending (most active first)
+  const sorted = [...data.players].sort((a,b)=>b.distance-a.distance);
+  sorted.forEach((p, i) => {
+    const ref = LINEUP[i] || {num: i+1, name: 'Player '+(i+1), pos:'—'};
+    p.num  = ref.num;
+    p.name = ref.name;
+    p.pos  = ref.pos;
+  });
+  // Put back in original order
+  data.players = data.players.map(p => sorted.find(s=>s===p)||p);
+  return data;
+}
 function ingestReport(data){
   // Accepts report.json produced by convert_report.py
   if(!data.matchday){toast('Unrecognised report format — ensure convert_report.py was used');return;}
+  data = mapTracksToPlayers(data);
   const idx=MATCHES.findIndex(m=>m.matchday===data.matchday);
   if(idx>=0) MATCHES[idx]={...MATCHES[idx],...data};
   else MATCHES.push(data);
@@ -2042,6 +2070,30 @@ function generateGraphic(){
   ctx.font='22px "DM Sans",sans-serif';
   ctx.textAlign='center';
   ctx.fillText('MFL SEASON 2 · FIVE NINE TURF MAROL',W/2,1020);
+  // Team logos on scoreboard
+  if(m){
+    // MiCuz logo left
+    (()=>{
+      const img=new Image();
+      img.onload=()=>{
+        ctx.save();ctx.beginPath();ctx.arc(180,430,28,0,Math.PI*2);ctx.closePath();ctx.clip();
+        ctx.drawImage(img,152,402,56,56);ctx.restore();
+        ctx.beginPath();ctx.arc(180,430,28,0,Math.PI*2);
+        ctx.strokeStyle='#FFD700';ctx.lineWidth=2;ctx.stroke();
+      };
+      img.src=LOGOS.micuz;img.complete&&img.onload();
+    })();
+    // Goal scorers
+    const scorers = m.tier2?.goalScorers||[];
+    if(scorers.length){
+      ctx.font='18px "DM Sans",sans-serif';
+      ctx.fillStyle='rgba(255,255,255,0.6)';
+      ctx.textAlign='left';
+      scorers.forEach((s,i)=>{
+        ctx.fillText('⚽ '+s.player+' '+s.minute+"'", 120, 640+(i*24));
+      });
+    }
+  }
   // MFL logo in bottom right
   (()=>{
     const mflImg = new Image();
