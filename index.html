@@ -567,163 +567,123 @@ canvas.radar-canvas{width:100%!important;height:auto!important}
     <div class="screen" id="sc-analysis">
       <div class="sh"><span>Advanced Analysis</span></div>
 
-      <!-- Half toggle -->
       <div class="half-toggle mb12">
         <button class="ht-btn active" id="htH1" onclick="setHalf(1)">1st Half</button>
         <button class="ht-btn" id="htH2" onclick="setHalf(2)">2nd Half</button>
         <button class="ht-btn" id="htFT" onclick="setHalf(0)">Full Match</button>
       </div>
 
-      <!-- Player selector -->
       <div class="sh"><span>Select Player</span></div>
-      <div class="dscroll mb16" id="playerChips"></div>
+      <div class="dscroll mb12" id="playerChips"></div>
 
       <div class="split-screen">
         <div>
+          <!-- HEATMAP -->
           <div class="sh"><span>Individual Heatmap</span></div>
-          <div class="card mb16">
-            <div class="heatmap-pitch" id="heatmapPitch">
-              <svg viewBox="0 0 680 420" fill="none" xmlns="http://www.w3.org/2000/svg" id="heatmapSvg">
-                <!-- 5-a-side pitch: Five Nine Turf Marol ~28m x 18m -->
+          <div class="card mb16" style="padding:10px">
+            <div style="position:relative;width:100%;background:#1a3a1a;border-radius:8px;overflow:hidden;aspect-ratio:680/420">
+              <svg id="heatmapSvg" viewBox="0 0 680 420" fill="none" style="position:absolute;inset:0;width:100%;height:100%">
+                <!-- 5-a-side: Five Nine Turf Marol 28m x 18m -->
                 <rect width="680" height="420" fill="#1a3a1a"/>
-                <!-- Pitch outline -->
                 <rect x="20" y="20" width="640" height="380" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
-                <!-- Halfway line -->
                 <line x1="340" y1="20" x2="340" y2="400" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-                <!-- Centre circle (small for 5-a-side) -->
-                <circle cx="340" cy="210" r="45" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                <circle cx="340" cy="210" r="45" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" fill="none"/>
                 <circle cx="340" cy="210" r="4" fill="rgba(255,255,255,0.4)"/>
-                <!-- Left penalty area -->
-                <rect x="20" y="130" width="100" height="160" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
-                <!-- Right penalty area -->
-                <rect x="560" y="130" width="100" height="160" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
-                <!-- Left goal -->
-                <rect x="20" y="170" width="18" height="80" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
-                <!-- Right goal -->
-                <rect x="642" y="170" width="18" height="80" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
-                <!-- Corner arcs -->
-                <path d="M 20 20 Q 35 20 35 35" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
-                <path d="M 660 20 Q 660 35 645 35" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
-                <path d="M 20 400 Q 35 400 35 385" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
-                <path d="M 660 400 Q 645 400 645 385" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
-                <!-- Penalty spots -->
-                <circle cx="120" cy="210" r="3" fill="rgba(255,255,255,0.4)"/>
-                <circle cx="560" cy="210" r="3" fill="rgba(255,255,255,0.4)"/>
-                <!-- Heatmap blobs (replaced by real data) -->
-                <radialGradient id="h1" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#FFD700" stop-opacity="0.55"/>
-                  <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
-                </radialGradient>
-                <radialGradient id="h2" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#FF3B3B" stop-opacity="0.4"/>
-                  <stop offset="100%" stop-color="#FF3B3B" stop-opacity="0"/>
-                </radialGradient>
-                <ellipse cx="400" cy="180" rx="100" ry="80" fill="url(#h1)" class="hblob"/>
-                <ellipse cx="300" cy="250" rx="70" ry="60" fill="url(#h2)" class="hblob"/>
+                <rect x="20" y="130" width="100" height="160" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" fill="none"/>
+                <rect x="560" y="130" width="100" height="160" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" fill="none"/>
+                <rect x="20" y="168" width="18" height="84" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
+                <rect x="642" y="168" width="18" height="84" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
+                <circle cx="120" cy="210" r="3" fill="rgba(255,255,255,0.35)"/>
+                <circle cx="560" cy="210" r="3" fill="rgba(255,255,255,0.35)"/>
+                <path d="M20 20 Q34 20 34 34" stroke="rgba(255,255,255,0.18)" stroke-width="1" fill="none"/>
+                <path d="M660 20 Q660 34 646 34" stroke="rgba(255,255,255,0.18)" stroke-width="1" fill="none"/>
+                <path d="M20 400 Q34 400 34 386" stroke="rgba(255,255,255,0.18)" stroke-width="1" fill="none"/>
+                <path d="M660 400 Q646 400 646 386" stroke="rgba(255,255,255,0.18)" stroke-width="1" fill="none"/>
+                <defs id="hmDefs"></defs>
               </svg>
-              <div style="position:absolute;bottom:6px;right:8px;font-size:9px;color:rgba(255,255,255,.4);font-family:'JetBrains Mono',monospace">5-A-SIDE · FIVE NINE TURF</div>
+              <div style="position:absolute;bottom:5px;right:8px;font-size:9px;color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace" id="hmLabel">5-A-SIDE · FIVE NINE TURF</div>
             </div>
           </div>
 
-          <div class="sh"><span>Performance Radar</span></div>
-          <div class="card mb16">
-            <div class="radar-wrap">
-              <canvas id="radarChart" class="radar-canvas" width="220" height="220"></canvas>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:12px" id="radarLegend"></div>
-          </div>
-        </div>
-
-        <div>
+          <!-- PASS MAP -->
           <div class="sh"><span>Pass Map</span></div>
-          <div class="card mb16">
-            <div class="heatmap-pitch">
-              <svg viewBox="0 0 680 420" fill="none" xmlns="http://www.w3.org/2000/svg" id="passMapSvg">
+          <div class="card mb16" style="padding:10px">
+            <div style="position:relative;width:100%;background:#1a3a1a;border-radius:8px;overflow:hidden;aspect-ratio:680/420">
+              <svg id="passMapSvg" viewBox="0 0 680 420" fill="none" style="position:absolute;inset:0;width:100%;height:100%">
                 <rect width="680" height="420" fill="#1a3a1a"/>
                 <rect x="20" y="20" width="640" height="380" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
                 <line x1="340" y1="20" x2="340" y2="400" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-                <circle cx="340" cy="210" r="45" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
-                <rect x="20" y="130" width="100" height="160" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
-                <rect x="560" y="130" width="100" height="160" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
-                <rect x="20" y="170" width="18" height="80" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
-                <rect x="642" y="170" width="18" height="80" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
+                <circle cx="340" cy="210" r="45" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" fill="none"/>
+                <rect x="20" y="130" width="100" height="160" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" fill="none"/>
+                <rect x="560" y="130" width="100" height="160" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" fill="none"/>
+                <rect x="20" y="168" width="18" height="84" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
+                <rect x="642" y="168" width="18" height="84" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
                 <defs>
-                  <marker id="arrowG" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                    <path d="M0,0 L0,6 L6,3 z" fill="#00D176"/>
+                  <marker id="arrowG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#00D176"/>
                   </marker>
-                  <marker id="arrowR" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                    <path d="M0,0 L0,6 L6,3 z" fill="#FF3B3B"/>
+                  <marker id="arrowR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#FF3B3B"/>
                   </marker>
                 </defs>
+                <text x="340" y="215" fill="rgba(255,255,255,0.2)" font-size="11" text-anchor="middle" font-family="'JetBrains Mono',monospace" id="passMapEmpty">No pass data — pipeline does not yet detect passes</text>
               </svg>
-              <div style="position:absolute;bottom:6px;left:8px;display:flex;gap:8px">
+              <div style="position:absolute;bottom:5px;left:8px;display:flex;gap:10px">
                 <span style="font-size:9px;color:#00D176;font-family:'JetBrains Mono',monospace">● SUCCESS</span>
                 <span style="font-size:9px;color:#FF3B3B;font-family:'JetBrains Mono',monospace">● FAIL</span>
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="sh"><span>Shot Map</span></div>
+        <div>
+          <!-- RADAR -->
+          <div class="sh"><span>Performance Radar</span></div>
           <div class="card mb16">
-            <!-- Pitch view -->
-            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Pitch Positions</div>
-            <div class="heatmap-pitch" style="aspect-ratio:68/35;margin-bottom:12px">
-              <svg viewBox="0 0 680 350" fill="none">
-                <rect width="680" height="350" fill="#1a3a1a"/>
-                <!-- 5-a-side half pitch for shot map -->
-                <rect x="10" y="10" width="660" height="330" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
-                <line x1="10" y1="175" x2="670" y2="175" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-                <!-- Penalty area -->
-                <rect x="500" y="100" width="160" height="150" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="rgba(255,255,255,0.02)"/>
-                <!-- 5-a-side goal (smaller) -->
-                <rect x="638" y="140" width="22" height="70" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
-                <!-- Penalty spot -->
-                <circle cx="560" cy="175" r="3" fill="rgba(255,255,255,0.4)"/>
-                <!-- Shot markers: ⬤ goal, ○ on target, × off target -->
-                <circle cx="520" cy="175" r="8" fill="#00D176" opacity="0.9"/>
-                <circle cx="490" cy="155" r="7" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.8"/>
-                <circle cx="560" cy="190" r="7" fill="none" stroke="#FF3B3B" stroke-width="2" opacity="0.7"/>
-                <line cx="540" cy="160" x1="533" y1="153" x2="547" y2="167" stroke="#FF3B3B" stroke-width="2.5"/>
-                <line cx="540" cy="160" x1="547" y1="153" x2="533" y2="167" stroke="#FF3B3B" stroke-width="2.5"/>
-              </svg>
-            </div>
-            <!-- Goal face view -->
-            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Goal Face</div>
-            <div class="shotmap-goal">
-              <svg viewBox="0 0 700 280" fill="none" id="goalFaceSvg">
-                <rect width="700" height="280" fill="#1a3a1a"/>
-                <!-- 5-a-side goal face: ~3m wide x 2m high -->
-                <!-- Outer frame (pitch surroundings) -->
-                <rect x="0" y="0" width="700" height="280" fill="#1a3a1a"/>
-                <!-- Crossbar and posts -->
-                <rect x="100" y="40" width="500" height="200" stroke="rgba(255,255,255,0.6)" stroke-width="3" fill="rgba(255,255,255,0.02)"/>
-                <!-- Net lines horizontal -->
-                <line x1="100" y1="88" x2="600" y2="88" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-                <line x1="100" y1="136" x2="600" y2="136" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-                <line x1="100" y1="184" x2="600" y2="184" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-                <!-- Net lines vertical -->
-                <line x1="183" y1="40" x2="183" y2="240" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-                <line x1="266" y1="40" x2="266" y2="240" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-                <line x1="350" y1="40" x2="350" y2="240" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-                <line x1="433" y1="40" x2="433" y2="240" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-                <line x1="516" y1="40" x2="516" y2="240" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-                <!-- Zone labels -->
-                <text x="141" y="270" fill="rgba(255,255,255,.25)" font-size="9" text-anchor="middle" font-family="JetBrains Mono">LEFT</text>
-                <text x="350" y="270" fill="rgba(255,255,255,.25)" font-size="9" text-anchor="middle" font-family="JetBrains Mono">CENTRE</text>
-                <text x="558" y="270" fill="rgba(255,255,255,.25)" font-size="9" text-anchor="middle" font-family="JetBrains Mono">RIGHT</text>
-                <text x="50" y="75" fill="rgba(255,255,255,.2)" font-size="9" text-anchor="middle" font-family="JetBrains Mono">HIGH</text>
-                <text x="50" y="145" fill="rgba(255,255,255,.2)" font-size="9" text-anchor="middle" font-family="JetBrains Mono">MID</text>
-                <text x="50" y="215" fill="rgba(255,255,255,.2)" font-size="9" text-anchor="middle" font-family="JetBrains Mono">LOW</text>
-              </svg>
-            </div>
-            <div style="display:flex;gap:12px;margin-top:8px">
-              <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#00D176">⬤ GOAL</span>
-              <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#FFD700">○ ON TARGET</span>
-              <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#FF3B3B">× OFF TARGET</span>
-            </div>
+            <canvas id="radarChart" width="260" height="260" style="width:100%;max-width:260px;display:block;margin:0 auto"></canvas>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:12px" id="radarLegend"></div>
           </div>
 
+          <!-- SHOT MAP PITCH -->
+          <div class="sh"><span>Shot Map</span></div>
+          <div class="card mb16" style="padding:10px">
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Pitch Positions</div>
+            <div style="position:relative;width:100%;background:#1a3a1a;border-radius:8px;overflow:hidden;aspect-ratio:680/320;margin-bottom:12px">
+              <svg id="shotMapPitchSvg" viewBox="0 0 680 320" fill="none" style="position:absolute;inset:0;width:100%;height:100%">
+                <rect width="680" height="320" fill="#1a3a1a"/>
+                <rect x="20" y="20" width="640" height="280" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
+                <line x1="340" y1="20" x2="340" y2="300" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                <rect x="500" y="80" width="160" height="160" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="rgba(255,255,255,0.01)"/>
+                <rect x="642" y="130" width="18" height="60" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="rgba(255,255,255,0.04)"/>
+                <circle cx="540" cy="160" r="3" fill="rgba(255,255,255,0.4)"/>
+                <text x="340" y="165" fill="rgba(255,255,255,0.2)" font-size="11" text-anchor="middle" font-family="'JetBrains Mono',monospace" id="shotMapEmpty">No shot data from pipeline</text>
+              </svg>
+            </div>
 
+            <!-- GOAL FACE -->
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Goal Face</div>
+            <div style="position:relative;width:100%;background:#1a3a1a;border-radius:8px;overflow:hidden;aspect-ratio:700/280">
+              <svg id="goalFaceSvg" viewBox="0 0 700 280" fill="none" style="position:absolute;inset:0;width:100%;height:100%">
+                <rect width="700" height="280" fill="#1a3a1a"/>
+                <rect x="100" y="40" width="500" height="200" stroke="rgba(255,255,255,0.6)" stroke-width="3" fill="rgba(255,255,255,0.02)"/>
+                <line x1="100" y1="107" x2="600" y2="107" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="100" y1="174" x2="600" y2="174" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="267" y1="40" x2="267" y2="240" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="433" y1="40" x2="433" y2="240" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <text x="183" y="268" fill="rgba(255,255,255,.2)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace">LEFT</text>
+                <text x="350" y="268" fill="rgba(255,255,255,.2)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace">CENTRE</text>
+                <text x="517" y="268" fill="rgba(255,255,255,.2)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace">RIGHT</text>
+                <text x="55" y="78" fill="rgba(255,255,255,.2)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace">HIGH</text>
+                <text x="55" y="145" fill="rgba(255,255,255,.2)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace">MID</text>
+                <text x="55" y="212" fill="rgba(255,255,255,.2)" font-size="9" text-anchor="middle" font-family="'JetBrains Mono',monospace">LOW</text>
+              </svg>
+            </div>
+            <div style="display:flex;gap:14px;margin-top:8px">
+              <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#00D176">⬤ GOAL</span>
+              <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#FFD700">○ ON TARGET</span>
+              <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#FF3B3B">× OFF</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1607,1066 +1567,150 @@ function closeDrill(){
 // ══════════════════════════════════════════════════════════════════
 //  ANALYSIS
 // ══════════════════════════════════════════════════════════════════
+let currentAnalysisPlayerIdx = 0;
+
+function getAnalysisMatch(){
+  return MATCHES.length ? MATCHES[MATCHES.length-1] : null;
+}
+
 function renderAnalysis(){
-  const chips=document.getElementById('playerChips');
-  // Use real pipeline players if available, else squad
-  const latestMatch = MATCHES.length ? MATCHES[MATCHES.length-1] : null;
-  const analysisPlayers = latestMatch?.players?.length
-    ? latestMatch.players
-    : SQUAD.map(p=>({name:p.name,num:p.num,pos:p.pos}));
-  chips.innerHTML=analysisPlayers.map((p,i)=>`<div class="dchip ${i===0?'active':''}" onclick="selectAnalysisPlayer(this,'${p.name}',${i})">#${p.num||i+1} ${p.name.split(' ')[0]}</div>`).join('');
-  currentAnalysisPlayerIdx=0;
-  drawRadar(currentPlayer);
-  renderRadarLegend(currentPlayer);
-  renderRealHeatmap(analysisPlayers[0]?.name);
-  renderRealPassMap(analysisPlayers[0]?.name);
+  const match = getAnalysisMatch();
+  const players = match?.players?.length
+    ? match.players
+    : SQUAD.map(p=>({name:p.name, num:p.num, pos:p.pos}));
+
+  const chips = document.getElementById('playerChips');
+  chips.innerHTML = players.map((p,i) =>
+    `<div class="dchip ${i===0?'active':''}" onclick="selectAnalysisPlayer(this,${i})">#${p.num||i+1} ${(p.name||'Player').split(' ')[0]}</div>`
+  ).join('');
+
+  currentAnalysisPlayerIdx = 0;
+  renderAnalysisPlayer(0);
 }
-function selectAnalysisPlayer(el,name,idx){
+
+function selectAnalysisPlayer(el, idx){
   document.querySelectorAll('#playerChips .dchip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
-  currentAnalysisPlayerIdx=idx;
-  // Try to find in squad for radar
-  currentPlayer=SQUAD.find(p=>p.name===name)||SQUAD[0];
-  // Use pipeline radar if available
-  const mp = MATCHES.length ? MATCHES[MATCHES.length-1].players?.[idx] : null;
-  if(mp && mp.radar) drawRadarFromData(mp.radar);
-  else drawRadar(currentPlayer);
-  renderRadarLegend(currentPlayer);
-  renderRealHeatmap(name,idx);
-  renderRealPassMap(name,idx);
-}
-let currentAnalysisPlayerIdx=0;
-function selectPlayer(el,name){
-  document.querySelectorAll('#playerChips .dchip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  currentPlayer=SQUAD.find(p=>p.name===name)||SQUAD[0];
-  drawRadar(currentPlayer);
-  renderRadarLegend(currentPlayer);
-  renderRealHeatmap(name);
-  renderRealPassMap(name);
-}
-function setHalf(h){
-  currentHalf=h;
-  ['htH1','htH2','htFT'].forEach((id,i)=>document.getElementById(id).classList.toggle('active',i===[1,2,0].indexOf(h)+[0,1,2][i]===i));
-  document.getElementById('htH1').classList.toggle('active',h===1);
-  document.getElementById('htH2').classList.toggle('active',h===2);
-  document.getElementById('htFT').classList.toggle('active',h===0);
-}
-function drawRadar(player){
-  const canvas=document.getElementById('radarChart');
-  if(!canvas||!canvas.getContext) return;
-  const ctx=canvas.getContext('2d');
-  const W=220,H=220,cx=110,cy=110,r=80;
-  ctx.clearRect(0,0,W,H);
-  const axes=['Involvement','Shooting','Goal Threat','Speed','Defending','Stamina'];
-  // Sample values — overridden by pipeline data when available
-  const vals = getPlayerRadarVals(player);
-  const n=axes.length;
-  // Draw grid
-  for(let ring=1;ring<=5;ring++){
-    ctx.beginPath();
-    for(let i=0;i<n;i++){
-      const angle=((2*Math.PI*i)/n)-(Math.PI/2);
-      const x=cx+Math.cos(angle)*(r*ring/5);
-      const y=cy+Math.sin(angle)*(r*ring/5);
-      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-    }
-    ctx.closePath();
-    ctx.strokeStyle='rgba(255,215,0,0.1)';
-    ctx.lineWidth=1;
-    ctx.stroke();
-  }
-  // Draw axes
-  for(let i=0;i<n;i++){
-    const angle=((2*Math.PI*i)/n)-(Math.PI/2);
-    ctx.beginPath();
-    ctx.moveTo(cx,cy);
-    ctx.lineTo(cx+Math.cos(angle)*r,cy+Math.sin(angle)*r);
-    ctx.strokeStyle='rgba(255,215,0,0.15)';
-    ctx.lineWidth=1;
-    ctx.stroke();
-  }
-  // Draw filled polygon
-  ctx.beginPath();
-  for(let i=0;i<n;i++){
-    const angle=((2*Math.PI*i)/n)-(Math.PI/2);
-    const v=vals[i]/100;
-    const x=cx+Math.cos(angle)*(r*v);
-    const y=cy+Math.sin(angle)*(r*v);
-    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-  }
-  ctx.closePath();
-  ctx.fillStyle='rgba(255,215,0,0.18)';
-  ctx.fill();
-  ctx.strokeStyle='#FFD700';
-  ctx.lineWidth=2;
-  ctx.stroke();
-  // Dots
-  for(let i=0;i<n;i++){
-    const angle=((2*Math.PI*i)/n)-(Math.PI/2);
-    const v=vals[i]/100;
-    ctx.beginPath();
-    ctx.arc(cx+Math.cos(angle)*(r*v),cy+Math.sin(angle)*(r*v),4,0,Math.PI*2);
-    ctx.fillStyle='#FFD700';
-    ctx.fill();
-  }
-  // Axis labels
-  ctx.font='bold 9px "DM Sans"';
-  ctx.fillStyle='rgba(255,255,255,0.6)';
-  ctx.textAlign='center';
-  ctx.textBaseline='middle';
-  for(let i=0;i<n;i++){
-    const angle=((2*Math.PI*i)/n)-(Math.PI/2);
-    const lx=cx+Math.cos(angle)*(r+14);
-    const ly=cy+Math.sin(angle)*(r+14);
-    ctx.fillText(axes[i].toUpperCase().slice(0,4),lx,ly);
-  }
-}
-function getPlayerRadarVals(player){
-  const presets={
-    22:[82,88,85,90,72,70], // Victor
-    29:[75,60,65,78,88,72], // Joshua
-    12:[70,55,58,72,90,75], // Dhanush
-    9:[80,85,82,70,65,60],  // Melwin
-    11:[78,92,90,80,60,68], // Sheldon
-    14:[85,45,40,72,80,78], // Kishore
-    7:[72,80,78,75,65,70],  // Reuben
-    19:[68,72,70,65,58,55], // Merwyn
-    25:[65,60,58,68,72,65], // Keith
-    69:[60,30,28,72,78,70], // Dylan
-    8:[58,50,48,60,62,58]   // Denver
-  };
-  return presets[player.num]||[60,60,60,60,60,60];
-}
-function renderRadarLegend(player){
-  const labels=['Involvement','Shooting','Goal Threat','Speed','Defending','Stamina'];
-  const vals=getPlayerRadarVals(player);
-  document.getElementById('radarLegend').innerHTML=labels.map((l,i)=>`
-    <div style="text-align:center;padding:6px;background:var(--s2);border-radius:8px;border:1px solid var(--bf)">
-      <div style="font-family:'Bebas Neue',cursive;font-size:18px;color:var(--gold)">${vals[i]}</div>
-      <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">${l}</div>
-    </div>`).join('');
+  currentAnalysisPlayerIdx = idx;
+  renderAnalysisPlayer(idx);
 }
 
-// ══════════════════════════════════════════════════════════════════
-//  PLAYER PROFILES
-// ══════════════════════════════════════════════════════════════════
-function setProfileTab(tab,el){
-  profileTab=tab;
-  document.querySelectorAll('#profileTeamTabs .dchip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  renderProfiles();
-}
-function renderProfiles(){
-  const el=document.getElementById('profileContent');
-  if(profileTab==='micuz'){
-    el.innerHTML=SQUAD.map(p=>`
-      <div class="card mb12" style="cursor:pointer;transition:border-color .2s" onclick="openProfile(${p.num})" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--bf)'">
-        <div class="prof-head">
-          <div class="prof-badge">${p.num}</div>
-          <div><div class="prof-title">${p.name}</div><div class="prof-pos">${p.pos} · ${p.role}</div>
-          <div class="prof-traits">${p.traits.map(t=>`<span class="trait-tag">${t}</span>`).join('')}</div>
-          </div>
-        </div>
-        <div style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:8px">${p.strengths}</div>
-        <div style="font-size:11px;color:rgba(255,59,59,.7);line-height:1.5">⚠ ${p.weaknesses}</div>
-        ${p.subPattern?`<div style="font-size:11px;color:var(--blue);margin-top:6px;line-height:1.5">🔄 ${p.subPattern}</div>`:''}
-      </div>`).join('');
-  } else {
-    el.innerHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">Manual scouting notes for opposition players. Tap a team in Opposition Intelligence to access player-level profiles.</div>
-    ${OPPOSITION.map(t=>`
-      <div class="card mb8" style="cursor:pointer;transition:border-color .2s" onclick="go('opp');setOpp('${t.id}')" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--bf)'">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><div style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1.5px;color:var(--gold)">${t.name}</div>
-          <div style="font-size:11px;color:var(--muted)">${t.players.filter(p=>p.threat==='RED').length} RED threat${t.players.filter(p=>p.threat==='RED').length!==1?'s':''}</div></div>
-          <div>→</div>
-        </div>
-      </div>`).join('')}`;
-  }
-}
-function openProfile(num){
-  // Could open modal with full detail — here shows toast
-  const p=SQUAD.find(x=>x.num===num);
-  if(p) toast(`${p.name} — ${p.pos}`);
+function renderAnalysisPlayer(idx){
+  const match = getAnalysisMatch();
+  const player = match?.players?.[idx];
+  const squadPlayer = player ? SQUAD.find(p=>p.name===player.name)||SQUAD[0] : SQUAD[0];
+  if(player?.radar) drawRadarFromData(player.radar);
+  else drawRadar(squadPlayer);
+  renderHeatmap(player);
+  renderPassMap(player);
+  renderShotMap(player);
 }
 
-// ══════════════════════════════════════════════════════════════════
-//  OPPOSITION
-// ══════════════════════════════════════════════════════════════════
-function renderOpp(){
-  const chips=document.getElementById('oppChips');
-  chips.innerHTML=OPPOSITION.map(t=>`<div class="dchip ${t.id===currentOppId?'active':''}" onclick="setOpp('${t.id}')" style="display:flex;align-items:center;gap:6px">${LOGOS[t.id]?'<img src="'+LOGOS[t.id]+'" style="width:18px;height:18px;object-fit:contain;border-radius:3px">':''} ${t.name.replace('Marol ','').replace(' Marol','')}</div>`).join('');
-  renderOppDetail();
-}
-function setOpp(id){
-  currentOppId=id;
-  document.querySelectorAll('#oppChips .dchip').forEach((c,i)=>c.classList.toggle('active',OPPOSITION[i].id===id));
-  renderOppDetail();
-}
-function renderOppDetail(){
-  const t=OPPOSITION.find(x=>x.id===currentOppId);
-  if(!t) return;
-  const el=document.getElementById('oppDetail');
-  const threatOrder={RED:0,ORANGE:1,YELLOW:2,GREEN:3};
-  const sorted=[...t.players].sort((a,b)=>threatOrder[a.threat]-threatOrder[b.threat]);
-  const tLogo = LOGOS[t.id] ? `<img src="${LOGOS[t.id].replace(/\`/g,"")}" style="width:52px;height:52px;object-fit:contain;border-radius:8px;flex-shrink:0">` : '';
-  // fix: need runtime value
-  const tLogoHtml = LOGOS[t.id] ? '<img src="'+LOGOS[t.id]+'" style="width:52px;height:52px;object-fit:contain;border-radius:8px;flex-shrink:0">' : '';
-  el.innerHTML=`
-    <div class="card card-top mb16">
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
-        ${tLogoHtml ? tLogoHtml : ''}
-        <div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:var(--gold);margin-bottom:2px">${t.name}</div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Kit: ${t.kit}</div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Manager: ${t.manager}</div>
-      ${t.captain?`<div style="font-size:11px;color:var(--muted)">Captain: ${t.captain}</div>`:''}
-      ${t.season1?`<div style="margin-top:6px"><span style="background:rgba(255,215,0,.1);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700;color:var(--gold)">Season 1: ${t.season1}</span></div>`:''}
-        </div>
-      </div>
-    </div>
-
-    ${t.intel?`<div class="instr-box mb16" style="background:rgba(77,158,255,.05);border-color:rgba(77,158,255,.2)">
-      <div class="instr-title" style="color:var(--blue)">Intelligence Summary</div>
-      <div style="font-size:12px;color:var(--text);line-height:1.7">${t.intel}</div>
-    </div>`:''}
-
-    <div class="sh"><span>Key Instructions</span></div>
-    <div class="instr-box mb16">
-      <div class="instr-title">Pre-Match Briefing Points</div>
-      ${t.instructions.map(i=>`<div class="instr-item">${i}</div>`).join('')}
-    </div>
-
-    <div class="sh"><span>Player Profiles — Threat Analysis</span></div>
-    <div class="card mb16">
-      ${sorted.map(p=>`
-        <div class="player-row">
-          <div class="player-num">${p.num}</div>
-          <div style="flex:1">
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              <span class="player-name">${p.name}</span>
-              <span class="threat-${p.threat}">${p.threat}</span>
-              ${p.role?`<span style="font-size:10px;color:var(--muted);text-transform:uppercase">${p.role}</span>`:''}
-              ${p.age?`<span style="font-size:10px;color:var(--muted)">Age ${p.age}</span>`:''}
-            </div>
-            <div class="player-note">${p.note}</div>
-          </div>
-        </div>`).join('')}
-    </div>`;
-}
-
-// ══════════════════════════════════════════════════════════════════
-//  DATA ENTRY
-// ══════════════════════════════════════════════════════════════════
-function addGoalScorerRow(){
-  const container=document.getElementById('goalScorerRows');
-  const div=document.createElement('div');
-  div.className='frow';
-  div.style='align-items:end;gap:8px;margin-top:8px';
-  div.innerHTML=`<div class="fgroup" style="flex:1"><label>Player</label>
-    <select><option>Victor #22</option><option>Joshua #29</option><option>Dhanush #12</option><option>Melwin #9</option><option>Sheldon #11</option><option>Kishore #14</option><option>Reuben #7</option><option>Merwyn #19</option><option>Keith #25</option><option>Dylan #69</option><option>Denver #8</option></select></div>
-    <div class="fgroup" style="width:60px"><label>Min</label><input type="number" min="1" max="45"></div>`;
-  container.appendChild(div);
-}
-function addSubRow(){
-  const container=document.getElementById('subTimingRows');
-  const div=document.createElement('div');
-  div.className='frow3';
-  div.style='align-items:end;gap:8px;margin-top:8px';
-  div.innerHTML=`<div class="fgroup"><label>Off</label><select><option>Victor #22</option><option>Sheldon #11</option><option>Kishore #14</option><option>Joshua #29</option><option>Dhanush #12</option></select></div>
-    <div class="fgroup"><label>On</label><select><option>Reuben #7</option><option>Melwin #9</option><option>Merwyn #19</option><option>Keith #25</option><option>Dylan #69</option><option>Denver #8</option></select></div>
-    <div class="fgroup"><label>Min</label><input type="number" min="1" max="45"></div>`;
-  container.appendChild(div);
-}
-function saveEntry(){
-  const md=document.getElementById('eMD').value;
-  const opp=document.getElementById('eOpp').value;
-  const gf=parseInt(document.getElementById('eGH').value)||0;
-  const ga=parseInt(document.getElementById('eGA').value)||0;
-  const res=document.getElementById('eRes').value;
-  const match={
-    matchday:md,opponent:opp,goalsFor:gf,goalsAgainst:ga,result:res,
-    date:new Date().toLocaleDateString('en-GB'),type:'League',
-    teamStats:{},players:[],events:[],
-    tier2:{
-      yellowCards:parseInt(document.getElementById('eYC').value)||0,
-      yellowCardsOpp:parseInt(document.getElementById('eYCO').value)||0,
-      cornersUs:parseInt(document.getElementById('eCU').value)||0,
-      cornersOpp:parseInt(document.getElementById('eCO').value)||0,
-      freeKicksUs:parseInt(document.getElementById('eFKU').value)||0,
-      freeKicksOpp:parseInt(document.getElementById('eFKO').value)||0
-    }
-  };
-  const idx=MATCHES.findIndex(m=>m.matchday===md);
-  if(idx>=0){
-    // Update existing match — preserve pipeline data, update score and tier2
-    MATCHES[idx].goalsFor     = gf;
-    MATCHES[idx].goalsAgainst = ga;
-    MATCHES[idx].result       = res;
-    MATCHES[idx].tier2        = match.tier2;
-    MATCHES[idx].opponent     = opp;
-  } else {
-    MATCHES.push(match);
-  }
-  saveMatches();
-  toast('Match data saved ✓ — '+md+' vs '+opp+' '+gf+'-'+ga+' '+res);
-  renderHome();
-}
-
-// ══════════════════════════════════════════════════════════════════
-//  UPLOAD / DRIVE
-// ══════════════════════════════════════════════════════════════════
-function handleUpload(input){
-  const file=input.files[0];
-  if(!file) return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      const data=JSON.parse(e.target.result);
-      ingestReport(data);
-    } catch(err){
-      toast('Invalid JSON file');
-    }
-  };
-  reader.readAsText(file);
-}
-function mapTracksToPlayers(data){
-  // S2 squad (current season)
-  const S2_LINEUP = [
-    {num:22, name:'Victor Shriyan',   pos:'Freeplay'},
-    {num:14, name:'Kishore Shetty',   pos:'Goalkeeper'},
-    {num:29, name:'Joshua Lopez',     pos:'Defender'},
-    {num:12, name:'Dhanush Nadar',    pos:'Defender'},
-    {num:11, name:'Sheldon Rego',     pos:'Forward'},
-    {num:7,  name:'Reuben Pereira',   pos:'Forward'},
-    {num:19, name:'Merwyn DSouza',    pos:'Forward'},
-    {num:9,  name:'Melwin Vaz',       pos:'Forward'},
-    {num:25, name:'Keith Briganza',   pos:'Defender'},
-    {num:69, name:'Dylan Rodrigues',  pos:'Goalkeeper'},
-    {num:8,  name:'Denver Rodrigues', pos:'Defender'},
-  ];
-  // S1 squad for MiCuz FC (from MFL Instagram team lineups)
-  const S1_LINEUP = [
-    {num:22, name:'Victor Shriyan',   pos:'Freeplay'},
-    {num:10, name:'Ashish Kothari',   pos:'Midfielder'},
-    {num:8,  name:'Hrishkesh Hirve',  pos:'Defender'},
-    {num:99, name:'Akhil Raj',        pos:'Defender'},
-    {num:7,  name:'Merwyn DSouza',    pos:'Forward'},
-    {num:17, name:'Ronan Machado',    pos:'Forward'},
-    {num:1,  name:'Dylan Rodrigues',  pos:'Goalkeeper'},
-    {num:6,  name:'Raphael Viegas',   pos:'Midfielder'},
-    {num:18, name:'Karthik Konar',    pos:'Forward'},
-    {num:5,  name:'Adrian Moraes',    pos:'Defender'},
-    {num:0,  name:'Nishant Patel',    pos:'Midfielder'},
-  ];
-  // Detect which squad to use based on matchday label
-  const isS1 = data.matchday && data.matchday.toLowerCase().includes('s1');
-  const LINEUP = isS1 ? S1_LINEUP : S2_LINEUP;
-  if(!data.players?.length) return data;
-  // Sort by distance descending (most active first)
-  const sorted = [...data.players].sort((a,b)=>b.distance-a.distance);
-  sorted.forEach((p, i) => {
-    const ref = LINEUP[i] || {num: i+1, name: 'Player '+(i+1), pos:'—'};
-    p.num  = ref.num;
-    p.name = ref.name;
-    p.pos  = ref.pos;
-  });
-  // Put back in original order
-  data.players = data.players.map(p => sorted.find(s=>s===p)||p);
-  
-  // Fix distance if it looks like raw pixels (>500km = definitely pixels)
-  if(data.teamStats){
-    const dist = data.teamStats.distanceCovered;
-    if(dist > 100){
-      // Convert from pixel-accumulated value to realistic km
-      // Real 5-a-side 20 min = ~1.5km per player average
-      const nPlayers = data.players.length || 5;
-      const avgDist = data.players.reduce((s,p)=>s+(p.distance||0),0) / nPlayers;
-      data.teamStats.distanceCovered = Math.round(avgDist * nPlayers * 10) / 10;
-      data.teamStats.distancePerPlayer = Math.round(avgDist * 10) / 10;
-    }
-    // Fix maxSpeed - compute from players
-    if(!data.teamStats.maxSpeed || data.teamStats.maxSpeed === 0){
-      const topSpd = Math.max(...(data.players.map(p=>p.maxSpeed||0)));
-      data.teamStats.maxSpeed = topSpd > 0 ? topSpd : 0;
-    }
-  }
-  // Fix player ratings that are near-zero
-  data.players.forEach(p => {
-    if(p.rating < 1.0 && p.distance > 0){
-      // Recalculate based on available data
-      const stamina = Math.min(Math.round(p.distance / 2.0 * 100), 100);
-      p.radar.stamina = stamina;
-      p.radar.involvement = Math.min(Math.round((p.passes||0) / 20 * 100), 100);
-      p.radar.speed = Math.min(Math.round((p.maxSpeed||0) / 22 * 100), 100);
-      p.rating = Math.max(
-        Math.round((stamina * 0.35 + (p.radar.speed||0) * 0.25 + (p.radar.involvement||0) * 0.20 + 20) / 10 * 10) / 10,
-        3.0
-      );
-    }
-  });
-  return data;
-}
-function ingestReport(data){
-  // Accepts report.json produced by convert_report.py
-  if(!data.matchday){toast('Unrecognised report format — ensure convert_report.py was used');return;}
-  // Preserve manually-corrected score if it already exists for this matchday
-  const existingIdx = MATCHES.findIndex(m=>m.matchday===data.matchday);
-  if(existingIdx>=0){
-    const existing = MATCHES[existingIdx];
-    // If existing match has a non-zero score that differs from incoming, keep the existing score
-    if(existing.goalsFor > 0 || existing.goalsAgainst > 0){
-      data.goalsFor     = existing.goalsFor;
-      data.goalsAgainst = existing.goalsAgainst;
-      data.result       = existing.result;
-    }
-    // Preserve any tier2 data already entered
-    if(existing.tier2 && (existing.tier2.goalScorers?.length || existing.tier2.yellowCards > 0)){
-      data.tier2 = existing.tier2;
-    }
-  }
-  data = mapTracksToPlayers(data);
-  // Merge: keep existing data for fields not in new upload
-  const idx=MATCHES.findIndex(m=>m.matchday===data.matchday);
-  if(idx>=0){
-    // Deep merge — new data wins except for manually-preserved fields above
-    MATCHES[idx]={...MATCHES[idx],...data};
-  } else {
-    MATCHES.push(data);
-  }
-  saveMatches();
-  const scoreNote = (data.goalsFor===0 && data.goalsAgainst===0) 
-    ? ' — Enter correct score in Data Entry' : '';
-  toast('Imported: '+data.matchday+' vs '+data.opponent+' ✓'+scoreNote);
-  renderHome();
-}
-function importFromDrive(){
-  const url=document.getElementById('driveUrl').value.trim();
-  if(!url){toast('Paste a Google Drive link first');return;}
-  toast('Fetching from Drive…');
-  // Note: direct fetch of Drive files requires public sharing and proper export URL format.
-  // This is a client-side PWA — CORS limitations apply. Use convert_report.py and upload directly.
-  setTimeout(()=>toast('Paste Drive share link → download JSON → upload above'),1500);
-}
-
-// ══════════════════════════════════════════════════════════════════
-//  SOCIAL GRAPHIC
-// ══════════════════════════════════════════════════════════════════
-function populateSgSelect(){
-  const sel=document.getElementById('sgMatch');
-  sel.innerHTML='<option value="">— Select Match —</option>'+
-    MATCHES.map((m,i)=>`<option value="${i}">${m.matchday}: MiCuz ${m.goalsFor}–${m.goalsAgainst} ${m.opponent}</option>`).join('');
-  if(MATCHES.length) generateGraphic();
-}
-function generateGraphic(){
-  const sel=document.getElementById('sgMatch');
-  const idx=parseInt(sel.value);
-  const m=isNaN(idx)?null:MATCHES[idx];
-  const canvas=document.getElementById('sgCanvas');
-  const ctx=canvas.getContext('2d');
-  const W=1080,H=1080;
-  ctx.clearRect(0,0,W,H);
-  // Background
-  ctx.fillStyle='#000';
-  ctx.fillRect(0,0,W,H);
-  // Gold grid
-  ctx.strokeStyle='rgba(255,215,0,0.04)';
-  ctx.lineWidth=1;
-  for(let x=0;x<W;x+=54){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-  for(let y=0;y<H;y+=54){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-  // Gold top stripe
-  const grad=ctx.createLinearGradient(0,0,W,0);
-  grad.addColorStop(0,'#FFD700');
-  grad.addColorStop(1,'rgba(255,215,0,0)');
-  ctx.fillStyle=grad;
-  ctx.fillRect(0,0,W,6);
-  // Club badge — MiCuz FC logo (top left, clear of text)
-  (()=>{
-    const img = new Image();
-    img.onload = () => {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(100,100,52,0,Math.PI*2);
-      ctx.closePath();
-      ctx.clip();
-      ctx.drawImage(img, 48, 48, 104, 104);
-      ctx.restore();
-      ctx.beginPath();
-      ctx.arc(100,100,54,0,Math.PI*2);
-      ctx.strokeStyle='#FFD700';
-      ctx.lineWidth=3;
-      ctx.stroke();
-    };
-    img.src = LOGOS.micuz;
-    img.complete && img.onload();
-  })();
-  // Club name - pushed right to avoid logo overlap
-  ctx.fillStyle='#FFD700';
-  ctx.font='64px "Bebas Neue",cursive';
-  ctx.textAlign='left';
-  ctx.fillText('MICUZ FC',230,115);
-  ctx.font='20px "DM Sans",sans-serif';
-  ctx.fillStyle='rgba(255,215,0,0.6)';
-  ctx.fillText('MAROL FOOTBALL LEAGUE · SEASON 2',230,148);
-  // Divider
-  ctx.strokeStyle='rgba(255,215,0,0.3)';
-  ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(60,190);ctx.lineTo(W-60,190);ctx.stroke();
-  if(m){
-    // Score
-    ctx.fillStyle='#FFF';
-    ctx.font='200px "Bebas Neue",cursive';
-    ctx.textAlign='center';
-    ctx.fillText(`${m.goalsFor}—${m.goalsAgainst}`,W/2,430);
-    // Teams
-    ctx.font='40px "Bebas Neue",cursive';
-    ctx.fillStyle='#FFD700';
-    ctx.textAlign='left';
-    ctx.fillText('MICUZ FC',140,480);
-    ctx.fillStyle='#888';
-    ctx.textAlign='right';
-    ctx.fillText((m.opponent||'').toUpperCase(),W-140,480);
-    // Opponent logo
-    const oppId=OPPOSITION.find(o=>{
-      if(!m.opponent) return false;
-      const ol=m.opponent.toLowerCase();
-      return o.id.replace(/_/g,' ').split(' ').some(w=>w.length>3&&ol.includes(w));
-    })?.id;
-    if(oppId&&LOGOS[oppId]){
-      const oppImg=new Image();
-      oppImg.onload=()=>{
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(W-100,430,45,0,Math.PI*2);
-        ctx.closePath();
-        ctx.clip();
-        ctx.drawImage(oppImg,W-145,385,90,90);
-        ctx.restore();
-        ctx.beginPath();
-        ctx.arc(W-100,430,47,0,Math.PI*2);
-        ctx.strokeStyle='rgba(255,255,255,0.3)';
-        ctx.lineWidth=2;
-        ctx.stroke();
-      };
-      oppImg.src=LOGOS[oppId];
-      oppImg.complete&&oppImg.onload();
-    }
-    // Result badge
-    const rc=m.result==='Win'?'#00D176':m.result==='Loss'?'#FF3B3B':'#FFD700';
-    ctx.fillStyle=rc+'22';
-    roundRect(ctx,W/2-120,510,240,60,12);
-    ctx.fill();
-    ctx.strokeStyle=rc;
-    ctx.lineWidth=2;
-    ctx.stroke();
-    ctx.fillStyle=rc;
-    ctx.font='bold 32px "Bebas Neue",cursive';
-    ctx.textAlign='center';
-    ctx.fillText(m.result?.toUpperCase()||'—',W/2,550);
-    // Matchday
-    ctx.font='22px "DM Sans",sans-serif';
-    ctx.fillStyle='rgba(255,255,255,0.5)';
-    ctx.textAlign='center';
-    ctx.fillText(`${m.matchday} · ${m.date||'MFL 2026'}`,W/2,600);
-    // Goal scorers from tier2
-    const scorers = m.tier2?.goalScorers||[];
-    if(scorers.length){
-      ctx.font='bold 22px "DM Sans",sans-serif';
-      ctx.fillStyle='rgba(255,215,0,0.85)';
-      ctx.textAlign='left';
-      scorers.forEach((s,i)=>{
-        ctx.fillText('⚽  '+s.player+"  "+s.minute+"'", 120, 628+(i*30));
-      });
-    } else {
-      ctx.font='18px "DM Sans",sans-serif';
-      ctx.fillStyle='rgba(255,255,255,0.3)';
-      ctx.textAlign='center';
-      ctx.fillText('Add goal scorers via Data Entry screen',W/2,635);
-    }
-    // Divider
-    ctx.strokeStyle='rgba(255,215,0,0.2)';
-    ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(60,640);ctx.lineTo(W-60,640);ctx.stroke();
-    // Stats row
-    const stats=[
-      {label:'POSSESSION',value:(m.teamStats?.possession??'—')+'%'},
-      {label:'SHOTS',value:m.teamStats?.shots??'—'},
-      {label:'PASSES',value:m.teamStats?.passes??'—'},
-      {label:'DISTANCE',value:(m.teamStats?.distanceCovered??'—')+'km'}
-    ];
-    stats.forEach((s,i)=>{
-      const x=120+i*(W-240)/3.5;
-      ctx.font='60px "Bebas Neue",cursive';
-      ctx.fillStyle='#FFD700';
-      ctx.textAlign='center';
-      ctx.fillText(String(s.value),x+80,720);
-      ctx.font='18px "DM Sans",sans-serif';
-      ctx.fillStyle='rgba(255,255,255,0.4)';
-      ctx.fillText(s.label,x+80,760);
-    });
-  } else {
-    ctx.fillStyle='rgba(255,215,0,0.3)';
-    ctx.font='40px "Bebas Neue",cursive';
-    ctx.textAlign='center';
-    ctx.fillText('SELECT A MATCH TO GENERATE GRAPHIC',W/2,540);
-  }
-  // Footer
-  ctx.fillStyle='rgba(255,215,0,0.35)';
-  ctx.font='22px "DM Sans",sans-serif';
-  ctx.textAlign='center';
-  ctx.fillText('MFL SEASON 2 · FIVE NINE TURF MAROL',W/2,1020);
-  // Team logos on scoreboard
-  if(m){
-    // MiCuz logo left
-    (()=>{
-      const img=new Image();
-      img.onload=()=>{
-        ctx.save();ctx.beginPath();ctx.arc(180,430,28,0,Math.PI*2);ctx.closePath();ctx.clip();
-        ctx.drawImage(img,152,402,56,56);ctx.restore();
-        ctx.beginPath();ctx.arc(180,430,28,0,Math.PI*2);
-        ctx.strokeStyle='#FFD700';ctx.lineWidth=2;ctx.stroke();
-      };
-      img.src=LOGOS.micuz;img.complete&&img.onload();
-    })();
-    // Goal scorers
-    const scorers = m.tier2?.goalScorers||[];
-    if(scorers.length){
-      ctx.font='18px "DM Sans",sans-serif';
-      ctx.fillStyle='rgba(255,255,255,0.6)';
-      ctx.textAlign='left';
-      scorers.forEach((s,i)=>{
-        ctx.fillText('⚽ '+s.player+' '+s.minute+"'", 120, 640+(i*24));
-      });
-    }
-  }
-  // MFL logo in bottom right
-  (()=>{
-    const mflImg = new Image();
-    mflImg.onload = () => {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(W-80, H-80, 44, 0, Math.PI*2);
-      ctx.closePath();
-      ctx.clip();
-      ctx.drawImage(mflImg, W-124, H-124, 88, 88);
-      ctx.restore();
-    };
-    mflImg.src = LOGOS.MFL;
-    mflImg.complete && mflImg.onload();
-  })();
-  // Gold bottom stripe
-  const grad2=ctx.createLinearGradient(W,0,0,0);
-  grad2.addColorStop(0,'#FFD700');
-  grad2.addColorStop(1,'rgba(255,215,0,0)');
-  ctx.fillStyle=grad2;
-  ctx.fillRect(0,H-6,W,6);
-}
-function roundRect(ctx,x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
-  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
-  ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
-  ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();
-}
-function downloadGraphic(){
-  generateGraphic();
-  const canvas=document.getElementById('sgCanvas');
-  const link=document.createElement('a');
-  link.download='MiCuzFC_Match_Graphic.png';
-  link.href=canvas.toDataURL('image/png');
-  link.click();
-  toast('Graphic downloaded ✓');
-}
-
-// ══════════════════════════════════════════════════════════════════
-//  AI ANALYST
-// ══════════════════════════════════════════════════════════════════
-function quickQ(q){
-  document.getElementById('cinput').value=q;
-  sendChat();
-}
-async function sendChat(){
-  const input=document.getElementById('cinput');
-  const q=input.value.trim();
-  if(!q) return;
-  input.value='';
-  const msgs=document.getElementById('cmsgs');
-  msgs.innerHTML+=`<div class="msg user">${q}</div>`;
-  msgs.innerHTML+=`<div class="msg ai" id="aiTyping"><div class="albl">MiCuz Analyst</div><div class="dots"><span></span><span></span><span></span></div></div>`;
-  msgs.scrollTop=msgs.scrollHeight;
-  document.getElementById('csend').disabled=true;
-  // Build context for the LLM
-  const ctx=buildContext();
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:800,
-        system:`You are the match analyst for MiCuz FC, a 5-a-side football team competing in MFL Season 2 at Five Nine Turf, Marol, Mumbai. Ashley is the manager. You have access to squad data, opposition intelligence and match records. Respond concisely and professionally. Use bullet points only when listing multiple items. Never use informal language.\n\nSQUAD AND CONTEXT:\n${ctx}`,
-        messages:[{role:'user',content:q}]
-      })
-    });
-    const data=await res.json();
-    const text=data.content?.find(c=>c.type==='text')?.text||'Analysis unavailable.';
-    document.getElementById('aiTyping').innerHTML=`<div class="albl">MiCuz Analyst</div>${text.replace(/\n/g,'<br>')}`;
-  } catch(e){
-    document.getElementById('aiTyping').innerHTML=`<div class="albl">MiCuz Analyst</div>Analysis unavailable — check connection.`;
-  }
-  msgs.scrollTop=msgs.scrollHeight;
-  document.getElementById('csend').disabled=false;
-}
-function buildContext(){
-  let ctx=`SQUAD: ${SQUAD.map(p=>`#${p.num} ${p.name} (${p.pos}, ${p.role})`).join(', ')}\n`;
-  ctx+=`SEASON RECORD: ${MATCHES.length} matches played\n`;
-  if(MATCHES.length){
-    let w=0,d=0,l=0;
-    MATCHES.forEach(m=>{if(m.result==='Win')w++;else if(m.result==='Draw')d++;else l++;});
-    ctx+=`W${w} D${d} L${l}\n`;
-    ctx+=`RECENT: ${MATCHES.slice(-3).map(m=>`${m.matchday} vs ${m.opponent}: ${m.goalsFor}-${m.goalsAgainst} ${m.result}`).join(', ')}\n`;
-  }
-  ctx+=`TOURNAMENT: MFL Season 2, 5-a-side rolling subs, 15 mins per half + added time (33-38 mins FT), 9 league games + playoffs. MD1: 28 March 2026.\n`;
-  ctx+=`STARTING 5: #14 Kishore (GK), #29 Joshua (DEF), #12 Dhanush (DEF), #22 Victor (Freeplay/Captain), #11 Sheldon (FWD)\n`;
-  return ctx;
-}
-
-
-// ══════════════════════════════════════════════════════════════════
-//  SEASON STATS
-// ══════════════════════════════════════════════════════════════════
-let ssCharts = {};
-let leaderTab = 'rating';
-
-function renderSeasonStats() {
-  // Set logo
-  const logoEl = document.getElementById('ssHeroLogo');
-  if (logoEl && typeof LOGOS !== 'undefined') logoEl.src = LOGOS.micuz;
-
-  if (!MATCHES.length) {
-    document.getElementById('ssNoData').style.display = 'block';
-    document.getElementById('ssContent').style.display = 'none';
-    document.getElementById('ssKpiGrid').innerHTML = '';
-    renderKPIs([]);
+function renderHeatmap(player){
+  const svg = document.getElementById('heatmapSvg');
+  if(!svg) return;
+  svg.querySelectorAll('.rh').forEach(e=>e.remove());
+  const defs = document.getElementById('hmDefs');
+  if(defs) defs.innerHTML='';
+  const lbl = document.getElementById('hmLabel');
+  if(!player?.heatmap?.length){
+    if(lbl) lbl.textContent='No heatmap data';
     return;
   }
-  document.getElementById('ssNoData').style.display = 'none';
-  document.getElementById('ssContent').style.display = 'block';
-
-  renderKPIs(MATCHES);
-  renderFormStrip(MATCHES);
-  renderFormTable(MATCHES);
-  renderGoalsChart(MATCHES);
-  renderPossChart(MATCHES);
-  renderPressingChart(MATCHES);
-  renderPassChart(MATCHES);
-  renderSeasonRadar(MATCHES);
-  renderLeaderboard(MATCHES);
-  renderSeasonShotMap(MATCHES);
-}
-
-function renderKPIs(matches) {
-  const w = matches.filter(m=>m.result==='Win').length;
-  const d = matches.filter(m=>m.result==='Draw').length;
-  const l = matches.filter(m=>m.result==='Loss').length;
-  const gf = matches.reduce((s,m)=>s+parseInt(m.goalsFor||0),0);
-  const ga = matches.reduce((s,m)=>s+parseInt(m.goalsAgainst||0),0);
-  const played = matches.length;
-  const pts = w*3 + d;
-  const avgRating = played ? (matches.reduce((s,m)=>s+(m.matchRating||0),0)/played).toFixed(1) : '—';
-  const avgPoss = played ? Math.round(matches.reduce((s,m)=>s+(m.teamStats?.possession||50),0)/played) : '—';
-  const kpis = [
-    {v:played, l:'Played'}, {v:w, l:'Wins'}, {v:d, l:'Draws'}, {v:l, l:'Losses'},
-    {v:pts, l:'Points'}, {v:gf+':'+ga, l:'Goals'}, {v:(gf-ga>=0?'+':'')+(gf-ga), l:'GD'},
-    {v:avgPoss+'%', l:'Avg Poss'}
-  ];
-  document.getElementById('ssKpiGrid').innerHTML = kpis.map(k=>`
-    <div class="ss-kpi"><div class="ss-kv">${k.v}</div><div class="ss-kl">${k.l}</div></div>`).join('');
-}
-
-function renderFormStrip(matches) {
-  const last5 = matches.slice(-5);
-  const el = document.getElementById('ssFormStrip');
-  el.innerHTML = last5.map(m=>`
-    <div class="ss-form-res ${m.result?.[0]||'D'}" style="width:24px;height:24px;border-radius:4px;font-size:10px">
-      ${m.result?.[0]||'?'}
-    </div>`).join('');
-}
-
-function renderFormTable(matches) {
-  const el = document.getElementById('ssFormTable');
-  el.innerHTML = matches.map(m=>`
-    <div class="ss-form-row" style="animation:up .3s ease">
-      <div class="ss-form-md">${m.matchday||'—'}</div>
-      <div class="ss-form-opp">${m.opponent||'—'}</div>
-      <div class="ss-form-score">${m.goalsFor||0}–${m.goalsAgainst||0}</div>
-      <div class="ss-form-res ${m.result?.[0]||'D'}">${m.result?.[0]||'?'}</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);width:32px;text-align:right;flex-shrink:0">${m.matchRating||'—'}</div>
-    </div>`).join('') || '<div style="color:var(--muted);font-size:12px;padding:12px">No matches yet</div>';
-}
-
-function destroyChart(id) {
-  if (ssCharts[id]) { ssCharts[id].destroy(); delete ssCharts[id]; }
-}
-
-function ssChartDefaults() {
-  return {
-    color: '#EBEBEB',
-    plugins: { legend: { display:false } },
-    scales: {
-      x: { ticks:{ color:'#585858', font:{size:10} }, grid:{ color:'rgba(255,215,0,.06)' } },
-      y: { ticks:{ color:'#585858', font:{size:10} }, grid:{ color:'rgba(255,215,0,.06)' } }
-    }
-  };
-}
-
-function renderGoalsChart(matches) {
-  destroyChart('goals');
-  const ctx = document.getElementById('ssGoalsChart')?.getContext('2d');
-  if (!ctx) return;
-  const labels = matches.map(m=>m.matchday||'?');
-  ssCharts.goals = new Chart(ctx, {
-    type:'bar',
-    data: {
-      labels,
-      datasets:[
-        { label:'Scored', data: matches.map(m=>m.goalsFor||0),
-          backgroundColor:'rgba(255,215,0,0.7)', borderColor:'#FFD700', borderWidth:1, borderRadius:4 },
-        { label:'Conceded', data: matches.map(m=>m.goalsAgainst||0),
-          backgroundColor:'rgba(255,59,59,0.5)', borderColor:'#FF3B3B', borderWidth:1, borderRadius:4 }
-      ]
-    },
-    options: { ...ssChartDefaults(), responsive:true,
-      plugins:{ legend:{ display:true, labels:{ color:'#888', font:{size:10}, boxWidth:10 } } } }
-  });
-}
-
-function renderPossChart(matches) {
-  destroyChart('poss');
-  const ctx = document.getElementById('ssPossChart')?.getContext('2d');
-  if (!ctx) return;
-  const labels = matches.map(m=>m.matchday||'?');
-  const poss = matches.map(m=>m.teamStats?.possession||m.possession||50);
-  ssCharts.poss = new Chart(ctx, {
-    type:'line',
-    data: { labels, datasets:[{
-      label:'Possession %', data:poss,
-      borderColor:'#FFD700', backgroundColor:'rgba(255,215,0,0.08)',
-      tension:0.4, fill:true, pointBackgroundColor:'#FFD700', pointRadius:4
-    }]},
-    options: { ...ssChartDefaults(), responsive:true,
-      scales:{ ...ssChartDefaults().scales, y:{ ...ssChartDefaults().scales.y, min:0, max:100,
-        ticks:{ callback:v=>v+'%', color:'#585858', font:{size:10} } } } }
-  });
-}
-
-function renderPressingChart(matches) {
-  destroyChart('press');
-  const ctx = document.getElementById('ssPressingChart')?.getContext('2d');
-  if (!ctx) return;
-  const labels = matches.map(m=>m.matchday||'?');
-  const press = matches.map(m=>m.teamStats?.pressingIntensity||0);
-  ssCharts.press = new Chart(ctx, {
-    type:'line',
-    data: { labels, datasets:[{
-      label:'Pressing %', data:press,
-      borderColor:'#FF8C00', backgroundColor:'rgba(255,140,0,0.08)',
-      tension:0.4, fill:true, pointBackgroundColor:'#FF8C00', pointRadius:4
-    }]},
-    options: { ...ssChartDefaults(), responsive:true,
-      scales:{ ...ssChartDefaults().scales, y:{ ...ssChartDefaults().scales.y, min:0, max:100,
-        ticks:{ callback:v=>v+'%', color:'#585858', font:{size:10} } } } }
-  });
-}
-
-function renderPassChart(matches) {
-  destroyChart('pass');
-  const ctx = document.getElementById('ssPassChart')?.getContext('2d');
-  if (!ctx) return;
-  const labels = matches.map(m=>m.matchday||'?');
-  const pass = matches.map(m=>m.teamStats?.passCompletion||0);
-  ssCharts.pass = new Chart(ctx, {
-    type:'line',
-    data: { labels, datasets:[{
-      label:'Pass %', data:pass,
-      borderColor:'#4D9EFF', backgroundColor:'rgba(77,158,255,0.08)',
-      tension:0.4, fill:true, pointBackgroundColor:'#4D9EFF', pointRadius:4
-    }]},
-    options: { ...ssChartDefaults(), responsive:true,
-      scales:{ ...ssChartDefaults().scales, y:{ ...ssChartDefaults().scales.y, min:0, max:100,
-        ticks:{ callback:v=>v+'%', color:'#585858', font:{size:10} } } } }
-  });
-}
-
-function renderSeasonRadar(matches) {
-  destroyChart('radar');
-  const ctx = document.getElementById('ssRadarChart')?.getContext('2d');
-  if (!ctx || !matches.length) return;
-  const avg = key => {
-    const vals = matches.map(m=>m.teamStats?.[key]||0).filter(v=>v>0);
-    return vals.length ? vals.reduce((s,v)=>s+v,0)/vals.length : 0;
-  };
-  const poss   = avg('possession');
-  const pass   = avg('passCompletion');
-  const press  = avg('pressingIntensity');
-  const shots  = matches.reduce((s,m)=>s+(m.teamStats?.shots||0),0) / matches.length;
-  const tackle = matches.reduce((s,m)=>s+((m.teamStats?.tacklesWon||0)/(m.teamStats?.tackles||1)*100),0)/matches.length;
-  const goals  = matches.reduce((s,m)=>s+(m.goalsFor||0),0)/matches.length;
-  ssCharts.radar = new Chart(ctx, {
-    type:'radar',
-    data:{
-      labels:['POSSESSION','PASSING','PRESSING','SHOOTING','DEFENDING','GOALS/GAME'],
-      datasets:[{
-        data:[poss, pass, press, Math.min(shots/5*100,100), tackle, Math.min(goals/3*100,100)],
-        borderColor:'#FFD700', backgroundColor:'rgba(255,215,0,0.12)',
-        pointBackgroundColor:'#FFD700', pointRadius:4, borderWidth:2
-      }]
-    },
-    options:{
-      responsive:true,
-      plugins:{ legend:{ display:false } },
-      scales:{ r:{
-        min:0, max:100,
-        ticks:{ display:false },
-        grid:{ color:'rgba(255,215,0,0.1)' },
-        angleLines:{ color:'rgba(255,215,0,0.15)' },
-        pointLabels:{ color:'#888', font:{size:9} }
-      }}
-    }
-  });
-}
-
-function setLeaderTab(tab, el) {
-  leaderTab = tab;
-  document.querySelectorAll('#ssLeaderTabs .dchip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  renderLeaderboard(MATCHES);
-}
-
-function renderLeaderboard(matches) {
-  const el = document.getElementById('ssLeaderContent');
-  // Aggregate player stats across all matches
-  const agg = {};
-  matches.forEach(m=>{
-    (m.players||[]).forEach(p=>{
-      const k = p.num+'_'+p.name;
-      if (!agg[k]) agg[k] = { num:p.num, name:p.name, pos:p.pos, apps:0,
-        rating:0, goals:0, distance:0, passes:0, passComp:0, sprints:0,
-        tackles:0, tacklesWon:0, interceptions:0 };
-      agg[k].apps++;
-      agg[k].rating     += p.rating||0;
-      agg[k].goals      += p.goals||0;
-      agg[k].distance   += p.distance||0;
-      agg[k].passes     += p.passes||0;
-      agg[k].passComp   += p.passesCompleted||0;
-      agg[k].sprints    += p.sprints||0;
-      agg[k].tackles    += p.tackles||0;
-      agg[k].tacklesWon += p.tacklesWon||0;
-      agg[k].interceptions += p.interceptions||0;
+  player.heatmap.forEach((pt,i)=>{
+    const [nx,ny,intensity]=pt;
+    const x=20+nx*640, y=20+ny*380;
+    const r=55+(intensity||0.7)*35;
+    const hot=(intensity||0.7)>0.8;
+    const col=hot?'#FF3B3B':'#FFD700';
+    const gId='rh'+i;
+    const grad=document.createElementNS('http://www.w3.org/2000/svg','radialGradient');
+    grad.setAttribute('id',gId);grad.setAttribute('cx','50%');grad.setAttribute('cy','50%');grad.setAttribute('r','50%');
+    ['0%','100%'].forEach((offset,j)=>{
+      const stop=document.createElementNS('http://www.w3.org/2000/svg','stop');
+      stop.setAttribute('offset',offset);stop.setAttribute('stop-color',col);
+      stop.setAttribute('stop-opacity',j===0?String((intensity||0.7)*0.75):'0');
+      grad.appendChild(stop);
     });
-  });
-  const players = Object.values(agg).map(p=>({
-    ...p,
-    avgRating: p.apps ? (p.rating/p.apps).toFixed(1) : 0,
-    avgPass:   p.passes ? Math.round(p.passComp/p.passes*100) : 0,
-    defending: p.tacklesWon + p.interceptions
-  }));
-
-  const sortMap = {
-    rating:   (a,b)=>b.avgRating-a.avgRating,
-    goals:    (a,b)=>b.goals-a.goals,
-    distance: (a,b)=>b.distance-a.distance,
-    passes:   (a,b)=>b.avgPass-a.avgPass,
-    sprints:  (a,b)=>b.sprints-a.sprints,
-    defending:(a,b)=>b.defending-a.defending
-  };
-  const valMap = {
-    rating:   p=>[p.avgRating, '/10'],
-    goals:    p=>[p.goals, ' goals'],
-    distance: p=>[p.distance.toFixed(1), ' km'],
-    passes:   p=>[p.avgPass, '%'],
-    sprints:  p=>[p.sprints, ' spr'],
-    defending:p=>[p.defending, ' D+I']
-  };
-
-  const sorted = [...players].sort(sortMap[leaderTab]||sortMap.rating);
-  const maxVal = sorted.length ? parseFloat(valMap[leaderTab](sorted[0])[0]) : 1;
-
-  if (!sorted.length) {
-    el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:12px">Upload match reports to see player stats.</div>';
-    return;
-  }
-
-  el.innerHTML = `<table class="ss-player-table">
-    <thead><tr>
-      <th>#</th><th>Player</th><th>Apps</th>
-      <th>${leaderTab==='rating'?'Avg Rating':leaderTab==='goals'?'Goals':leaderTab==='distance'?'Distance km':leaderTab==='passes'?'Pass %':leaderTab==='sprints'?'Sprints':'D+I'}</th>
-    </tr></thead>
-    <tbody>
-      ${sorted.map((p,i)=>{
-        const [val, unit] = valMap[leaderTab](p);
-        const pct = maxVal ? Math.min(parseFloat(val)/maxVal*100,100) : 0;
-        return `<tr style="animation:up .3s ease ${i*0.04}s both">
-          <td style="color:var(--gold);font-family:'Bebas Neue',cursive;font-size:16px">${p.num}</td>
-          <td><div style="font-weight:600">${p.name}</div><div style="font-size:10px;color:var(--muted)">${p.pos}</div></td>
-          <td style="color:var(--muted)">${p.apps}</td>
-          <td>
-            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:${i===0?'var(--gold)':'var(--text)'}">${val}</span>
-            <span style="font-size:10px;color:var(--muted)">${unit}</span>
-            <div class="ss-bar-wrap"><div class="ss-bar" style="width:${pct}%"></div></div>
-          </td>
-        </tr>`;
-      }).join('')}
-    </tbody>
-  </table>`;
-}
-
-function renderSeasonShotMap(matches) {
-  const svg = document.getElementById('ssShotMapSvg');
-  if (!svg) return;
-  // Remove old shots
-  svg.querySelectorAll('.ss-shot').forEach(e=>e.remove());
-  const allShots = [];
-  matches.forEach(m=>{
-    (m.players||[]).forEach(p=>{
-      (p.shotMap||[]).forEach(s=>allShots.push(s));
-    });
-  });
-  // Goal face is 700x240, shot x/y are 0-1 normalised
-  // Map to SVG coords: x 50-650 (600px wide), y 20-220 (200px tall)
-  allShots.forEach((s,i)=>{
-    const sx = 50 + (s.x||0.5)*600;
-    const sy = 20 + (s.y||0.5)*200;
-    const el = document.createElementNS('http://www.w3.org/2000/svg','circle');
-    el.setAttribute('cx', sx.toFixed(1));
-    el.setAttribute('cy', sy.toFixed(1));
-    el.setAttribute('r', s.goal?9:7);
-    el.setAttribute('class','ss-shot');
-    if (s.goal) {
-      el.setAttribute('fill','rgba(0,209,118,0.8)');
-    } else if (s.on_target||s.onTarget) {
-      el.setAttribute('fill','none');
-      el.setAttribute('stroke','#FFD700');
-      el.setAttribute('stroke-width','2');
-    } else {
-      el.setAttribute('fill','none');
-      el.setAttribute('stroke','#FF3B3B');
-      el.setAttribute('stroke-width','2');
-    }
-    el.setAttribute('opacity','0.85');
+    if(defs) defs.appendChild(grad);
+    const el=document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+    el.setAttribute('cx',x.toFixed(1));el.setAttribute('cy',y.toFixed(1));
+    el.setAttribute('rx',r.toFixed(1));el.setAttribute('ry',(r*0.75).toFixed(1));
+    el.setAttribute('fill','url(#'+gId+')');el.setAttribute('class','rh');
     svg.appendChild(el);
   });
+  if(lbl) lbl.textContent=(player.name||'Player')+' · REAL DATA · 5-A-SIDE';
 }
 
-// Load Chart.js for season stats (CDN)
-(function loadChartJs() {
-  if (window.Chart) return;
-  const s = document.createElement('script');
-  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
-  s.onload = () => { if (document.getElementById('sc-season')?.classList.contains('active')) renderSeasonStats(); };
-  document.head.appendChild(s);
-})();
+function renderPassMap(player){
+  const svg=document.getElementById('passMapSvg');
+  if(!svg) return;
+  svg.querySelectorAll('.rp').forEach(e=>e.remove());
+  const emptyTxt=document.getElementById('passMapEmpty');
+  if(!player?.passMap?.length){if(emptyTxt)emptyTxt.style.display='block';return;}
+  if(emptyTxt)emptyTxt.style.display='none';
+  player.passMap.forEach(pass=>{
+    const x1=20+pass.x1*640,y1=20+pass.y1*380;
+    const x2=20+pass.x2*640,y2=20+pass.y2*380;
+    const col=pass.success?'#00D176':'#FF3B3B';
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1.toFixed(1));line.setAttribute('y1',y1.toFixed(1));
+    line.setAttribute('x2',x2.toFixed(1));line.setAttribute('y2',y2.toFixed(1));
+    line.setAttribute('stroke',col);line.setAttribute('stroke-width','2');
+    line.setAttribute('opacity','0.8');line.setAttribute('class','rp');
+    line.setAttribute('marker-end',pass.success?'url(#arrowG)':'url(#arrowR)');
+    if(!pass.success)line.setAttribute('stroke-dasharray','5,3');
+    svg.appendChild(line);
+    const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx',x1.toFixed(1));dot.setAttribute('cy',y1.toFixed(1));
+    dot.setAttribute('r','4');dot.setAttribute('fill',col);
+    dot.setAttribute('opacity','0.8');dot.setAttribute('class','rp');
+    svg.appendChild(dot);
+  });
+}
 
+function renderShotMap(player){
+  const pitchSvg=document.getElementById('shotMapPitchSvg');
+  const goalSvg=document.getElementById('goalFaceSvg');
+  if(!pitchSvg||!goalSvg) return;
+  pitchSvg.querySelectorAll('.rs').forEach(e=>e.remove());
+  goalSvg.querySelectorAll('.rs').forEach(e=>e.remove());
+  const empty=document.getElementById('shotMapEmpty');
+  if(!player?.shotMap?.length){if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';
+  player.shotMap.forEach(shot=>{
+    const px=500+(shot.x||0.5)*160, py=80+(shot.y||0.5)*160;
+    const pc=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    pc.setAttribute('cx',px.toFixed(1));pc.setAttribute('cy',py.toFixed(1));
+    pc.setAttribute('r',shot.goal?'8':'7');pc.setAttribute('class','rs');
+    pc.setAttribute('fill',shot.goal?'#00D176':'none');
+    if(!shot.goal){pc.setAttribute('stroke',shot.on_target||shot.onTarget?'#FFD700':'#FF3B3B');pc.setAttribute('stroke-width','2');}
+    pc.setAttribute('opacity','0.9');
+    pitchSvg.appendChild(pc);
+    const gx=100+(shot.x||0.5)*500, gy=40+(shot.y||0.5)*200;
+    if(shot.goal){
+      const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx',gx.toFixed(1));c.setAttribute('cy',gy.toFixed(1));
+      c.setAttribute('r','10');c.setAttribute('fill','rgba(0,209,118,0.85)');c.setAttribute('class','rs');
+      goalSvg.appendChild(c);
+    } else if(shot.on_target||shot.onTarget){
+      const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx',gx.toFixed(1));c.setAttribute('cy',gy.toFixed(1));
+      c.setAttribute('r','9');c.setAttribute('fill','none');
+      c.setAttribute('stroke','#FFD700');c.setAttribute('stroke-width','2.5');c.setAttribute('class','rs');
+      goalSvg.appendChild(c);
+    } else {
+      const g=document.createElementNS('http://www.w3.org/2000/svg','g');g.setAttribute('class','rs');
+      [[gx-7,gy-7,gx+7,gy+7],[gx+7,gy-7,gx-7,gy+7]].forEach(coords=>{
+        const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+        l.setAttribute('x1',coords[0].toFixed(1));l.setAttribute('y1',coords[1].toFixed(1));
+        l.setAttribute('x2',coords[2].toFixed(1));l.setAttribute('y2',coords[3].toFixed(1));
+        l.setAttribute('stroke','#FF3B3B');l.setAttribute('stroke-width','2.5');g.appendChild(l);
+      });
+      goalSvg.appendChild(g);
+    }
+  });
+}
 
 // ── Real pipeline heatmap renderer ──────────────────────────────
 function renderRealHeatmap(playerName, idx){
@@ -2854,6 +1898,82 @@ renderHome();
 // opp chips rendered on go('opp') call
 // Populate social match select
 populateSgSelect();
+
+// ══ SOCIAL GRAPHIC ══════════════════════════════════════
+function populateSgSelect(){
+  const sel=document.getElementById('sgMatch');
+  if(!sel) return;
+  sel.innerHTML='<option value="">— Select Match —</option>'+
+    MATCHES.map((m,i)=>`<option value="${i}">${m.matchday}: MiCuz ${m.goalsFor}–${m.goalsAgainst} ${m.opponent}</option>`).join('');
+  if(MATCHES.length) generateGraphic();
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();
+}
+function generateGraphic(){
+  const sel=document.getElementById('sgMatch');
+  const idx=parseInt(sel?.value);
+  const m=isNaN(idx)?null:MATCHES[idx];
+  const canvas=document.getElementById('sgCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=1080,H=1080;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,215,0,0.03)';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=54){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=54){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  const tg=ctx.createLinearGradient(0,0,W,0);tg.addColorStop(0,'#FFD700');tg.addColorStop(1,'rgba(255,215,0,0)');
+  ctx.fillStyle=tg;ctx.fillRect(0,0,W,6);
+  (()=>{const img=new Image();img.onload=()=>{ctx.save();ctx.beginPath();ctx.arc(80,80,55,0,Math.PI*2);ctx.closePath();ctx.clip();ctx.drawImage(img,25,25,110,110);ctx.restore();ctx.beginPath();ctx.arc(80,80,57,0,Math.PI*2);ctx.strokeStyle='#FFD700';ctx.lineWidth=3;ctx.stroke();};img.src=LOGOS.micuz;img.complete&&img.onload();})();
+  ctx.fillStyle='#FFD700';ctx.font='bold 56px "Bebas Neue",cursive';ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillText('MICUZ FC',155,42);
+  ctx.font='20px "DM Sans",sans-serif';ctx.fillStyle='rgba(255,215,0,0.55)';
+  ctx.fillText('MAROL FOOTBALL LEAGUE · SEASON 2',155,106);
+  ctx.strokeStyle='rgba(255,215,0,0.25)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(60,155);ctx.lineTo(W-60,155);ctx.stroke();
+  if(m){
+    ctx.fillStyle='#FFF';ctx.font='220px "Bebas Neue",cursive';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(m.goalsFor+'-'+m.goalsAgainst,W/2,380);
+    ctx.font='44px "Bebas Neue",cursive';ctx.fillStyle='#FFD700';ctx.textAlign='left';ctx.fillText('MICUZ FC',80,520);
+    ctx.fillStyle='#777';ctx.textAlign='right';ctx.fillText((m.opponent||'').toUpperCase(),W-80,520);
+    const oppId=OPPOSITION.find(o=>{if(!m.opponent)return false;const ol=m.opponent.toLowerCase();return o.id.replace(/_/g,' ').split(' ').some(w=>w.length>3&&ol.includes(w));})?.id;
+    if(oppId&&LOGOS[oppId]){const ol=new Image();ol.onload=()=>{ctx.save();ctx.beginPath();ctx.arc(W-80,470,55,0,Math.PI*2);ctx.closePath();ctx.clip();ctx.drawImage(ol,W-135,415,110,110);ctx.restore();ctx.beginPath();ctx.arc(W-80,470,57,0,Math.PI*2);ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=2;ctx.stroke();};ol.src=LOGOS[oppId];ol.complete&&ol.onload();}
+    const rc=m.result==='Win'?'#00D176':m.result==='Loss'?'#FF3B3B':'#FFD700';
+    ctx.fillStyle=rc+'22';roundRect(ctx,W/2-100,550,200,54,12);ctx.fill();
+    ctx.strokeStyle=rc;ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=rc;ctx.font='32px "Bebas Neue",cursive';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText((m.result||'—').toUpperCase(),W/2,577);
+    ctx.font='20px "DM Sans",sans-serif';ctx.fillStyle='rgba(255,255,255,0.4)';
+    ctx.fillText((m.matchday||'')+'  ·  '+(m.date||'MFL 2026'),W/2,626);
+    ctx.strokeStyle='rgba(255,215,0,0.18)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(60,655);ctx.lineTo(W-60,655);ctx.stroke();
+    const stats=[{l:'POSSESSION',v:(m.teamStats?.possession??'—')+'%'},{l:'SHOTS',v:m.teamStats?.shots??'—'},{l:'PASSES',v:m.teamStats?.passes??'—'},{l:'DISTANCE',v:(m.teamStats?.distanceCovered??'—')+'km'}];
+    stats.forEach((s,i)=>{const x=140+i*205;ctx.font='64px "Bebas Neue",cursive';ctx.fillStyle='#FFD700';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(s.v),x,730);ctx.font='16px "DM Sans",sans-serif';ctx.fillStyle='rgba(255,255,255,0.35)';ctx.fillText(s.l,x,773);});
+    ctx.strokeStyle='rgba(255,215,0,0.15)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(60,800);ctx.lineTo(W-60,800);ctx.stroke();
+    const scorers=m.tier2?.goalScorers||[];
+    if(scorers.length){ctx.font='bold 22px "DM Sans",sans-serif';ctx.fillStyle='rgba(255,215,0,0.9)';ctx.textAlign='left';scorers.forEach((s,i)=>{ctx.fillText('⚽  '+s.player+'  '+s.minute+"'",80,840+(i*34));});}
+    else{ctx.font='18px "DM Sans",sans-serif';ctx.fillStyle='rgba(255,255,255,0.2)';ctx.textAlign='center';ctx.fillText('Add goal scorers via Data Entry',W/2,850);}
+  } else {
+    ctx.fillStyle='rgba(255,215,0,0.25)';ctx.font='36px "Bebas Neue",cursive';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('SELECT A MATCH TO GENERATE',W/2,540);
+  }
+  const mflImg=new Image();mflImg.onload=()=>{ctx.save();ctx.beginPath();ctx.arc(W-70,H-70,48,0,Math.PI*2);ctx.closePath();ctx.clip();ctx.drawImage(mflImg,W-118,H-118,96,96);ctx.restore();};mflImg.src=LOGOS.MFL;mflImg.complete&&mflImg.onload();
+  const bg=ctx.createLinearGradient(W,0,0,0);bg.addColorStop(0,'#FFD700');bg.addColorStop(1,'rgba(255,215,0,0)');ctx.fillStyle=bg;ctx.fillRect(0,H-6,W,6);
+}
+function downloadGraphic(){
+  generateGraphic();
+  setTimeout(()=>{
+    const canvas=document.getElementById('sgCanvas');
+    const link=document.createElement('a');
+    link.download='MiCuzFC_Match_Graphic.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    toast('Graphic downloaded ✓');
+  },500);
+}
+
 </script>
 </body>
 </html>
