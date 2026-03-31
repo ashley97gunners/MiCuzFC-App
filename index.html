@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0a">
+<title>MiCuz FC · Match Analyzer</title>
+<script src="logos.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --gold:#FFD700;--gold2:#C8960C;--gold3:#e6b800;
+  --black:#0a0a0a;--dark:#111;--panel:#181818;--card:#1e1e1e;--border:#2a2a2a;
+  --red:#e53935;--green:#43a047;--blue:#1976d2;--orange:#fb8c00;--purple:#7b1fa2;
+  --text:#f0f0f0;--muted:#777;--radius:10px;
+}
+html,body{height:100%;background:var(--black);color:var(--text);font-family:'Rajdhani',sans-serif;overflow:hidden;}
+body{display:flex;flex-direction:column;}
+.hdr{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--dark);border-bottom:2px solid var(--gold2);flex-shrink:0;}
+.hdr img{width:40px;height:40px;object-fit:contain;border-radius:4px;}
+.hdr-title{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;color:var(--gold);}
+.hdr-sub{font-size:.65rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;}
+.hdr-badge{font-size:.62rem;background:var(--gold);color:#000;padding:2px 8px;border-radius:20px;font-weight:700;margin-left:auto;}
+.nav{display:flex;background:var(--dark);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-btn{flex:1;min-width:58px;padding:10px 2px;text-align:center;font-size:.58rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+.nav-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+.content::-webkit-scrollbar{width:3px;}
+.content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.tab{display:none;padding:14px;}
+.tab.active{display:block;}
+.sec-hdr{font-size:.62rem;font-weight:700;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.sec-hdr.gold{color:var(--gold);border-color:var(--gold2);}
+.sec-hdr.red{color:#ef9a9a;border-color:var(--red);}
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:14px;margin-bottom:12px;}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.stat-box{background:var(--panel);border-radius:8px;border:1px solid var(--border);padding:10px 6px;text-align:center;}
+.stat-val{font-family:'Cinzel',serif;font-size:1.25rem;font-weight:700;color:var(--gold);}
+.stat-lbl{font-size:.5rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:3px;}
+.match-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--gold2);padding:14px;margin-bottom:14px;}
+.match-teams{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.team-block{text-align:center;flex:1;}
+.team-logo-wrap{width:52px;height:52px;margin:0 auto 6px;}
+.team-logo-wrap img{width:100%;height:100%;object-fit:contain;border-radius:4px;}
+.team-name{font-family:'Cinzel',serif;font-size:.75rem;font-weight:700;color:var(--gold);}
+.team-role{font-size:.55rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;}
+.score-block{text-align:center;padding:0 8px;}
+.score-big{font-family:'Cinzel',serif;font-size:2.4rem;font-weight:900;color:#fff;line-height:1;}
+.match-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid var(--border);padding-top:12px;}
+.meta-item{text-align:center;}
+.meta-label{font-size:.5rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
+.meta-value{font-size:.82rem;font-weight:700;color:var(--gold);margin-top:2px;}
+.poss-wrap{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:12px;margin-bottom:12px;}
+.poss-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:6px 0;}
+.poss-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:3px;transition:width .5s;}
+.cmp-table{width:100%;border-collapse:collapse;font-size:.78rem;}
+.cmp-table th{font-size:.52rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;padding:6px 8px;text-align:center;border-bottom:1px solid var(--border);}
+.cmp-table th:first-child{text-align:left;}
+.cmp-table td{padding:7px 8px;border-bottom:1px solid var(--border);text-align:center;}
+.cmp-table td:first-child{text-align:left;color:var(--muted);font-size:.68rem;}
+.cmp-table tr:last-child td{border-bottom:none;}
+.cmp-home{color:var(--gold);font-weight:700;}
+.cmp-away{color:#90caf9;font-weight:700;}
+.ps-wrap{overflow-x:auto;margin-bottom:12px;}
+.ps-table{width:100%;border-collapse:collapse;font-size:.72rem;white-space:nowrap;}
+.ps-table th{font-size:.48rem;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;padding:5px 6px;text-align:right;border-bottom:1px solid var(--border);background:var(--card);position:sticky;top:0;}
+.ps-table th:first-child{text-align:left;min-width:100px;}
+.ps-table td{padding:6px;border-bottom:1px solid var(--border);text-align:right;vertical-align:middle;}
+.ps-table td:first-child{text-align:left;}
+.ps-table tr:hover td{background:rgba(255,215,0,.03);}
+.ps-name{font-weight:600;font-size:.78rem;display:block;}
+.ps-pos{font-size:.56rem;color:var(--muted);}
+.ps-gold{color:var(--gold);font-weight:700;}
+.ps-blue{color:#90caf9;}
+.team-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;margin-bottom:10px;}
+.team-pill img{width:26px;height:26px;object-fit:contain;border-radius:3px;}
+.team-pill-name{font-family:'Cinzel',serif;font-size:.82rem;font-weight:700;}
+.pill-micuz{background:rgba(255,215,0,.1);border:1px solid var(--gold2);}
+.pill-micuz .team-pill-name{color:var(--gold);}
+.pill-opp{background:rgba(144,202,249,.08);border:1px solid #1565c0;}
+.pill-opp .team-pill-name{color:#90caf9;}
+.half-toggle{display:flex;gap:6px;margin-bottom:14px;}
+.half-btn{flex:1;padding:8px;border-radius:20px;border:1px solid var(--border);background:var(--panel);color:var(--muted);font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.half-btn.active{background:var(--gold);color:#000;border-color:var(--gold);}
+.player-pills{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none;}
+.player-pills::-webkit-scrollbar{display:none;}
+.pill{flex-shrink:0;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--panel);color:var(--muted);font-size:.68rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.pill.active{background:var(--gold);color:#000;border-color:var(--gold);}
+.pill.opp-pill.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.rating-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.rating-row:last-child{border-bottom:none;}
+.p-num{font-family:'Cinzel',serif;font-size:.9rem;font-weight:700;color:var(--gold);width:24px;text-align:center;flex-shrink:0;}
+.p-info{flex:1;min-width:0;}
+.p-name{font-size:.85rem;font-weight:700;}
+.p-pos{font-size:.57rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.p-rating{font-family:'Cinzel',serif;font-size:1.2rem;font-weight:700;color:var(--gold);flex-shrink:0;}
+.form-section{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:14px;margin-bottom:12px;}
+.form-title{font-size:.62rem;font-weight:700;letter-spacing:.15em;color:var(--gold);text-transform:uppercase;margin-bottom:12px;}
+.form-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.form-col{flex:1;min-width:100px;}
+label{display:block;font-size:.57rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;}
+input,select{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-size:.88rem;font-family:'Rajdhani',sans-serif;outline:none;-webkit-appearance:none;}
+input:focus,select:focus{border-color:var(--gold2);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:8px;border:none;font-size:.82rem;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:all .2s;font-family:'Rajdhani',sans-serif;}
+.btn-gold{background:var(--gold);color:#000;}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);}
+.btn-red{background:var(--red);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-blue{background:var(--blue);color:#fff;}
+.btn-full{width:100%;}
+.btn-sm{padding:6px 10px;font-size:.7rem;}
+.leader-tabs{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;}
+.leader-tabs::-webkit-scrollbar{display:none;}
+.leader-tab{flex-shrink:0;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--panel);color:var(--muted);font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.leader-tab.active{background:var(--gold);color:#000;border-color:var(--gold);}
+.lb-table{width:100%;border-collapse:collapse;}
+.lb-table th{font-size:.5rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);}
+.lb-table td{padding:8px;border-bottom:1px solid var(--border);font-size:.8rem;}
+.lb-table tr:last-child td{border-bottom:none;}
+.lb-rank{font-family:'Cinzel',serif;font-weight:700;color:var(--gold);}
+.threat-card{background:var(--panel);border-radius:8px;border-left:3px solid var(--red);padding:10px 12px;margin-bottom:8px;}
+.threat-name{font-weight:700;font-size:.88rem;color:#ef9a9a;}
+.threat-detail{font-size:.72rem;color:var(--muted);margin-top:3px;}
+.shot-zone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.shot-zone-box{background:var(--panel);border-radius:8px;border:1px solid var(--border);padding:10px 6px;text-align:center;}
+.shot-zone-val{font-family:'Cinzel',serif;font-size:1.25rem;font-weight:700;}
+.zone-box{color:var(--green);}
+.zone-edge{color:var(--gold);}
+.zone-long{color:#ef9a9a;}
+.zone-grid-visual{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:4px;height:200px;margin-bottom:12px;}
+.zone-cell{border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:all .3s;}
+.zone-cell .zone-name{font-size:.5rem;color:rgba(255,255,255,.6);margin-bottom:2px;}
+.zone-cell .zone-pct{font-size:.85rem;font-weight:700;}
+.import-area{border:2px dashed var(--border);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;}
+.import-area:hover{border-color:var(--gold2);}
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green);color:#fff;padding:10px 20px;border-radius:20px;font-size:.82rem;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.error{background:var(--red);}
+.result-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.58rem;font-weight:700;letter-spacing:.1em;}
+.result-w{background:#1b5e20;color:#81c784;}
+.result-d{background:#4a3000;color:var(--gold);}
+.result-l{background:#b71c1c;color:#ef9a9a;}
+.match-list-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--panel);border-radius:8px;border:1px solid var(--border);margin-bottom:8px;cursor:pointer;transition:border-color .2s;}
+.match-list-item:hover{border-color:var(--gold2);}
+.match-list-logos{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+.match-list-logos img{width:26px;height:26px;object-fit:contain;border-radius:3px;}
+.match-list-score{font-family:'Cinzel',serif;font-size:.9rem;font-weight:700;color:var(--gold);padding:0 4px;flex-shrink:0;}
+.match-list-info{flex:1;min-width:0;}
+.match-list-teams{font-size:.76rem;font-weight:600;}
+.match-list-meta{font-size:.57rem;color:var(--muted);}
+.note{background:#1a2a00;border:1px solid #3a5500;border-radius:6px;padding:10px 12px;font-size:.7rem;color:#a8c060;margin-bottom:10px;}
+.note-blue{background:#0a1929;border:1px solid #1565c0;color:#90caf9;}
+.note-red{background:#1a0000;border:1px solid var(--red);color:#ef9a9a;}
+.empty{text-align:center;padding:30px 20px;color:var(--muted);font-size:.82rem;}
+.empty-icon{font-size:2.5rem;margin-bottom:8px;}
+.track-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+.track-row:last-child{border-bottom:none;}
+.track-id{font-family:'Cinzel',serif;font-size:.8rem;color:var(--gold);flex-shrink:0;width:72px;}
+.track-mapped{color:var(--green);font-size:.76rem;font-weight:600;}
+.track-unmapped{color:var(--muted);font-size:.7rem;font-style:italic;}
+.fatigue-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:4px;}
+.fatigue-fill{height:100%;border-radius:4px;transition:width .4s;}
+.radar-wrap{position:relative;width:100%;max-width:260px;margin:0 auto 12px;}
+.radar-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.r-stat{background:var(--panel);border-radius:6px;padding:8px;text-align:center;}
+.r-val{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--gold);}
+.r-lbl{font-size:.5rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
+.pass-net-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:.78rem;}
+.pass-net-row:last-child{border-bottom:none;}
+.pass-net-count{font-family:'Cinzel',serif;font-weight:700;color:var(--gold);margin-left:auto;flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <img id="hdrLogo" src="" alt="MiCuz FC">
+  <div style="flex:1;">
+    <div class="hdr-title">MiCuz FC · Match Analyzer</div>
+    <div class="hdr-sub">MFL Season 2 · Marol</div>
+  </div>
+  <span class="hdr-badge" id="matchCount">0 Matches</span>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showTab('reports')">📊 Reports</button>
+  <button class="nav-btn" onclick="showTab('intel')">🔴 Intel</button>
+  <button class="nav-btn" onclick="showTab('analysis')">🔬 Analysis</button>
+  <button class="nav-btn" onclick="showTab('entry')">✏️ Entry</button>
+  <button class="nav-btn" onclick="showTab('season')">🏆 Season</button>
+  <button class="nav-btn" onclick="showTab('hub')">🗂 Hub</button>
+  <button class="nav-btn" onclick="showTab('import')">📥 Import</button>
+</div>
+
+<div class="content">
+
+<!-- ═══ REPORTS ═══ -->
+<div class="tab active" id="tab-reports">
+  <div class="sec-hdr">Match Reports</div>
+  <div id="matchListWrap"><div class="empty"><div class="empty-icon">📋</div>No matches yet.</div></div>
+  <div id="matchDetail" style="display:none;">
+    <button class="btn btn-outline btn-sm" style="margin-bottom:12px;" onclick="closeDetail()">← All Matches</button>
+    <div class="match-card">
+      <div class="match-teams">
+        <div class="team-block">
+          <div class="team-logo-wrap"><img id="det-home-logo" src="" alt=""></div>
+          <div class="team-name" id="det-home">MiCuz FC</div>
+          <div class="team-role">HOME</div>
+        </div>
+        <div class="score-block">
+          <div class="score-big"><span id="det-hg">0</span><span style="color:var(--muted);font-size:1.6rem"> – </span><span id="det-ag">0</span></div>
+          <div style="margin-top:4px;" id="det-result-badge"></div>
+        </div>
+        <div class="team-block">
+          <div class="team-logo-wrap"><img id="det-away-logo" src="" alt=""></div>
+          <div class="team-name" id="det-away">Opponent</div>
+          <div class="team-role">AWAY</div>
+        </div>
+      </div>
+      <div class="match-meta">
+        <div class="meta-item"><div class="meta-label">Matchday</div><div class="meta-value" id="det-md">—</div></div>
+        <div class="meta-item"><div class="meta-label">Type</div><div class="meta-value" id="det-type">—</div></div>
+        <div class="meta-item"><div class="meta-label">Venue</div><div class="meta-value" id="det-venue">—</div></div>
+      </div>
+    </div>
+    <div class="poss-wrap">
+      <div style="display:flex;justify-content:space-between;"><span style="font-size:.75rem;font-weight:700;color:var(--gold);" id="poss-h-name">MiCuz FC</span><span style="font-size:.75rem;font-weight:700;color:var(--gold);" id="poss-h-val">—</span></div>
+      <div class="poss-bar"><div class="poss-fill" id="poss-bar-fill" style="width:50%"></div></div>
+      <div style="display:flex;justify-content:space-between;"><span style="font-size:.72rem;color:var(--muted);" id="poss-a-name">Opponent</span><span style="font-size:.72rem;color:var(--muted);" id="poss-a-val">—</span></div>
+    </div>
+    <div class="sec-hdr">Team Comparison</div>
+    <div class="card" style="padding:8px;overflow-x:auto;">
+      <table class="cmp-table"><thead><tr><th>Stat</th><th class="cmp-home" id="cmp-h-hdr">MiCuz FC</th><th class="cmp-away" id="cmp-a-hdr">Opponent</th></tr></thead><tbody id="cmpTableBody"></tbody></table>
+    </div>
+    <div class="sec-hdr gold">⚡ MiCuz FC — Player Stats</div>
+    <div class="team-pill pill-micuz" id="micuz-pill-det"><img id="micuz-pill-logo" src="" alt=""><span class="team-pill-name">MiCuz FC</span></div>
+    <div class="card" style="padding:0;"><div class="ps-wrap"><table class="ps-table"><thead><tr><th>Player</th><th>Rtg</th><th>G</th><th>A</th><th>Sh</th><th>Q</th><th>OT</th><th>Pas</th><th>F%</th><th>Tkl</th><th>Int</th><th>Trn</th><th>Prs</th><th>Cry</th><th>2B</th><th>Km</th><th>Spd</th></tr></thead><tbody id="micuzPlayerTable"></tbody></table></div></div>
+    <div class="sec-hdr">⚽ Goal Scorers</div>
+    <div class="card"><div id="goalScorerList"><span style="color:var(--muted);font-size:.8rem;">No goals recorded.</span></div></div>
+    <button class="btn btn-gold btn-full" onclick="generateShareCard()" style="margin-bottom:20px;">📤 Generate Share Graphic</button>
+    <canvas id="shareCanvas" style="display:none;"></canvas>
+  </div>
+</div>
+
+<!-- ═══ INTEL ═══ -->
+<div class="tab" id="tab-intel">
+  <div class="sec-hdr red">🔴 Opposition Intel</div>
+  <div class="form-section" style="margin-bottom:12px;">
+    <div class="form-title">Select Match</div>
+    <select id="intelMatchSel" onchange="loadIntel()"><option value="">— Select Match —</option></select>
+  </div>
+  <div id="intelContent" style="display:none;">
+    <div class="team-pill pill-opp" id="opp-pill" style="margin-bottom:12px;">
+      <img id="opp-pill-logo" src="" alt="" style="width:28px;height:28px;object-fit:contain;border-radius:3px;">
+      <span class="team-pill-name" id="opp-pill-name">Opponent</span>
+    </div>
+    <div class="sec-hdr">Team Stats Comparison</div>
+    <div class="card" style="padding:8px;overflow-x:auto;">
+      <table class="cmp-table"><thead><tr><th>Stat</th><th class="cmp-home" id="intel-micuz-hdr">MiCuz FC</th><th class="cmp-away" id="intel-opp-hdr">Opponent</th></tr></thead><tbody id="intelCmpBody"></tbody></table>
+    </div>
+    <div class="sec-hdr">🎯 Shot Zones</div>
+    <div class="shot-zone-grid">
+      <div class="shot-zone-box"><div class="shot-zone-val zone-box" id="sz-box">0</div><div class="stat-lbl">Box</div></div>
+      <div class="shot-zone-box"><div class="shot-zone-val zone-edge" id="sz-edge">0</div><div class="stat-lbl">Edge</div></div>
+      <div class="shot-zone-box"><div class="shot-zone-val zone-long" id="sz-long">0</div><div class="stat-lbl">Long Range</div></div>
+    </div>
+    <div class="sec-hdr">🗺 Zone Occupation Overlay</div>
+    <div class="card" style="padding:10px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:.62rem;">
+        <span style="color:var(--gold);">■ MiCuz FC</span>
+        <span style="color:#90caf9;">■ Opposition</span>
+        <span style="color:var(--red);">⚔ Contested</span>
+      </div>
+      <div class="zone-grid-visual" id="zoneOverlayGrid"></div>
+    </div>
+    <div class="sec-hdr">⚠️ Key Threats</div>
+    <div id="keyThreatsWrap"></div>
+    <div class="sec-hdr">Opposition Player Stats</div>
+    <div class="card" style="padding:0;"><div class="ps-wrap"><table class="ps-table"><thead><tr><th>Player</th><th>Rtg</th><th>Sh</th><th>Q</th><th>OT</th><th>Pas</th><th>F%</th><th>Tkl</th><th>Int</th><th>Prs</th><th>Cry</th><th>2B</th><th>Km</th><th>Spd</th></tr></thead><tbody id="oppPlayerTable"></tbody></table></div></div>
+    <div class="sec-hdr">📊 Head-to-Head</div>
+    <div id="intelH2H" class="card"><div style="color:var(--muted);font-size:.8rem;">No matches yet.</div></div>
+    <div class="sec-hdr">🗺 Opposition Heatmap</div>
+    <div class="player-pills" id="oppHeatmapPills"></div>
+    <div class="card" style="padding:8px;"><canvas id="oppHeatmapCanvas" style="width:100%;display:block;border-radius:6px;"></canvas><div style="font-size:.6rem;color:var(--muted);text-align:right;padding:4px 0;" id="oppHeatmapLabel">Select a player</div></div>
+    <div class="sec-hdr">📋 Scouting Notes (from Intel DB)</div>
+    <div id="intelScoutingNotes" class="card"><span style="color:var(--muted);font-size:.8rem;">Select a match to load scouting notes.</span></div>
+  </div>
+</div>
+
+<!-- ═══ ANALYSIS ═══ -->
+<div class="tab" id="tab-analysis">
+  <div class="sec-hdr">Advanced Analysis — MiCuz FC</div>
+  <div class="half-toggle">
+    <button class="half-btn active" id="hbtn-1" onclick="setHalf(1)">1st Half</button>
+    <button class="half-btn" id="hbtn-2" onclick="setHalf(2)">2nd Half</button>
+    <button class="half-btn" id="hbtn-f" onclick="setHalf('full')">Full Match</button>
+  </div>
+  <div class="sec-hdr">Select Player</div>
+  <div class="player-pills" id="analysisPills"></div>
+  <div class="sec-hdr">Performance Radar</div>
+  <div class="card">
+    <div class="radar-wrap"><canvas id="radarCanvas"></canvas></div>
+    <div class="radar-stats">
+      <div class="r-stat"><div class="r-val" id="rad-pas">0</div><div class="r-lbl">Passes</div></div>
+      <div class="r-stat"><div class="r-val" id="rad-sho">0</div><div class="r-lbl">Shots</div></div>
+      <div class="r-stat"><div class="r-val" id="rad-gt">0</div><div class="r-lbl">Goals</div></div>
+      <div class="r-stat"><div class="r-val" id="rad-spd">0</div><div class="r-lbl">Speed</div></div>
+      <div class="r-stat"><div class="r-val" id="rad-def">0</div><div class="r-lbl">Def</div></div>
+      <div class="r-stat"><div class="r-val" id="rad-prs">0</div><div class="r-lbl">Press</div></div>
+    </div>
+  </div>
+  <div class="sec-hdr">🗺 Individual Heatmap</div>
+  <div class="card" style="padding:8px;"><canvas id="heatmapCanvas" style="width:100%;display:block;border-radius:6px;"></canvas><div style="font-size:.6rem;color:var(--muted);text-align:right;padding:4px 0;" id="heatmapLabel">Select a player</div></div>
+  <div class="sec-hdr">📈 Fatigue Windows</div>
+  <div class="card" id="fatigueCard"><div style="color:var(--muted);font-size:.8rem;">Select a player above.</div></div>
+  <div class="sec-hdr">🔗 Pass Network</div>
+  <div class="card" id="passNetCard"><div style="color:var(--muted);font-size:.8rem;">No pass network data.</div></div>
+</div>
+
+<!-- ═══ DATA ENTRY ═══ -->
+<div class="tab" id="tab-entry">
+  <div class="sec-hdr">Data Entry</div>
+  <div class="form-section"><div class="form-title">Select Match</div><select id="entryMatchSelect" onchange="loadEntryMatch()"><option value="">— Select Match —</option></select></div>
+  <div id="entryFormWrap" style="display:none;">
+    <div class="form-section">
+      <div class="form-title">Match Info</div>
+      <div class="form-row"><div class="form-col"><label>Home Team</label><input type="text" id="ef-home"></div><div class="form-col"><label>Away Team</label><input type="text" id="ef-away"></div></div>
+      <div class="form-row"><div class="form-col"><label>Home Goals</label><input type="number" id="ef-hg" min="0" value="0"></div><div class="form-col"><label>Away Goals</label><input type="number" id="ef-ag" min="0" value="0"></div></div>
+      <div class="form-row"><div class="form-col"><label>Matchday</label><input type="text" id="ef-md"></div><div class="form-col"><label>Type</label><select id="ef-type"><option>League</option><option>Cup</option><option>Friendly</option><option>Playoff</option></select></div><div class="form-col"><label>Venue</label><input type="text" id="ef-venue"></div></div>
+    </div>
+    <div class="form-section">
+      <div class="form-title">⚽ Goal Scorers</div>
+      <div class="form-row"><div class="form-col"><label>Scorer</label><select id="ef-scorer"><option value="">— Player —</option></select></div><div class="form-col"><label>Team</label><select id="ef-scorer-team"><option value="home">MiCuz FC</option><option value="away">Opposition</option></select></div></div>
+      <div class="form-row"><div class="form-col"><label>Type</label><select id="ef-gtype"><option>Open Play</option><option>Header</option><option>Penalty</option><option>Free Kick</option><option>Own Goal</option></select></div><div class="form-col"><label>Half</label><select id="ef-ghalf"><option value="1">1st Half</option><option value="2">2nd Half</option></select></div><div class="form-col"><label>Assist</label><select id="ef-assist"><option value="">None</option></select></div></div>
+      <button class="btn btn-green btn-full" onclick="addGoalEntry()">+ Add Goal</button>
+      <div id="goalEntryList" style="margin-top:8px;display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+    <div class="form-section">
+      <div class="form-title">Player Stats Override</div>
+      <div class="form-row"><div class="form-col"><label>Player</label><select id="ef-player" onchange="loadPlayerEntry()"><option value="">— Select —</option></select></div></div>
+      <div class="form-row"><div class="form-col"><label>Goals</label><input type="number" id="eo-goals" min="0" value="0"></div><div class="form-col"><label>Assists</label><input type="number" id="eo-assists" min="0" value="0"></div><div class="form-col"><label>Shots</label><input type="number" id="eo-shots" min="0" value="0"></div></div>
+      <div class="form-row"><div class="form-col"><label>On Target</label><input type="number" id="eo-ont" min="0" value="0"></div><div class="form-col"><label>Passes</label><input type="number" id="eo-passes" min="0" value="0"></div><div class="form-col"><label>Fwd Pass%</label><input type="number" id="eo-fwdpct" min="0" max="100" value="0"></div></div>
+      <div class="form-row"><div class="form-col"><label>Tackles</label><input type="number" id="eo-tackles" min="0" value="0"></div><div class="form-col"><label>Intercepts</label><input type="number" id="eo-int" min="0" value="0"></div><div class="form-col"><label>Turnovers</label><input type="number" id="eo-turn" min="0" value="0"></div></div>
+      <div class="form-row"><div class="form-col"><label>Dist (km)</label><input type="number" id="eo-dist" min="0" step="0.1" value="0"></div><div class="form-col"><label>Max Speed</label><input type="number" id="eo-spd" min="0" step="0.1" value="0"></div><div class="form-col"><label>Sprints</label><input type="number" id="eo-sprints" min="0" value="0"></div></div>
+      <button class="btn btn-blue btn-full" onclick="savePlayerEntry()">💾 Save Player Stats</button>
+    </div>
+    <div style="padding:0 0 20px;"><button class="btn btn-gold btn-full" onclick="saveEntry()" style="padding:14px;">✅ Save All Changes</button></div>
+  </div>
+</div>
+
+<!-- ═══ SEASON ═══ -->
+<div class="tab" id="tab-season">
+  <div class="sec-hdr">Season Stats — MFL Season 2</div>
+  <div class="stats-grid" style="margin-bottom:14px;">
+    <div class="stat-box"><div class="stat-val" id="ss-p">0</div><div class="stat-lbl">Played</div></div>
+    <div class="stat-box"><div class="stat-val" id="ss-w" style="color:var(--green)">0</div><div class="stat-lbl">Won</div></div>
+    <div class="stat-box"><div class="stat-val" id="ss-d" style="color:var(--gold)">0</div><div class="stat-lbl">Drawn</div></div>
+    <div class="stat-box"><div class="stat-val" id="ss-l" style="color:var(--red)">0</div><div class="stat-lbl">Lost</div></div>
+    <div class="stat-box"><div class="stat-val" id="ss-gf">0</div><div class="stat-lbl">Goals For</div></div>
+    <div class="stat-box"><div class="stat-val" id="ss-ga">0</div><div class="stat-lbl">Goals Against</div></div>
+  </div>
+  <div class="leader-tabs">
+    <button class="leader-tab active" id="lt-goals" onclick="setLeaderTab('goals')">Goals</button>
+    <button class="leader-tab" id="lt-assists" onclick="setLeaderTab('assists')">Assists</button>
+    <button class="leader-tab" id="lt-rating" onclick="setLeaderTab('rating')">Rating</button>
+    <button class="leader-tab" id="lt-shots" onclick="setLeaderTab('shots')">Shots</button>
+    <button class="leader-tab" id="lt-distance" onclick="setLeaderTab('distance')">Distance</button>
+    <button class="leader-tab" id="lt-tackles" onclick="setLeaderTab('tackles')">Tackles</button>
+    <button class="leader-tab" id="lt-press" onclick="setLeaderTab('press')">Pressing</button>
+  </div>
+  <div class="card"><table class="lb-table"><thead><tr><th>#</th><th>Player</th><th>MP</th><th id="lb-col-hdr">Goals</th></tr></thead><tbody id="leaderboardBody"></tbody></table></div>
+</div>
+
+<!-- ═══ HUB ═══ -->
+<div class="tab" id="tab-hub">
+  <div class="sec-hdr">🏆 MFL Season 2 — League Table</div>
+  <div class="card" style="padding:0;overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:.78rem;" id="leagueTableEl"></table></div>
+  <div class="sec-hdr" style="margin-top:4px;">📅 Fixtures & Results</div>
+  <div id="fixturesList"></div>
+  <div class="sec-hdr" style="margin-top:4px;">🔗 Synergy Networks</div>
+  <div class="note note-blue">Pre-existing relationship networks across MFL Season 2. Shows who knows MiCuz FC patterns.</div>
+  <div id="synergyList"></div>
+  <div class="sec-hdr" style="margin-top:4px;">🔍 Team Intelligence Browser</div>
+  <select id="hubTeamSel" onchange="loadHubTeam()" style="width:100%;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-size:.88rem;font-family:'Rajdhani',sans-serif;outline:none;margin-bottom:10px;"><option value="">— Select Team —</option></select>
+  <div id="hubTeamContent" style="display:none;">
+    <div class="match-card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <img id="hub-team-logo" src="" alt="" style="width:56px;height:56px;object-fit:contain;border-radius:6px;">
+        <div><div style="font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;color:var(--gold);" id="hub-team-name">Team</div><div style="font-size:.62rem;color:var(--muted);margin-top:2px;" id="hub-team-meta"></div></div>
+      </div>
+      <div id="hub-tactical-alert" style="display:none;" class="note note-red"></div>
+    </div>
+    <div class="sec-hdr">👤 Manager</div><div class="card"><div id="hub-manager" style="font-size:.85rem;"></div></div>
+    <div id="hub-sub-section" style="display:none;"><div class="sec-hdr">🔄 Rolling Sub Plan</div><div class="card"><div id="hub-sub-plan" style="font-size:.8rem;line-height:1.6;color:#a8c060;"></div></div></div>
+    <div id="hub-syn-section" style="display:none;"><div class="sec-hdr">🔗 Synergy Notes</div><div class="card" id="hub-syn-notes"></div></div>
+    <div id="hub-tac-section" style="display:none;"><div class="sec-hdr red">📋 Tactical Instructions</div><div class="card" id="hub-tactics"></div></div>
+    <div class="sec-hdr" id="hub-squad-hdr">Squad Profiles</div>
+    <div id="hubSquadList"></div>
+  </div>
+</div>
+
+<!-- ═══ IMPORT ═══ -->
+<div class="tab" id="tab-import">
+  <div class="sec-hdr">Import Match Data</div>
+  <div class="form-section">
+    <div class="form-title">Import Pipeline JSON</div>
+    <div class="import-area" onclick="document.getElementById('jsonFileInput').click()"><div style="font-size:2rem;margin-bottom:8px;">📂</div><div style="font-size:.8rem;color:var(--muted);">Tap to select JSON<br><small style="color:var(--border);">From run_pipeline.py export</small></div></div>
+    <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="importJSON(event)">
+    <div id="importStatus" style="margin-top:10px;font-size:.78rem;color:var(--muted);"></div>
+  </div>
+  <div class="form-section">
+    <div class="form-title">Create Match Manually</div>
+    <div class="form-row"><div class="form-col"><label>Home Team</label><input type="text" id="nm-home" value="MiCuz FC"></div><div class="form-col"><label>Away Team</label><input type="text" id="nm-away" placeholder="Opponent"></div></div>
+    <div class="form-row"><div class="form-col"><label>Home Goals</label><input type="number" id="nm-hg" min="0" value="0"></div><div class="form-col"><label>Away Goals</label><input type="number" id="nm-ag" min="0" value="0"></div></div>
+    <div class="form-row"><div class="form-col"><label>Matchday</label><input type="text" id="nm-md" placeholder="MD2"></div><div class="form-col"><label>Type</label><select id="nm-type"><option>League</option><option>Cup</option><option>Friendly</option><option>Playoff</option></select></div></div>
+    <div class="form-row"><div class="form-col"><label>Venue</label><input type="text" id="nm-venue" placeholder="5-NINE"></div><div class="form-col"><label>Date</label><input type="date" id="nm-date"></div></div>
+    <button class="btn btn-gold btn-full" onclick="createNewMatch()" style="margin-top:4px;">+ Create Match</button>
+  </div>
+  <div class="form-section">
+    <div class="form-title">Track ID → Player Mapping</div>
+    <div class="note">After importing pipeline JSON, players show as track_96 etc. Assign real names here. Watch the annotated video to identify each track ID.</div>
+    <div class="form-row" style="margin-bottom:10px;"><div class="form-col"><label>Match</label><select id="map-match-sel" onchange="loadTrackList()"><option value="">— Select —</option></select></div></div>
+    <div id="trackListWrap" style="margin-bottom:12px;"></div>
+    <div id="trackAssignForm" style="display:none;">
+      <div class="form-row"><div class="form-col"><label>Track ID</label><input type="text" id="map-track-id" readonly style="color:var(--gold);"></div><div class="form-col"><label>Jersey #</label><input type="number" id="map-jersey" min="1" max="99"></div><div class="form-col"><label>Name</label><input type="text" id="map-name" placeholder="Ashley"></div></div>
+      <div class="form-row"><div class="form-col"><label>Position</label><select id="map-pos"><option>Forward</option><option>Midfielder</option><option>Defender</option><option>Goalkeeper</option><option>Freeplay</option></select></div><div class="form-col" style="display:flex;align-items:flex-end;gap:6px;"><button class="btn btn-gold" style="flex:1;" onclick="saveTrackMapping()">✅ Assign</button><button class="btn btn-outline" onclick="cancelTrackAssign()">✕</button></div></div>
+    </div>
+  </div>
+  <div class="form-section">
+    <div class="form-title">Roster</div>
+    <div class="form-row"><div class="form-col"><label>Number</label><input type="number" id="ros-num" placeholder="#"></div><div class="form-col"><label>Name</label><input type="text" id="ros-name" placeholder="Player Name"></div><div class="form-col"><label>Position</label><select id="ros-pos"><option>Goalkeeper</option><option>Defender</option><option>Midfielder</option><option>Forward</option><option>Freeplay</option></select></div></div>
+    <button class="btn btn-outline btn-full" onclick="addRosterPlayer()">+ Add to Roster</button>
+    <div id="rosterList" style="margin-top:10px;"></div>
+  </div>
+  <div class="form-section" style="border-color:var(--red);"><div class="form-title" style="color:var(--red);">Danger Zone</div><button class="btn btn-red btn-full" onclick="clearAllData()">🗑 Clear All Match Data</button></div>
+</div>
+
+</div><!-- end content -->
+<div class="toast" id="toast"></div>
+
+<script>
+const INTEL_DB = {"MiCuz FC": {"shortName": "MiCuz", "season1": "Competed — Season 1", "kit": "Home: Black + Gold | Away: Yellow + Gold", "instagram": "@micuz_fc", "manager": "Ashley Francis D'Souza", "tacticalAlert": null, "formation": "5-a-side rotating: GK + Def pair (Joshua/Dhanush) + Victor (freeplay/captain) + Forward (Sheldon/Reuben)", "rollingSubPlan": "Standard: Reuben on for Sheldon — one move before Sheldon fatigues. Melwin (4 Apr+): on for Sheldon OR Victor — whoever more tired, max 5–7 min bursts. GK change: Dylan on for Kishore — direct clearances only when Dylan plays. FATIGUE MANAGEMENT is the single most critical tactical job.", "synergyNotes": ["CORE GROUP (deep synergy): Victor, Joshua, Dhanush, Melwin, Sheldon, Kishore, Reuben", "LIMITED: Merwyn — synergy with Victor, Reuben, Keith, Sheldon only", "LIMITED: Keith — synergy with Victor, Reuben, Merwyn, Sheldon, Dylan only", "NO SYNERGY: Denver — combinations will not flow through him on pitch", "INTEL ASSET: Denver knows Saldanha, Rane, Braganza, Henriques (Warriors), Chougule, Malcom (Bloodline/Bluelock) from Holy Family church"], "squad": [{"number": "14", "name": "Kishore Shetty", "position": "Goalkeeper", "role": "Starting", "threat": null, "notes": "Star veteran ball-playing GK. Controls game tempo. Excellent distribution. Ambidextrous. Weakness: can mispass under pressure, relies on feet more than hands for saves."}, {"number": "29", "name": "Joshua Lopez", "position": "Defender", "role": "Starting", "threat": null, "notes": "Marquee. Versatile, ambidextrous. Elite MFA player with Dhanush. Weakness: holds ball too long, overplays, fatigues, misses key scoring chances."}, {"number": "12", "name": "Dhanush Nadar", "position": "Defender", "role": "Starting", "threat": null, "notes": "Marquee. Elite MFA player with Joshua — deep combination. Weakness: fatigues at key moments."}, {"number": "22", "name": "Victor Shriyan", "position": "Freeplay/Captain", "role": "Starting", "threat": null, "notes": "Marquee. Versatile, ambidextrous, fast, strong. Killer left foot shot. Leader. Weakness: fatigues at key moments, wants to play full game."}, {"number": "11", "name": "Sheldon Rego", "position": "Forward", "role": "Starting", "threat": null, "notes": "MFL Season 1 TOP SCORER with Bluelock. Ambidextrous, powerful shots both feet. Calisthenics athlete. Pure striker. Weakness: fatigues, can be slightly selfish."}, {"number": "7", "name": "Reuben Pereira", "position": "Forward", "role": "Primary Sub", "threat": null, "notes": "Experienced ambidextrous forward. Ronaldo-inspired. Management role. Right knee injury — currently left foot dominant. Come on for Sheldon one move before fatigue."}, {"number": "9", "name": "Melwin Vaz", "position": "Forward", "role": "Impact Sub (from 4 Apr)", "threat": null, "notes": "Star veteran. Versatile, ambidextrous. AVAILABLE FROM 4 APRIL ONLY — recovering from injury. Use in short 5–7 minute bursts only."}, {"number": "19", "name": "Merwyn D'Souza", "position": "Forward", "role": "Sub", "threat": null, "notes": "3 goals 2 assists Season 1. Ambidextrous, good vision. Weakness: lacks strength, loses 50/50s, tires quickly. Use in non-physical matchups only."}, {"number": "25", "name": "Keith Briganza", "position": "Defender", "role": "Sub", "threat": null, "notes": "Bluelock last year. Good ball control, right foot dominant. Synergy with Victor, Reuben, Merwyn, Sheldon, Dylan only."}, {"number": "69", "name": "Dylan Rodrigues", "position": "Goalkeeper", "role": "Backup GK", "threat": null, "notes": "Young, energetic. Excellent hand saves but very weak leg distribution. Sub GK only — if Dylan plays, direct clearances only, no playing out from back."}, {"number": "8", "name": "Denver Rodrigues", "position": "Defender / Intel Asset", "role": "Sub", "threat": null, "notes": "Mavericks last year. No synergy with any squad member. PRIMARY VALUE as intel source — knows Warriors, Bloodline and Bluelock players from Holy Family church connection."}], "tacticalInstructions": []}, "Marol Bloodline FC": {"shortName": "Bloodline", "season1": "RUNNERS-UP — Season 1", "kit": "Home: Dark Maroon | Away: White + Maroon trim", "instagram": "@marolbloodline_fc", "manager": "Rahul Acharya (ex-59 FC — knows MiCuz system completely)", "tacticalAlert": "Manager Rahul Acharya is an ex-59 FC teammate of Ashley, Victor and Reuben. He has full knowledge of MiCuz FC playing style. Expect Bloodline to be specifically prepared for MiCuz FC. Change at least one combination pattern before this game.", "squad": [{"number": "10", "name": "Akshay Chavan", "position": "Attacker", "age": 31, "threat": "🔴 HIGH", "notes": "S&C coach, 6ft+, controls game, powerful both feet, holds ball too long. DOUBLE PRESS — one player presses, second cuts nearest pass option."}, {"number": "14", "name": "Viraj Shetty", "position": "Defender", "age": 29, "threat": "🔴 HIGH", "notes": "Explosive pace, always shapes right foot. FORCE HIM LEFT. Ex-59 teammate — knows your game. Selfish in attack."}, {"number": "13", "name": "Jordan Chougule", "position": "Goalkeeper", "age": 28, "threat": "🔴 HIGH", "notes": "Ball-playing GK, lob ball specialist. DOUBLE PRESS ONLY — single press ineffective. Watch for lob ball over defensive line."}, {"number": "03", "name": "Meyrick Fernandes", "position": "Attacker", "age": 28, "threat": "🔴 HIGH", "notes": "Ambidextrous, always upfront. Predictable skill moves — study them. Press before he turns and faces goal."}, {"number": "17", "name": "Declan Gonsalves", "position": "Attacker", "age": 31, "threat": "🟠 MED-HIGH", "notes": "National teqball champion for India. Calm, experienced. SINGLE PRESS sufficient — does not need double press. Slightly slow."}, {"number": "21", "name": "Tayyeb Penwala", "position": "Attacker", "age": 31, "threat": "🟠 MED-HIGH", "notes": "Poacher. Hot-headed, card prone. Low centre of gravity. Agitate legally — he will foul. Explosive in tight spaces."}, {"number": "04", "name": "Ketan Gadekar", "position": "Attacker", "age": 33, "threat": "🟠 MED-HIGH", "notes": "Coach and attacker. Powerful. Poor synergy with rest of team. Attack spaces around him."}, {"number": "18", "name": "Abhay Chourasia", "position": "Defender", "age": 24, "threat": "🟡 MEDIUM", "notes": "Young defender. FC Young Guns connection. Limited data."}, {"number": "07", "name": "Faraaz Shaikh", "position": "Attacker", "age": 24, "threat": "🟡 MEDIUM", "notes": "Plays Classic 7 Friday league. Sub option."}, {"number": "12", "name": "Reuben D'Sa", "position": "Defender", "age": 18, "threat": "🟢 LOW", "notes": "Very young, 18 years old. Sub option. Limited tournament exposure."}, {"number": "19", "name": "Wilson D'Souza", "position": "Defender", "age": 51, "threat": "🟡 MEDIUM", "notes": "Age 51 — oldest player in league. VERY SLOW. Run behind him every time. Hot-headed, card prone."}, {"number": "09", "name": "Rahul Acharya", "position": "Manager", "age": 28, "threat": "🔴 HIGH", "notes": "Ex-59 FC. Has insider knowledge of MiCuz FC system. Bombay Football Championship winner. Change patterns."}], "tacticalInstructions": ["Double press Chavan — one player on him, second cuts nearest pass option simultaneously", "Force Shetty left at every touch — block his right side entirely", "NEVER single press Chougule — always double press near goal", "Watch for Chougule lob ball — defensive line must track runners behind at all times", "Study Fernandes skill moves before this game — he repeats the same 2–3 moves", "Single press Gonsalves — no need for double press", "Agitate Penwala and Wilson legally — both will get carded", "Attack spaces around Gadekar — his team connection is poor", "Change at least ONE combination before this game — Rahul Acharya knows your system"]}, "Marol City Warriors FC": {"shortName": "Warriors", "season1": "Unknown position Season 1", "kit": "Home: Crimson/Magenta | Away: Electric Blue", "instagram": "@marolcitywarriorsfc", "manager": "Unknown", "tacticalAlert": "Holy Family + Dom Savio synergy: Saldanha, Rane, Braganza and Henriques are all connected from this church group — their combinations will be better than unknown status suggests. Denver Rodrigues knows all four of them — brief squad before this game.", "squad": [{"number": "—", "name": "Jared Saldanha", "position": "Playmaker/Forward", "threat": "🔴 HIGH", "notes": "Semi-finalist last year (Chakra United). Ambidextrous. Needs ball constantly. Press immediately — he WILL dribble and lose it, creating counter. Deny him possession for long periods."}, {"number": "—", "name": "Aryan Surwade", "position": "Goalkeeper", "threat": "🔴 HIGH", "notes": "Best GK of Season 1 (Cecilians). Press HIGH when he distributes — poor synergy with new Warriors squad. Combinations not drilled. Force long ball."}, {"number": "—", "name": "Jervis D'Souza", "position": "Forward", "threat": "🔴 HIGH", "notes": "Left foot ONLY — no right foot at all. DOUBLE PRESS. Ex-59 teammate. Force right at every touch. Will run out of pass options under double press."}, {"number": "—", "name": "Nash Henriques", "position": "Defender", "threat": "🟠 MED-HIGH", "notes": "Overplays with keeper and adjacent defender. Press when he receives — cut off nearest options. Can be physically beaten."}, {"number": "—", "name": "Prashant Rane", "position": "Starting 5", "threat": "🟠 MED-HIGH", "notes": "Professional player. Holy Family synergy with Saldanha, Braganza, Henriques. Assess in first 5 minutes."}, {"number": "—", "name": "Chris Braganza", "position": "Starting 5", "threat": "🟠 MED-HIGH", "notes": "Professional player. Holy Family synergy. Assess in first 5 minutes."}, {"number": "—", "name": "Andreas D'Souza", "position": "Defender", "threat": "🟡 MEDIUM", "notes": "Tall, strong, powerful shot both feet. SLOW — run behind him at every opportunity. Not confident playing out from back."}, {"number": "—", "name": "Kenrick Rebello", "position": "Sub", "threat": "🟢 LOW", "notes": "Youth player, Pallotti church. Plays with Merwyn in church. Good skill but no tournament exposure — will crack under pressure. Stay on feet — his moves draw fouls."}, {"number": "—", "name": "Craig Fernandes", "position": "Sub", "threat": "🟢 LOW", "notes": "Fast and thin. No tournament exposure. Will crack under pressure."}, {"number": "—", "name": "Sharjeel Ansari", "position": "Sub", "threat": "🟢 LOW", "notes": "Versatile. Was in Warriors last year. Limited exposure."}, {"number": "—", "name": "Aaron Harry", "position": "Sub Forward", "threat": "🟢 LOW", "notes": "Only played 2–3 games last season. Not physically strong — outplay in every duel."}], "tacticalInstructions": ["Deny Saldanha the ball — when he receives, press IMMEDIATELY. He will dribble. Capitalise on counter.", "Force Jervis D'Souza RIGHT at every touch — he has no right foot", "Press Warriors high when Surwade distributes — combinations not rehearsed", "Brief squad using Denver's knowledge of Saldanha, Rane, Braganza, Henriques before game"]}, "Lvl One Marol": {"shortName": "Lvl One", "season1": "Unknown position Season 1", "kit": "Kit: Unknown — TBC", "instagram": "Unknown handle", "manager": "Sasanth Shetty (Owner)", "tacticalAlert": "FC Young Guns MFA bronze medallists — Sasanth, Aldrith and Pranit — form the best starting trio in the league on paper. Press them as a CONNECTED UNIT never individually. Nishant Patel played for MiCuz last season — change patterns when he comes on.", "squad": [{"number": "—", "name": "Sasanth Shetty", "position": "Anywhere (Owner)", "threat": "🔴 HIGH", "notes": "MFA 3rd place FC Young Guns. Owner/Marquee. Tall, strong and FAST — elite physical profile. Deep combination with Aldrith and Pranit from MFA campaign."}, {"number": "—", "name": "Aldrith Fernandez", "position": "Unknown (Marquee)", "threat": "🔴 HIGH", "notes": "MFA 3rd place FC Young Guns. Deep combination with Sasanth and Pranit. Press all three as CONNECTED UNIT."}, {"number": "—", "name": "Pranit Vyas", "position": "Unknown (Marquee)", "threat": "🔴 HIGH", "notes": "MFA 3rd place FC Young Guns. Part of the connected trio — never press one without pressing the others."}, {"number": "—", "name": "Tejas Bagayatkar", "position": "Anywhere", "threat": "🔴 HIGH", "notes": "Kalina Rangers. Brilliant, ambidextrous, strong. COMPLETELY ISOLATED from Lvl One squad. Patient approach — cut options, let isolation work."}, {"number": "—", "name": "Mathias Coutinho", "position": "Defender", "threat": "🟠 MED-HIGH", "notes": "Bluelock last year. Vastly experienced veteran. Very strong. HOT-HEADED and card prone. Agitate legally — he will get carded. Run at him with pace."}, {"number": "—", "name": "Manav Nagvekar", "position": "Versatile", "threat": "🟡 MEDIUM", "notes": "Chakra United last year. Decent synergy with squad. Versatile rotation option."}, {"number": "—", "name": "Manmeet Dhillon", "position": "Sub Defender", "threat": "🟡 MEDIUM", "notes": "Classic 7 last year. Strong but SLOW. St Johns — knows Victor and Joshua. Commits and can be taken past on second touch."}, {"number": "—", "name": "Nishant Patel", "position": "Sub", "threat": "🟡 MEDIUM", "notes": "59 FC — PLAYED FOR MICUZ LAST SEASON. Knows entire system. Ambidextrous but very slow and unfit. CHANGE PATTERNS when he comes on."}, {"number": "—", "name": "Viren Ujjainwal", "position": "Sub", "threat": "🟢 LOW", "notes": "Not a regular footballer. Slow. Left foot dominant — force right. St Johns connection."}, {"number": "—", "name": "Archis Patil", "position": "Unknown", "threat": "⚪ UNKNOWN", "notes": "No data. Assess in game."}, {"number": "—", "name": "Melchoir Fernandes", "position": "Unknown", "threat": "⚪ UNKNOWN", "notes": "No data. Assess in game."}, {"number": "—", "name": "Aum Dodia", "position": "Sub", "threat": "🟢 LOW", "notes": "Sub player only. No data."}], "tacticalInstructions": ["Press the FC Young Guns trio (Sasanth, Aldrith, Pranit) as a CONNECTED UNIT — never individually", "Patient vs Tejas Bagayatkar — cut options, let isolation work, same approach as Axel Peters", "Agitate Mathias Coutinho legally — he is hot-headed and will get carded", "CHANGE ALL PATTERNS when Nishant Patel comes on — he played for MiCuz last season", "Target the sharp drop in quality when sub players introduced — Viren, Manmeet are slow and limited"]}, "Cecilians of Marol": {"shortName": "Cecilians", "season1": "Unknown position Season 1", "kit": "Home: Royal Blue + White | Away: Red + Black", "instagram": "Unknown", "manager": "Unknown", "tacticalAlert": null, "squad": [], "tacticalInstructions": []}, "Marol Bluelock": {"shortName": "Bluelock", "season1": "Unknown position Season 1", "kit": "Home: Royal Blue + White", "instagram": "Unknown", "manager": "Unknown", "tacticalAlert": null, "squad": [], "tacticalInstructions": []}, "Chakra United Marol": {"shortName": "Chakra", "season1": "Semi-finalists — Season 1", "kit": "Home: White + Navy trim, Adidas", "instagram": "@chakra_united_marol", "manager": "Unknown", "tacticalAlert": "Three Pallotti church players (Alrick Rebello, Aaron D'Souza, Cayden Santis) know MiCuz FC Pallotti combinations — Merwyn, Keith, Melwin and Sheldon. Change Pallotti patterns before this game.", "squad": [{"number": "01", "name": "Cayden Santis", "position": "Goalkeeper", "threat": "🟠 MED-HIGH", "notes": "Confirmed GK — plays with gloves. Pallotti church — knows Merwyn, Keith, Melwin, Sheldon. Assess distribution style in game."}, {"number": "02", "name": "Jay Shah", "position": "Defender", "threat": "🟠 MED-HIGH", "notes": "Sahar group — experienced. Carries Sahar synergy into Chakra."}, {"number": "07", "name": "Kunal Kondvilkar", "position": "Defender", "threat": "🟠 MED-HIGH", "notes": "Chakra United core group — strong internal synergy."}, {"number": "11", "name": "Jaisal Shinde", "position": "Defender", "threat": "🟠 MED-HIGH", "notes": "Chakra United core group — experienced defender."}, {"number": "10", "name": "Siddhesh Kulkarni", "position": "Forward", "threat": "🟠 MED-HIGH", "notes": "Chakra United core. Forward. Key attacking threat."}, {"number": "09", "name": "Hrishikesh Hirve", "position": "Defender", "threat": "🟠 MED-HIGH", "notes": "Moved from Dazzlers to Chakra. Carries Dazzlers tactical knowledge."}, {"number": "08", "name": "Alrick Rebello", "position": "Forward", "threat": "🟠 MED-HIGH", "notes": "Pallotti church — knows MiCuz Pallotti combinations. Change Pallotti patterns before this game."}, {"number": "16", "name": "Aryan Mali", "position": "Forward", "threat": "🟡 MEDIUM", "notes": "Young player. Assess in game."}, {"number": "19", "name": "Dinesh Bagwe", "position": "Forward", "threat": "🟡 MEDIUM", "notes": "Assess in game."}, {"number": "69", "name": "Imran Shaikh", "position": "Forward", "threat": "🟡 MEDIUM", "notes": "Nickname: Mendis. Forward for Chakra."}, {"number": "—", "name": "Aaron D'Souza", "position": "Unknown", "threat": "🟡 MEDIUM", "notes": "Pallotti church — knows MiCuz Pallotti combinations."}], "tacticalInstructions": ["Change Pallotti combination patterns BEFORE this game — Alrick, Aaron D and Cayden all know them", "Hrishikesh knows Dazzlers system — if you face Dazzlers before Chakra, he may have scouted you", "Jay Shah carries Sahar knowledge — aware of Dazzlers-connected players' movements", "Chakra kit is white with navy — distinguish from Bloodline away (also white) in YOLO pipeline"]}, "Eastside FC": {"shortName": "East Side", "season1": "Unknown position Season 1", "kit": "Home: Red + White", "instagram": "@eastside_marol_fc", "manager": "Zoe Dewey | Co-owners: Lenord Rodrigues + Valerian Vincent", "tacticalAlert": "Co-owner Lenord Rodrigues is an ex-59 FC and Veterans group member — he knows MiCuz FC system completely. Eashanchandra Shenai has Pallotti church connection. Change both 59 patterns AND Pallotti combinations before this game.", "squad": [{"number": "—", "name": "Lenord Rodrigues", "position": "Co-Owner/Player", "threat": "🔴 HIGH", "notes": "59 FC + Veterans group + St Johns. Knows MiCuz FC ENTIRE system. Change combination patterns specifically for this game."}, {"number": "—", "name": "Shazeb Khan", "position": "Player", "threat": "🟠 MED-HIGH", "notes": "Autonomous FC. Experienced and technically strong. Assess in game."}, {"number": "—", "name": "Oliver Castelino", "position": "Player", "threat": "🟠 MED-HIGH", "notes": "Autonomous FC. Same group as Shazeb — combination understanding."}, {"number": "—", "name": "Pranav Palwankar", "position": "Player", "threat": "🟠 MED-HIGH", "notes": "Autonomous FC group."}, {"number": "—", "name": "Akhil Raj", "position": "Player", "threat": "🟠 MED-HIGH", "notes": "Autonomous FC group."}, {"number": "—", "name": "Eashanchandra Shenai", "position": "Player", "threat": "🟠 MED-HIGH", "notes": "Pallotti church + Veterans group. Knows MiCuz Pallotti combinations AND veteran training patterns. Be unpredictable."}, {"number": "—", "name": "Gladwin Moraes", "position": "Player", "threat": "🟡 MEDIUM", "notes": "St Johns parish — Victor and Joshua know his game."}, {"number": "—", "name": "Roystan Rodrigues", "position": "Player", "threat": "🟡 MEDIUM", "notes": "St Johns parish — Victor and Joshua know his game."}, {"number": "—", "name": "Steven Pawar", "position": "Player", "threat": "🟡 MEDIUM", "notes": "St Johns parish."}], "tacticalInstructions": ["Change at least ONE 59 FC combination pattern — Lenord knows your entire system", "Change Pallotti combinations — Shenai knows them from church tournaments", "Brief squad using Victor and Joshua's St Johns knowledge about Lenord, Gladwin, Roystan, Steven", "Autonomous FC core (Shazeb, Oliver, Pranav, Akhil) will have combination understanding — press as unit"]}, "Marol Ruthless": {"shortName": "Ruthless", "season1": "Unknown position Season 1", "kit": "Unknown — TBC", "instagram": "Unknown", "manager": "Unknown", "tacticalAlert": "Assess all unknown marquees in FIRST 5 MINUTES — adapt immediately.", "squad": [], "tacticalInstructions": ["Assess all unknown marquees in FIRST 5 MINUTES — adapt immediately based on what you see", "Physical dominance on Mufaddal every duel — he is not strong despite being skillful", "Be unpredictable vs players who know Victor and Joshua from St Johns"]}, "Dazzlers of Marol": {"shortName": "Dazzlers", "season1": "Unknown position Season 1", "kit": "Unknown — TBC", "instagram": "Unknown", "manager": "Unknown", "tacticalAlert": null, "squad": [{"number": "—", "name": "Nigel Marshall", "position": "Goalkeeper (Marquee)", "threat": "🔴 HIGH", "notes": "Tall, LEFT FOOT DOMINANT. Ball-playing GK. Powerful left foot shot. Takes shots when playing out. TBGC GK last year. FORCE RIGHT — block his left always. He will come out of goal."}, {"number": "—", "name": "Sagar Singh", "position": "Versatile (Marquee)", "threat": "🔴 HIGH", "notes": "Maharashtra state Beach Football rep. Classic 7 marquee last year. Ambidextrous. Excellent ball control. SLOW. Press immediately every touch — he cannot escape with pace."}, {"number": "—", "name": "Ronit Jain", "position": "Unknown (Marquee)", "threat": "🟠 MED-HIGH", "notes": "Sahar group. Full Dazzlers/Sahar synergy. Marquee level. Assess in game."}, {"number": "—", "name": "Anupam Poojari", "position": "Unknown (Marquee)", "threat": "🟠 MED-HIGH", "notes": "Sahar group. Full synergy. Marquee level. Assess in game."}, {"number": "—", "name": "Raj Mishra", "position": "Unknown", "threat": "🟠 MED-HIGH", "notes": "Sahar group synergy. Some combination understanding."}, {"number": "—", "name": "Luke Fernandes", "position": "Unknown", "threat": "🟡 MEDIUM", "notes": "Dazzlers/Sahar core. Synergy with group."}, {"number": "—", "name": "Nirmay Chand", "position": "Unknown", "threat": "🟡 MEDIUM", "notes": "Dazzlers/Sahar core."}, {"number": "—", "name": "Aaron Amanna", "position": "Sub", "threat": "🟢 LOW", "notes": "Strong build, powerful shots, SLOW, not a regular footballer. Pallotti church — knows Merwyn, Keith, Melwin, Sheldon. Be unpredictable with Pallotti combinations against him."}], "tacticalInstructions": ["Force Nigel Marshall RIGHT at every opportunity — block his left side entirely", "Track Nigel when he comes out to take shots — he will leave goal exposed", "Press Sagar Singh immediately every touch — excellent ball control but zero pace", "Press high as a unit to neutralise the Sahar group combinations", "Change Pallotti combination patterns — Aaron Amanna knows Merwyn, Keith, Melwin, Sheldon", "Target the drop in quality when sub players are introduced — pressure intensifies"]}};
+const SYNERGY_NETWORKS = [{"network": "59 FC", "teams": ["MiCuz FC", "Marol Bloodline FC", "Marol City Warriors FC", "Eastside FC", "Lvl One Marol"], "micuzPlayers": "Victor, Reuben, Ashley"}, {"network": "New 59 + Veterans", "teams": ["MiCuz FC", "Marol Bloodline FC", "Marol Bluelock", "Eastside FC", "Lvl One Marol"], "micuzPlayers": "Victor, Kishore, Melwin, Joshua, Dhanush, Sheldon"}, {"network": "Pallotti Church", "teams": ["MiCuz FC", "Marol City Warriors FC", "Marol Bluelock", "Chakra United Marol", "Dazzlers of Marol", "Cecilians of Marol", "Eastside FC"], "micuzPlayers": "Merwyn, Keith, Melwin, Sheldon"}, {"network": "Holy Family + Dom Savio", "teams": ["MiCuz FC", "Marol City Warriors FC", "Marol Bloodline FC", "Marol Bluelock"], "micuzPlayers": "Denver"}, {"network": "St Johns", "teams": ["MiCuz FC", "Marol Bluelock", "Eastside FC", "Marol Ruthless", "Cecilians of Marol", "Marol City Warriors FC", "Lvl One Marol"], "micuzPlayers": "Victor, Joshua"}, {"network": "Autonomous FC", "teams": ["Marol Bloodline FC", "Marol Bluelock", "Eastside FC"], "micuzPlayers": "None"}, {"network": "FC Young Guns", "teams": ["Lvl One Marol"], "micuzPlayers": "None"}, {"network": "Sahar/Dazzlers", "teams": ["Dazzlers of Marol", "Chakra United Marol"], "micuzPlayers": "None"}];
+const MFL_TABLE = [{"pos": 1, "team": "Marol Bloodline FC", "played": 0, "w": 0, "d": 0, "l": 0, "gf": 0, "ga": 0, "pts": 0}, {"pos": 2, "team": "Chakra United Marol", "played": 0, "w": 0, "d": 0, "l": 0, "gf": 0, "ga": 0, "pts": 0}, {"pos": 3, "team": "MiCuz FC", "played": 1, "w": 0, "d": 1, "l": 0, "gf": 2, "ga": 2, "pts": 1}, {"pos": 4, "team": "Lvl One Marol", "played": 1, "w": 0, "d": 1, "l": 0, "gf": 2, "ga": 2, "pts": 1}, {"pos": 5, "team": "Marol City Warriors FC", "played": 0, "w": 0, "d": 0, "l": 0, "gf": 0, "ga": 0, "pts": 0}, {"pos": 6, "team": "Cecilians of Marol", "played": 0, "w": 0, "d": 0, "l": 0, "gf": 0, "ga": 0, "pts": 0}, {"pos": 7, "team": "Marol Bluelock", "played": 0, "w": 0, "d": 0, "l": 0, "gf": 0, "ga": 0, "pts": 0}, {"pos": 8, "team": "Eastside FC", "played": 0, "w": 0, "d": 0, "l": 0, "gf": 0, "ga": 0, "pts": 0}, {"pos": 9, "team": "Marol Ruthless", "played": 0, "w": 0, "d": 0, "l": 0, "gf": 0, "ga": 0, "pts": 0}, {"pos": 10, "team": "Dazzlers of Marol", "played": 0, "w": 0, "d": 0, "l": 0, "gf": 0, "ga": 0, "pts": 0}];
+const MFL_FIXTURES = [{"matchday": "MD1", "home": "MiCuz FC", "away": "Lvl One Marol", "date": "28 Mar 2026", "result": "2-2"}, {"matchday": "MD2", "home": "TBC", "away": "MiCuz FC", "date": "TBC", "result": null}, {"matchday": "MD3", "home": "MiCuz FC", "away": "TBC", "date": "TBC", "result": null}, {"matchday": "MD4", "home": "TBC", "away": "MiCuz FC", "date": "TBC", "result": null}, {"matchday": "MD5", "home": "MiCuz FC", "away": "TBC", "date": "TBC", "result": null}, {"matchday": "MD6", "home": "TBC", "away": "MiCuz FC", "date": "TBC", "result": null}, {"matchday": "MD7", "home": "MiCuz FC", "away": "TBC", "date": "TBC", "result": null}, {"matchday": "MD8", "home": "TBC", "away": "MiCuz FC", "date": "TBC", "result": null}, {"matchday": "MD9", "home": "MiCuz FC", "away": "TBC", "date": "TBC", "result": null}];
+const MD1_PRELOAD = {"homeTeam": "MiCuz FC", "awayTeam": "Lvl One Marol", "homeGoals": 2, "awayGoals": 2, "matchday": "MD1", "type": "League", "venue": "5-NINE", "date": "2026-03-28", "is_micuz_match": true, "teamStats": {"possession": 42.5, "shots": 8, "shotsOnTarget": 4, "passes": 175, "passAccuracy": 74, "tackles": 47, "interceptions": 244, "sprints": 6991, "teamA": {"name": "MiCuz FC", "possession": 42.5, "passes": 175, "shots": 8, "shotsOnTarget": 4, "avgShotQuality": 5.1, "tackles": 47, "interceptions": 244, "sprints": 6991, "turnovers": 12, "forwardPassPct": 55.2, "counterAttacks": 3, "avgCounterSpeedS": 2.8, "secondBallWins": 16, "avgCompactnessPx": 185, "totalPressures": 52, "zoneOccupation": {"def_left": 18, "def_right": 16, "mid_left": 20, "mid_right": 18, "att_left": 14, "att_right": 14}, "compactnessWindows": [{"window": 0, "avg_compactness_px": 180}, {"window": 1, "avg_compactness_px": 190}]}, "teamB": {"name": "Lvl One Marol", "possession": 57.5, "passes": 210, "shots": 6, "shotsOnTarget": 2, "avgShotQuality": 5.5, "tackles": 38, "interceptions": 190, "sprints": 7200, "turnovers": 9, "forwardPassPct": 62.1, "counterAttacks": 5, "avgCounterSpeedS": 2.4, "secondBallWins": 10, "avgCompactnessPx": 172, "totalPressures": 34, "zoneOccupation": {"def_left": 8, "def_right": 6, "mid_left": 18, "mid_right": 20, "att_left": 22, "att_right": 26}, "compactnessWindows": [{"window": 0, "avg_compactness_px": 170}, {"window": 1, "avg_compactness_px": 174}]}}, "players": [{"number": "14", "name": "Kishore Shetty", "position": "Goalkeeper", "team_label": "A", "rating": 6.8, "distanceCovered": 3.2, "maxSpeed": 18.1, "sprints": 4, "shots": 0, "shotsOnTarget": 0, "passes": 15, "tackles": 2, "interceptions": 5, "turnovers": 1, "shot_zones": [], "avgShotQuality": 0, "forwardPassPct": 55, "pressureCount": 3, "pressingStyle": "Low block", "carryCount": 2, "carryTotalPx": 85, "secondBallWins": 1, "positions": [{"x": 8, "y": 50}, {"x": 12, "y": 35}, {"x": 10, "y": 65}], "fatigueWindows": [{"window": 0, "distance_px": 1600, "sprints": 2}, {"window": 1, "distance_px": 1600, "sprints": 2}]}, {"number": "29", "name": "Joshua Lopez", "position": "Defender", "team_label": "A", "rating": 6.5, "distanceCovered": 4.8, "maxSpeed": 20.4, "sprints": 8, "shots": 1, "shotsOnTarget": 0, "passes": 22, "tackles": 8, "interceptions": 6, "turnovers": 3, "shot_zones": ["edge"], "avgShotQuality": 3.2, "forwardPassPct": 48, "pressureCount": 12, "pressingStyle": "Mid press", "carryCount": 5, "carryTotalPx": 320, "secondBallWins": 3, "positions": [{"x": 25, "y": 30}, {"x": 20, "y": 50}, {"x": 30, "y": 70}], "fatigueWindows": [{"window": 0, "distance_px": 2400, "sprints": 4}, {"window": 1, "distance_px": 2400, "sprints": 4}]}, {"number": "12", "name": "Dhanush Nadar", "position": "Defender", "team_label": "A", "rating": 6.4, "distanceCovered": 4.6, "maxSpeed": 19.8, "sprints": 8, "shots": 1, "shotsOnTarget": 1, "passes": 20, "tackles": 9, "interceptions": 7, "turnovers": 2, "shot_zones": ["box"], "avgShotQuality": 5.1, "forwardPassPct": 52, "pressureCount": 11, "pressingStyle": "Mid press", "carryCount": 4, "carryTotalPx": 290, "secondBallWins": 2, "positions": [{"x": 22, "y": 65}, {"x": 28, "y": 45}, {"x": 18, "y": 55}], "fatigueWindows": [{"window": 0, "distance_px": 2300, "sprints": 4}, {"window": 1, "distance_px": 2300, "sprints": 4}]}, {"number": "22", "name": "Victor Shriyan", "position": "Freeplay", "team_label": "A", "rating": 7.2, "distanceCovered": 5.1, "maxSpeed": 22.3, "sprints": 11, "shots": 2, "shotsOnTarget": 1, "passes": 28, "tackles": 3, "interceptions": 4, "turnovers": 2, "shot_zones": ["box", "edge"], "avgShotQuality": 6.4, "forwardPassPct": 61, "pressureCount": 8, "pressingStyle": "High press", "carryCount": 8, "carryTotalPx": 510, "secondBallWins": 4, "positions": [{"x": 65, "y": 40}, {"x": 70, "y": 55}, {"x": 55, "y": 35}], "fatigueWindows": [{"window": 0, "distance_px": 2600, "sprints": 6}, {"window": 1, "distance_px": 2500, "sprints": 5}]}, {"number": "11", "name": "Sheldon Rego", "position": "Forward", "team_label": "A", "rating": 6.3, "distanceCovered": 4.5, "maxSpeed": 21.5, "sprints": 8, "shots": 2, "shotsOnTarget": 1, "passes": 18, "tackles": 2, "interceptions": 3, "turnovers": 3, "shot_zones": ["box", "long_range"], "avgShotQuality": 5.8, "forwardPassPct": 65, "pressureCount": 6, "pressingStyle": "High press", "carryCount": 7, "carryTotalPx": 440, "secondBallWins": 2, "positions": [{"x": 72, "y": 35}, {"x": 78, "y": 55}, {"x": 65, "y": 45}], "fatigueWindows": [{"window": 0, "distance_px": 2300, "sprints": 4}, {"window": 1, "distance_px": 2200, "sprints": 4}]}, {"number": "7", "name": "Reuben Pereira", "position": "Forward", "team_label": "A", "rating": 6.2, "distanceCovered": 4.4, "maxSpeed": 20.9, "sprints": 7, "shots": 1, "shotsOnTarget": 1, "passes": 16, "tackles": 3, "interceptions": 2, "turnovers": 2, "shot_zones": ["edge"], "avgShotQuality": 4.9, "forwardPassPct": 58, "pressureCount": 5, "pressingStyle": "High press", "carryCount": 6, "carryTotalPx": 380, "secondBallWins": 2, "positions": [{"x": 68, "y": 50}, {"x": 75, "y": 40}, {"x": 60, "y": 60}], "fatigueWindows": [{"window": 0, "distance_px": 2200, "sprints": 4}, {"window": 1, "distance_px": 2200, "sprints": 3}]}, {"number": "25", "name": "Keith Briganza", "position": "Defender", "team_label": "A", "rating": 6.0, "distanceCovered": 3.8, "maxSpeed": 19.1, "sprints": 5, "shots": 0, "shotsOnTarget": 0, "passes": 12, "tackles": 5, "interceptions": 3, "turnovers": 1, "shot_zones": [], "avgShotQuality": 0, "forwardPassPct": 44, "pressureCount": 7, "pressingStyle": "Mid press", "carryCount": 3, "carryTotalPx": 190, "secondBallWins": 2, "positions": [{"x": 30, "y": 55}, {"x": 25, "y": 40}, {"x": 35, "y": 65}], "fatigueWindows": [{"window": 0, "distance_px": 1900, "sprints": 3}, {"window": 1, "distance_px": 1900, "sprints": 2}]}, {"number": "?", "name": "Sasanth Shetty", "position": "Forward", "team_label": "B", "rating": 7.1, "distanceCovered": 5.4, "maxSpeed": 23.1, "sprints": 12, "shots": 3, "shotsOnTarget": 2, "passes": 30, "tackles": 4, "interceptions": 3, "turnovers": 2, "shot_zones": ["box", "box", "edge"], "avgShotQuality": 6.8, "forwardPassPct": 68, "pressureCount": 9, "pressingStyle": "High press", "carryCount": 9, "carryTotalPx": 580, "secondBallWins": 4, "positions": [{"x": 30, "y": 45}, {"x": 25, "y": 55}, {"x": 35, "y": 35}], "fatigueWindows": [{"window": 0, "distance_px": 2700, "sprints": 6}, {"window": 1, "distance_px": 2700, "sprints": 6}]}, {"number": "?", "name": "Aldrith Fernandez", "position": "Midfielder", "team_label": "B", "rating": 6.7, "distanceCovered": 5.1, "maxSpeed": 21.2, "sprints": 9, "shots": 2, "shotsOnTarget": 0, "passes": 35, "tackles": 6, "interceptions": 5, "turnovers": 3, "shot_zones": ["long_range", "edge"], "avgShotQuality": 3.5, "forwardPassPct": 62, "pressureCount": 11, "pressingStyle": "Mid press", "carryCount": 7, "carryTotalPx": 420, "secondBallWins": 3, "positions": [{"x": 45, "y": 50}, {"x": 40, "y": 35}, {"x": 50, "y": 65}], "fatigueWindows": [{"window": 0, "distance_px": 2550, "sprints": 5}, {"window": 1, "distance_px": 2550, "sprints": 4}]}, {"number": "?", "name": "Mathias Coutinho", "position": "Defender", "team_label": "B", "rating": 6.3, "distanceCovered": 4.7, "maxSpeed": 19.5, "sprints": 7, "shots": 0, "shotsOnTarget": 0, "passes": 22, "tackles": 9, "interceptions": 8, "turnovers": 1, "shot_zones": [], "avgShotQuality": 0, "forwardPassPct": 38, "pressureCount": 14, "pressingStyle": "Low block", "carryCount": 4, "carryTotalPx": 240, "secondBallWins": 3, "positions": [{"x": 78, "y": 40}, {"x": 72, "y": 55}, {"x": 80, "y": 65}], "fatigueWindows": [{"window": 0, "distance_px": 2350, "sprints": 4}, {"window": 1, "distance_px": 2350, "sprints": 3}]}], "goals": [{"scorer": "Victor Shriyan", "assist": "Dhanush Nadar", "type": "Open Play", "half": 1}, {"scorer": "Sheldon Rego", "assist": "Joshua Lopez", "type": "Open Play", "half": 2}], "playerOverrides": {}, "passNetwork": [{"from_id": "22", "to_id": "29", "count": 8}, {"from_id": "29", "to_id": "12", "count": 7}, {"from_id": "12", "to_id": "22", "count": 6}, {"from_id": "22", "to_id": "11", "count": 5}, {"from_id": "29", "to_id": "22", "count": 5}, {"from_id": "11", "to_id": "7", "count": 4}, {"from_id": "7", "to_id": "22", "count": 4}, {"from_id": "12", "to_id": "29", "count": 3}, {"from_id": "14", "to_id": "29", "count": 3}, {"from_id": "14", "to_id": "12", "count": 3}], "heatZoneOverlay": {"def_left": {"zone_label": "Defensive Left", "team_a_pct": 18, "team_b_pct": 8, "contested": false, "dominant": "A"}, "def_right": {"zone_label": "Defensive Right", "team_a_pct": 16, "team_b_pct": 6, "contested": false, "dominant": "A"}, "mid_left": {"zone_label": "Middle Left", "team_a_pct": 20, "team_b_pct": 18, "contested": true, "dominant": "Neutral"}, "mid_right": {"zone_label": "Middle Right", "team_a_pct": 18, "team_b_pct": 20, "contested": true, "dominant": "Neutral"}, "att_left": {"zone_label": "Attacking Left", "team_a_pct": 14, "team_b_pct": 22, "contested": false, "dominant": "B"}, "att_right": {"zone_label": "Attacking Right", "team_a_pct": 14, "team_b_pct": 26, "contested": false, "dominant": "B"}}};
+const ROSTER_PRELOAD = [{"number": "14", "name": "Kishore Shetty", "position": "Goalkeeper", "team_label": "A"}, {"number": "29", "name": "Joshua Lopez", "position": "Defender", "team_label": "A"}, {"number": "12", "name": "Dhanush Nadar", "position": "Defender", "team_label": "A"}, {"number": "22", "name": "Victor Shriyan", "position": "Freeplay", "team_label": "A"}, {"number": "11", "name": "Sheldon Rego", "position": "Forward", "team_label": "A"}, {"number": "7", "name": "Reuben Pereira", "position": "Forward", "team_label": "A"}, {"number": "25", "name": "Keith Briganza", "position": "Defender", "team_label": "A"}, {"number": "19", "name": "Merwyn D'Souza", "position": "Forward", "team_label": "A"}, {"number": "9", "name": "Melwin Vaz", "position": "Forward", "team_label": "A"}, {"number": "69", "name": "Dylan Rodrigues", "position": "Goalkeeper", "team_label": "A"}, {"number": "8", "name": "Denver Rodrigues", "position": "Defender", "team_label": "A"}];
+
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let matches = [], roster = [], entryGoals = [], selectedTrackKey = null;
+let currentMatchIndex = null, currentHalf = 'full';
+let currentAnalysisPlayer = 0, currentLeaderTab = 'goals';
+let currentIntelMatch = null, currentOppPlayer = 0;
+
+// ═══════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════
+function save() {
+  try {
+    localStorage.setItem('micuz_v4_matches', JSON.stringify(matches));
+    localStorage.setItem('micuz_v4_roster', JSON.stringify(roster));
+  } catch(e) {}
+}
+function load() {
+  try {
+    const m = localStorage.getItem('micuz_v4_matches');
+    const r = localStorage.getItem('micuz_v4_roster');
+    if (m) matches = JSON.parse(m);
+    if (r) roster = JSON.parse(r);
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
+function toast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast'+(type?' '+type:'')+' show';
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+function isMicuz(name) { return (name||'').toLowerCase().includes('micuz'); }
+function getMicuzPlayers(m) {
+  const ps = m.players||[];
+  const hasLabels = ps.some(p => p.team_label);
+  if (!hasLabels) return ps;
+  const lbl = isMicuz(m.homeTeam) ? 'A' : 'B';
+  return ps.filter(p => !p.team_label || p.team_label === lbl);
+}
+function getOppPlayers(m) {
+  const ps = m.players||[];
+  if (!ps.some(p => p.team_label)) return [];
+  const lbl = isMicuz(m.homeTeam) ? 'B' : 'A';
+  return ps.filter(p => p.team_label === lbl);
+}
+function getOppName(m) { return isMicuz(m.homeTeam) ? (m.awayTeam||'Opponent') : (m.homeTeam||'Opponent'); }
+function formatDist(d) {
+  if (!d || d===0) return '—';
+  return (d > 20 ? (d/1000).toFixed(2) : d.toFixed(2));
+}
+function formatSpd(s) { return (!s||s===0) ? '—' : s.toFixed(1); }
+
+// ═══════════════════════════════════════════════════════
+// TAB NAVIGATION
+// ═══════════════════════════════════════════════════════
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const names = ['reports','intel','analysis','entry','season','hub','import'];
+  document.querySelectorAll('.nav-btn')[names.indexOf(name)]?.classList.add('active');
+  if (name==='reports') renderMatchList();
+  if (name==='intel') { renderIntelSelects(); if (currentIntelMatch!==null) loadIntel(); }
+  if (name==='analysis') renderAnalysis();
+  if (name==='entry') renderEntry();
+  if (name==='season') renderSeason();
+  if (name==='hub') renderHub();
+}
+
+// ═══════════════════════════════════════════════════════
+// MATCH LIST
+// ═══════════════════════════════════════════════════════
+function renderMatchList() {
+  document.getElementById('matchCount').textContent = matches.length+' Match'+(matches.length!==1?'es':'');
+  const wrap = document.getElementById('matchListWrap');
+  if (!matches.length) { wrap.innerHTML='<div class="empty"><div class="empty-icon">📋</div>No matches yet.</div>'; return; }
+  wrap.innerHTML = matches.map((m,i) => {
+    const hg=m.homeGoals??0, ag=m.awayGoals??0;
+    const res=hg>ag?'W':hg===ag?'D':'L';
+    const cls=res==='W'?'result-w':res==='D'?'result-d':'result-l';
+    const hL=getTeamLogo(m.homeTeam), aL=getTeamLogo(m.awayTeam);
+    return `<div class="match-list-item" onclick="openMatch(${i})">
+      <div class="match-list-logos">${hL?`<img src="${hL}" alt="">`:'<span>⚽</span>'}<span class="match-list-score">${hg}–${ag}</span>${aL?`<img src="${aL}" alt="">`:'<span>⚽</span>'}</div>
+      <div class="match-list-info"><div class="match-list-teams">${m.homeTeam||'MiCuz FC'} vs ${m.awayTeam||'Opponent'}</div><div class="match-list-meta">${m.matchday||'—'} · ${m.type||'League'} · ${m.date||'—'}</div></div>
+      <span class="result-badge ${cls}">${res}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('matchDetail').style.display='none';
+}
+
+function openMatch(i) {
+  currentMatchIndex=i;
+  document.getElementById('matchListWrap').style.display='none';
+  document.getElementById('matchDetail').style.display='block';
+  renderMatchDetail();
+}
+function closeDetail() {
+  document.getElementById('matchListWrap').style.display='block';
+  document.getElementById('matchDetail').style.display='none';
+  currentMatchIndex=null;
+}
+
+// ═══════════════════════════════════════════════════════
+// MATCH DETAIL
+// ═══════════════════════════════════════════════════════
+function renderMatchDetail() {
+  const m = matches[currentMatchIndex]; if (!m) return;
+  const hL=getTeamLogo(m.homeTeam), aL=getTeamLogo(m.awayTeam);
+  const hEl=document.getElementById('det-home-logo'), aEl=document.getElementById('det-away-logo');
+  if (hL) { hEl.src=hL; hEl.style.display=''; } else hEl.style.display='none';
+  if (aL) { aEl.src=aL; aEl.style.display=''; } else aEl.style.display='none';
+  document.getElementById('micuz-pill-logo').src = getTeamLogo('MiCuz FC');
+  document.getElementById('det-home').textContent=m.homeTeam||'MiCuz FC';
+  document.getElementById('det-away').textContent=m.awayTeam||'Opponent';
+  document.getElementById('det-hg').textContent=m.homeGoals??0;
+  document.getElementById('det-ag').textContent=m.awayGoals??0;
+  document.getElementById('det-md').textContent=m.matchday||'—';
+  document.getElementById('det-type').textContent=m.type||'League';
+  document.getElementById('det-venue').textContent=m.venue||'—';
+  const hg=m.homeGoals??0, ag=m.awayGoals??0;
+  const res=hg>ag?'WIN':hg===ag?'DRAW':'LOSS';
+  const cls=res==='WIN'?'result-w':res==='DRAW'?'result-d':'result-l';
+  document.getElementById('det-result-badge').innerHTML=`<span class="result-badge ${cls}">${res}</span>`;
+  const ts=m.teamStats||{}, poss=ts.possession??50;
+  document.getElementById('poss-h-name').textContent=m.homeTeam||'MiCuz FC';
+  document.getElementById('poss-a-name').textContent=m.awayTeam||'Opponent';
+  document.getElementById('poss-h-val').textContent=poss+'%';
+  document.getElementById('poss-a-val').textContent=(100-poss)+'%';
+  document.getElementById('poss-bar-fill').style.width=poss+'%';
+  document.getElementById('cmp-h-hdr').textContent=m.homeTeam||'MiCuz FC';
+  document.getElementById('cmp-a-hdr').textContent=m.awayTeam||'Opponent';
+  const tsA=ts.teamA||{}, tsB=ts.teamB||{};
+  const cmpRows=[
+    ['Possession',(tsA.possession??poss)+'%',(tsB.possession??(100-poss))+'%'],
+    ['Shots',tsA.shots??ts.shots??'—',tsB.shots??'—'],
+    ['On Target',tsA.shotsOnTarget??ts.shotsOnTarget??'—',tsB.shotsOnTarget??'—'],
+    ['Avg Shot Quality',(tsA.avgShotQuality??0).toFixed(1)+'/10',(tsB.avgShotQuality??0).toFixed(1)+'/10'],
+    ['Passes',tsA.passes??ts.passes??'—',tsB.passes??'—'],
+    ['Fwd Pass %',(tsA.forwardPassPct??0)+'%',(tsB.forwardPassPct??0)+'%'],
+    ['Tackles',tsA.tackles??ts.tackles??'—',tsB.tackles??'—'],
+    ['Interceptions',tsA.interceptions??ts.interceptions??'—',tsB.interceptions??'—'],
+    ['Counter-Attacks',tsA.counterAttacks??'—',tsB.counterAttacks??'—'],
+    ['Avg Counter (s)',(tsA.avgCounterSpeedS??0)+'s',(tsB.avgCounterSpeedS??0)+'s'],
+    ['2nd Ball Wins',tsA.secondBallWins??'—',tsB.secondBallWins??'—'],
+    ['Pressing Events',tsA.totalPressures??'—',tsB.totalPressures??'—'],
+    ['Avg Compactness',(tsA.avgCompactnessPx??0).toFixed(0)+'px',(tsB.avgCompactnessPx??0).toFixed(0)+'px'],
+    ['Sprints',tsA.sprints??ts.sprints??'—',tsB.sprints??'—'],
+  ];
+  document.getElementById('cmpTableBody').innerHTML = cmpRows.map(r =>
+    `<tr><td>${r[0]}</td><td class="cmp-home">${r[1]}</td><td class="cmp-away">${r[2]}</td></tr>`).join('');
+  renderMicuzPlayerTable(m);
+  renderGoalScorers(m);
+}
+
+function renderMicuzPlayerTable(m) {
+  const players=getMicuzPlayers(m), ov=m.playerOverrides||{}, goals=m.goals||[];
+  if (!players.length) { document.getElementById('micuzPlayerTable').innerHTML='<tr><td colspan="17" style="color:var(--muted);text-align:center;padding:16px;">No player data.</td></tr>'; return; }
+  document.getElementById('micuzPlayerTable').innerHTML = [...players].sort((a,b)=>(b.rating||0)-(a.rating||0)).map(p => {
+    const o=ov[p.name]||{};
+    const g=goals.filter(gl=>gl.scorer===p.name).length;
+    const a=goals.filter(gl=>gl.assist===p.name).length;
+    const dist=formatDist(o.distanceCovered??p.distanceCovered);
+    const spd=formatSpd(o.maxSpeed??p.maxSpeed);
+    const rtg=(p.fatigue_adjusted_rating||p.rating||0).toFixed(1);
+    const q=(p.avgShotQuality||0).toFixed(1);
+    const fwd=(o.forwardPassPct??p.forwardPassPct??0);
+    const prs=(p.pressureCount||0);
+    const cry=(p.carryCount||0);
+    const sb=(p.secondBallWins||0);
+    return `<tr>
+      <td><span class="ps-name">${p.name||'Unmapped'}</span><span class="ps-pos">#${p.number||'?'} ${p.position||''}</span></td>
+      <td class="ps-gold">${rtg}</td>
+      <td class="${g>0?'ps-gold':''}">${g}</td><td>${a}</td>
+      <td>${o.shots??p.shots??0}</td><td>${q}</td><td>${o.shotsOnTarget??p.shotsOnTarget??0}</td>
+      <td>${o.passes??p.passes??0}</td><td>${fwd}%</td>
+      <td>${o.tackles??p.tackles??0}</td><td>${o.interceptions??p.interceptions??0}</td><td>${o.turnovers??p.turnovers??0}</td>
+      <td>${prs}</td><td>${cry}</td><td>${sb}</td>
+      <td>${dist}</td><td>${spd}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderGoalScorers(m) {
+  const goals=m.goals||[];
+  document.getElementById('goalScorerList').innerHTML = !goals.length
+    ? '<span style="color:var(--muted);font-size:.8rem;">No goals recorded.</span>'
+    : goals.map(g => `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--panel);border-radius:6px;font-size:.8rem;margin-bottom:4px;">⚽ <strong>${g.scorer}</strong>${g.assist?`<span style="color:var(--muted)">· Ast: ${g.assist}</span>`:''}  <span style="color:var(--muted);font-size:.7rem;">${g.type||'Open Play'} · H${g.half||1}</span></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// SHARE CARD
+// ═══════════════════════════════════════════════════════
+function generateShareCard() {
+  const m=matches[currentMatchIndex]; if (!m) return;
+  const canvas=document.getElementById('shareCanvas');
+  canvas.width=1080; canvas.height=1080;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,1080,1080);
+  ctx.strokeStyle='#C8960C'; ctx.lineWidth=8; ctx.strokeRect(20,20,1040,1040);
+  ctx.fillStyle='#FFD700'; ctx.font='bold 34px serif'; ctx.textAlign='center';
+  ctx.fillText('MAROL FOOTBALL LEAGUE · SEASON 2',540,78);
+  const hg=m.homeGoals??0, ag=m.awayGoals??0;
+  ctx.fillStyle='#ffffff'; ctx.font='bold 200px serif';
+  ctx.fillText(`${hg}-${ag}`,540,460);
+  ctx.fillStyle='#FFD700'; ctx.font='bold 52px serif';
+  ctx.textAlign='left'; ctx.fillText((m.homeTeam||'MiCuz FC').toUpperCase(),80,580);
+  ctx.textAlign='right'; ctx.fillText((m.awayTeam||'Opponent').toUpperCase(),1000,580);
+  const res=hg>ag?'WIN':hg===ag?'DRAW':'LOSS';
+  ctx.fillStyle=res==='WIN'?'#43a047':res==='DRAW'?'#FFD700':'#e53935';
+  ctx.font='bold 46px serif'; ctx.textAlign='center'; ctx.fillText(res,540,640);
+  ctx.fillStyle='#777'; ctx.font='30px sans-serif';
+  ctx.fillText(`${m.matchday||'MD?'} · ${m.date||''} · ${m.venue||''}`,540,700);
+  const ts=m.teamStats||{};
+  [[ts.possession?ts.possession+'%':'—','POSSESSION'],[ts.shots??'—','SHOTS'],[ts.passes??'—','PASSES']].forEach((s,i) => {
+    const x=180+i*360;
+    ctx.fillStyle='#FFD700'; ctx.font='bold 62px serif'; ctx.fillText(s[0],x,820);
+    ctx.fillStyle='#555'; ctx.font='26px sans-serif'; ctx.fillText(s[1],x,860);
+  });
+  ctx.fillStyle='rgba(255,215,0,.12)'; ctx.font='bold 26px serif'; ctx.textAlign='right';
+  ctx.fillText('MiCuz FC Match Analyzer',1000,1020);
+  function drawL(uri,x,y,cb) {
+    if (!uri) {cb();return;}
+    const img=new Image(); img.onload=()=>{ctx.drawImage(img,x,y,200,200);cb();}; img.onerror=cb; img.src=uri;
+  }
+  drawL(getTeamLogo(m.homeTeam),60,160,()=>drawL(getTeamLogo(m.awayTeam),820,160,()=>{
+    const lnk=document.createElement('a');
+    lnk.download=`MiCuz_${m.matchday||'MD'}_ShareCard.png`;
+    lnk.href=canvas.toDataURL('image/png'); lnk.click();
+    toast('✅ Share card downloaded!');
+  }));
+}
+
+// ═══════════════════════════════════════════════════════
+// HALF TOGGLE
+// ═══════════════════════════════════════════════════════
+function setHalf(h) {
+  currentHalf=h;
+  document.getElementById('hbtn-1').className='half-btn'+(h===1?' active':'');
+  document.getElementById('hbtn-2').className='half-btn'+(h===2?' active':'');
+  document.getElementById('hbtn-f').className='half-btn'+(h==='full'?' active':'');
+  drawHeatmap(); renderRadar();
+}
+
+// ═══════════════════════════════════════════════════════
+// ANALYSIS TAB
+// ═══════════════════════════════════════════════════════
+function renderAnalysis() {
+  const m=currentMatchIndex!==null?matches[currentMatchIndex]:(matches.length?matches[matches.length-1]:null);
+  const players=getMicuzPlayers(m||{});
+  const wrap=document.getElementById('analysisPills');
+  if (!players.length) {wrap.innerHTML='<span class="pill">No players</span>';return;}
+  wrap.innerHTML=players.map((p,i)=>
+    `<button class="pill${i===currentAnalysisPlayer?' active':''}" onclick="selectAnalysisPlayer(${i})">#${p.number||i+1} ${(p.name||'Player').split(' ')[0]}</button>`
+  ).join('');
+  drawHeatmap(); renderRadar(); renderFatigueWindows(); renderPassNetwork();
+}
+
+function selectAnalysisPlayer(i) { currentAnalysisPlayer=i; renderAnalysis(); }
+
+function drawHeatmap() {
+  const m=currentMatchIndex!==null?matches[currentMatchIndex]:(matches.length?matches[matches.length-1]:null);
+  const players=getMicuzPlayers(m||{});
+  const player=players[currentAnalysisPlayer];
+  drawHeatmapOnCanvas(document.getElementById('heatmapCanvas'), player, 'micuz');
+  document.getElementById('heatmapLabel').textContent = player
+    ? `${player.name||'Player'} · ${currentHalf==='full'?'Full Match':currentHalf===1?'1st Half':'2nd Half'}`
+    : 'Select a player';
+}
+
+function drawHeatmapOnCanvas(canvas, player, team='micuz') {
+  const W=canvas.offsetWidth||340, H=Math.round(W*0.6);
+  canvas.width=W*2; canvas.height=H*2; canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d'); ctx.scale(2,2);
+  ctx.fillStyle='#1a3a1a'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,.3)'; ctx.lineWidth=1;
+  ctx.strokeRect(10,10,W-20,H-20);
+  ctx.beginPath(); ctx.moveTo(W/2,10); ctx.lineTo(W/2,H-10); ctx.stroke();
+  ctx.beginPath(); ctx.arc(W/2,H/2,H*.18,0,Math.PI*2); ctx.stroke();
+  ctx.strokeRect(10,H*.25,W*.15,H*.5); ctx.strokeRect(W-10-W*.15,H*.25,W*.15,H*.5);
+  if (!player) return;
+  let pos=player.positions||[];
+  if (currentHalf===1) pos=pos.filter(p=>(p.half||1)===1);
+  else if (currentHalf===2) pos=pos.filter(p=>(p.half||1)===2);
+  if (!pos.length) pos=genSyntheticPos(player.position||'Forward');
+  const col=team==='opp'?'rgba(144,202,249,':'rgba(255,215,0,';
+  pos.forEach(pt => {
+    const px=10+(pt.x/100)*(W-20), py=10+(pt.y/100)*(H-20);
+    const rad=W*.12, grd=ctx.createRadialGradient(px,py,0,px,py,rad);
+    grd.addColorStop(0,col+'0.45)'); grd.addColorStop(.5,col+'0.15)'); grd.addColorStop(1,col+'0)');
+    ctx.fillStyle=grd; ctx.beginPath(); ctx.arc(px,py,rad,0,Math.PI*2); ctx.fill();
+  });
+}
+
+function genSyntheticPos(pos) {
+  const z={'Goalkeeper':[{x:8,y:50}],'Defender':[{x:22,y:30},{x:22,y:70},{x:30,y:50}],'Midfielder':[{x:45,y:40},{x:50,y:60},{x:40,y:50}],'Forward':[{x:72,y:40},{x:76,y:60},{x:65,y:50}],'Freeplay':[{x:55,y:50},{x:62,y:38},{x:48,y:62}]};
+  return (z[pos]||z['Midfielder']).map(b=>({x:b.x+(Math.random()-.5)*14,y:b.y+(Math.random()-.5)*18}));
+}
+
+function renderRadar() {
+  const canvas=document.getElementById('radarCanvas');
+  const m=currentMatchIndex!==null?matches[currentMatchIndex]:(matches.length?matches[matches.length-1]:null);
+  const players=getMicuzPlayers(m||{});
+  const p=players[currentAnalysisPlayer];
+  const ov=m?.playerOverrides||{};
+  const o=p?(ov[p.name]||{}):{};
+  const goals=m?.goals||[];
+  const S=200; canvas.width=S*2; canvas.height=S*2;
+  canvas.style.width='100%'; canvas.style.maxWidth=S+'px';
+  canvas.style.display='block'; canvas.style.margin='0 auto';
+  const ctx=canvas.getContext('2d'); ctx.scale(2,2);
+  const cx=S/2,cy=S/2,r=S/2-30,n=6;
+  if (!p) { ctx.fillStyle='rgba(255,255,255,.2)'; ctx.font='12px Rajdhani'; ctx.textAlign='center'; ctx.fillText('No player',cx,cy); return; }
+  const pGoals=goals.filter(g=>g.scorer===p.name).length;
+  const passes=o.passes??p.passes??0;
+  const shots=o.shots??p.shots??0;
+  const dist=(o.distanceCovered??p.distanceCovered??0);
+  const distKm=dist>20?dist/1000:dist;
+  const tackles=(o.tackles??p.tackles??0)+(o.interceptions??p.interceptions??0);
+  const speed=o.maxSpeed??p.maxSpeed??0;
+  const press=p.pressureCount||0;
+  const vals=[
+    Math.min(100,(passes/50)*100),
+    Math.min(100,(shots/5)*100),
+    Math.min(100,pGoals*33),
+    Math.min(100,(speed/30)*100),
+    Math.min(100,(tackles/10)*100),
+    Math.min(100,(press/15)*100),
+  ];
+  ['rad-pas','rad-sho','rad-gt','rad-spd','rad-def','rad-prs'].forEach((id,i)=>
+    document.getElementById(id).textContent=[passes,shots,pGoals,speed?speed.toFixed(1):0,tackles,press][i]);
+  for(let lv=1;lv<=5;lv++){
+    const fr=(r*lv)/5; ctx.beginPath();
+    for(let i=0;i<=n;i++){const a=(Math.PI*2*i/n)-Math.PI/2;i===0?ctx.moveTo(cx+fr*Math.cos(a),cy+fr*Math.sin(a)):ctx.lineTo(cx+fr*Math.cos(a),cy+fr*Math.sin(a));}
+    ctx.closePath(); ctx.strokeStyle='rgba(255,215,0,.12)'; ctx.lineWidth=1; ctx.stroke();
+  }
+  for(let i=0;i<n;i++){const a=(Math.PI*2*i/n)-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));ctx.strokeStyle='rgba(255,215,0,.15)';ctx.stroke();}
+  ctx.beginPath();
+  vals.forEach((v,i)=>{const a=(Math.PI*2*i/n)-Math.PI/2,fr=(r*v)/100;i===0?ctx.moveTo(cx+fr*Math.cos(a),cy+fr*Math.sin(a)):ctx.lineTo(cx+fr*Math.cos(a),cy+fr*Math.sin(a));});
+  ctx.closePath(); ctx.fillStyle='rgba(255,215,0,.2)'; ctx.fill();
+  ctx.strokeStyle='#FFD700'; ctx.lineWidth=2; ctx.stroke();
+  ctx.fillStyle='rgba(240,240,240,.85)'; ctx.font='bold 9px Rajdhani'; ctx.textAlign='center';
+  ['PASS','SHOT','GOAL','SPEE','DEF','PRES'].forEach((lbl,i)=>{
+    const a=(Math.PI*2*i/n)-Math.PI/2;
+    ctx.fillText(lbl,cx+(r+18)*Math.cos(a),cy+(r+18)*Math.sin(a)+3);
+  });
+}
+
+function renderFatigueWindows() {
+  const m=currentMatchIndex!==null?matches[currentMatchIndex]:(matches.length?matches[matches.length-1]:null);
+  const players=getMicuzPlayers(m||{});
+  const p=players[currentAnalysisPlayer];
+  const card=document.getElementById('fatigueCard');
+  if (!p||!p.fatigueWindows||!p.fatigueWindows.length) {
+    card.innerHTML='<div style="color:var(--muted);font-size:.8rem;">No fatigue data available.</div>'; return;
+  }
+  const maxDist=Math.max(...p.fatigueWindows.map(w=>w.distance_px||0),1);
+  card.innerHTML=`<div style="font-size:.78rem;font-weight:700;color:var(--gold);margin-bottom:10px;">${p.name} — Distance per 7-min window</div>`+
+    p.fatigueWindows.map((w,i)=>{
+      const pct=Math.round((w.distance_px/maxDist)*100);
+      const col=pct>80?'#43a047':pct>60?'#FFD700':pct>40?'#fb8c00':'#e53935';
+      return `<div style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:.68rem;margin-bottom:3px;">
+          <span style="color:var(--muted);">Window ${i+1} (${i*7+1}-${(i+1)*7} min)</span>
+          <span style="color:${col};font-weight:700;">${w.distance_px.toFixed(0)}px · ${w.sprints||0} sprints</span>
+        </div>
+        <div class="fatigue-bar"><div class="fatigue-fill" style="width:${pct}%;background:${col};"></div></div>
+      </div>`;
+    }).join('');
+}
+
+function renderPassNetwork() {
+  const m=currentMatchIndex!==null?matches[currentMatchIndex]:(matches.length?matches[matches.length-1]:null);
+  const net=m?.passNetwork||[];
+  const card=document.getElementById('passNetCard');
+  if (!net.length) { card.innerHTML='<div style="color:var(--muted);font-size:.8rem;">No pass network data.</div>'; return; }
+  const players=m.players||[];
+  function getName(id) {
+    const p=players.find(pl=>String(pl.track_id)===String(id)||pl.number===String(id));
+    return p?(p.name||`#${p.number}`):`#${id}`;
+  }
+  card.innerHTML='<div style="font-size:.72rem;font-weight:700;color:var(--gold);margin-bottom:8px;">Top Combinations (passes)</div>'+
+    net.slice(0,8).map(n=>`<div class="pass-net-row">
+      <span style="color:var(--gold);font-weight:600;">${getName(n.from_id)}</span>
+      <span style="color:var(--muted);">→</span>
+      <span style="color:var(--text);">${getName(n.to_id)}</span>
+      <span class="pass-net-count">${n.count}x</span>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// OPPOSITION INTEL
+// ═══════════════════════════════════════════════════════
+function renderIntelSelects() {
+  const sel=document.getElementById('intelMatchSel');
+  sel.innerHTML='<option value="">— Select Match —</option>';
+  matches.forEach((m,i)=>sel.innerHTML+=`<option value="${i}">${m.matchday||'MD?'} · ${m.homeTeam||'MiCuz'} vs ${m.awayTeam||'Opp'}</option>`);
+}
+
+function loadIntel() {
+  const i=parseInt(document.getElementById('intelMatchSel').value);
+  const content=document.getElementById('intelContent');
+  if (isNaN(i)){content.style.display='none';return;}
+  currentIntelMatch=i;
+  const m=matches[i];
+  const oppName=getOppName(m);
+  const oppLogo=getTeamLogo(oppName);
+  document.getElementById('opp-pill-logo').src=oppLogo||'';
+  document.getElementById('opp-pill-name').textContent=oppName;
+  document.getElementById('intel-micuz-hdr').textContent='MiCuz FC';
+  document.getElementById('intel-opp-hdr').textContent=oppName;
+  content.style.display='block';
+
+  const ts=m.teamStats||{};
+  const micuzHome=isMicuz(m.homeTeam);
+  const tsM=micuzHome?ts.teamA||{}:ts.teamB||{};
+  const tsO=micuzHome?ts.teamB||{}:ts.teamA||{};
+  const poss=ts.possession??50;
+  const possM=micuzHome?poss:100-poss;
+  document.getElementById('intelCmpBody').innerHTML=[
+    ['Possession',possM+'%',(100-possM)+'%'],
+    ['Shots',tsM.shots??'—',tsO.shots??'—'],
+    ['On Target',tsM.shotsOnTarget??'—',tsO.shotsOnTarget??'—'],
+    ['Avg Shot Quality',(tsM.avgShotQuality??0).toFixed(1)+'/10',(tsO.avgShotQuality??0).toFixed(1)+'/10'],
+    ['Passes',tsM.passes??ts.passes??'—',tsO.passes??'—'],
+    ['Fwd Pass %',(tsM.forwardPassPct??0)+'%',(tsO.forwardPassPct??0)+'%'],
+    ['Counter-Attacks',tsM.counterAttacks??'—',tsO.counterAttacks??'—'],
+    ['2nd Ball Wins',tsM.secondBallWins??'—',tsO.secondBallWins??'—'],
+    ['Pressing Events',tsM.totalPressures??'—',tsO.totalPressures??'—'],
+    ['Avg Compactness',(tsM.avgCompactnessPx??0).toFixed(0)+'px',(tsO.avgCompactnessPx??0).toFixed(0)+'px'],
+  ].map(r=>`<tr><td>${r[0]}</td><td class="cmp-home">${r[1]}</td><td class="cmp-away">${r[2]}</td></tr>`).join('');
+
+  // Shot zones
+  const oppPlayers=getOppPlayers(m);
+  let szB=0,szE=0,szL=0;
+  oppPlayers.forEach(p=>(p.shot_zones||[]).forEach(z=>{if(z==='box')szB++;else if(z==='edge')szE++;else if(z==='long_range')szL++;}));
+  document.getElementById('sz-box').textContent=szB;
+  document.getElementById('sz-edge').textContent=szE;
+  document.getElementById('sz-long').textContent=szL;
+
+  // Zone overlay
+  const overlay=m.heatZoneOverlay||{};
+  const zoneOrder=[['att_right','att_left'],['mid_right','mid_left'],['def_right','def_left']];
+  document.getElementById('zoneOverlayGrid').innerHTML=zoneOrder.flat().map(z=>{
+    const zd=overlay[z]||{};
+    const contested=zd.contested;
+    const dom=zd.dominant;
+    const bg=contested?'rgba(229,57,53,.2)':dom==='A'?'rgba(255,215,0,.15)':dom==='B'?'rgba(25,118,210,.15)':'rgba(255,255,255,.05)';
+    const border=contested?'var(--red)':dom==='A'?'var(--gold2)':dom==='B'?'#1565c0':'var(--border)';
+    return `<div class="zone-cell" style="background:${bg};border:1px solid ${border};">
+      <div class="zone-name">${(zd.zone_label||z).replace(' ','<br>')}</div>
+      <div class="zone-pct" style="color:var(--gold);">${zd.team_a_pct??0}%</div>
+      <div class="zone-pct" style="color:#90caf9;">${zd.team_b_pct??0}%</div>
+    </div>`;
+  }).join('');
+
+  // Key threats
+  const threats=[...oppPlayers].sort((a,b)=>(b.rating||0)-(a.rating||0)).slice(0,3);
+  document.getElementById('keyThreatsWrap').innerHTML=threats.length
+    ?threats.map(p=>`<div class="threat-card"><div class="threat-name">⚠️ ${p.name||'Track '+p.track_id} ${p.number?'#'+p.number:''} · ${p.position||'—'}</div><div class="threat-detail">Rating: ${(p.rating||0).toFixed(1)} · Shot Q: ${(p.avgShotQuality||0).toFixed(1)}/10 · Shots: ${p.shots||0} · Passes: ${p.passes||0} · Pressing: ${p.pressingStyle||'—'} · Dist: ${formatDist(p.distanceCovered)}km</div></div>`).join('')
+    :'<div style="color:var(--muted);font-size:.8rem;">No opposition player data. Pipeline team_label required.</div>';
+
+  // Opp player table
+  document.getElementById('oppPlayerTable').innerHTML=!oppPlayers.length
+    ?'<tr><td colspan="14" style="color:var(--muted);text-align:center;padding:16px;">No opposition data.<br><small>Pipeline team_label field required.</small></td></tr>'
+    :[...oppPlayers].sort((a,b)=>(b.rating||0)-(a.rating||0)).map(p=>`<tr>
+      <td><span class="ps-name ps-blue">${p.name||'Track '+p.track_id}</span><span class="ps-pos">#${p.number||'?'} ${p.position||''}</span></td>
+      <td class="ps-blue">${(p.rating||0).toFixed(1)}</td>
+      <td>${p.shots||0}</td><td>${(p.avgShotQuality||0).toFixed(1)}</td><td>${p.shotsOnTarget||0}</td>
+      <td>${p.passes||0}</td><td>${p.forwardPassPct||0}%</td>
+      <td>${p.tackles||0}</td><td>${p.interceptions||0}</td>
+      <td>${p.pressureCount||0}</td><td>${p.carryCount||0}</td><td>${p.secondBallWins||0}</td>
+      <td>${formatDist(p.distanceCovered)}</td><td>${formatSpd(p.maxSpeed)}</td>
+    </tr>`).join('');
+
+  // H2H
+  const h2h={played:0,w:0,d:0,l:0,gf:0,ga:0};
+  matches.forEach(mx=>{
+    const on=getOppName(mx);
+    if (on.toLowerCase()===oppName.toLowerCase()||getTeamLogo(on)===getTeamLogo(oppName)) {
+      h2h.played++;
+      const mG=isMicuz(mx.homeTeam)?(mx.homeGoals||0):(mx.awayGoals||0);
+      const oG=isMicuz(mx.homeTeam)?(mx.awayGoals||0):(mx.homeGoals||0);
+      h2h.gf+=mG; h2h.ga+=oG;
+      if(mG>oG)h2h.w++;else if(mG===oG)h2h.d++;else h2h.l++;
+    }
+  });
+  document.getElementById('intelH2H').innerHTML=h2h.played===0
+    ?'<div style="color:var(--muted);font-size:.8rem;">No matches yet.</div>'
+    :`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;margin-bottom:8px;">
+      <div><div style="font-family:'Cinzel',serif;font-size:1.2rem;font-weight:700;">${h2h.played}</div><div style="font-size:.55rem;color:var(--muted);">PLAYED</div></div>
+      <div><div style="font-family:'Cinzel',serif;font-size:1.2rem;font-weight:700;color:var(--green);">${h2h.w}</div><div style="font-size:.55rem;color:var(--muted);">WON</div></div>
+      <div><div style="font-family:'Cinzel',serif;font-size:1.2rem;font-weight:700;color:var(--gold);">${h2h.d}</div><div style="font-size:.55rem;color:var(--muted);">DRAWN</div></div>
+      <div><div style="font-family:'Cinzel',serif;font-size:1.2rem;font-weight:700;color:var(--red);">${h2h.l}</div><div style="font-size:.55rem;color:var(--muted);">LOST</div></div>
+    </div>
+    <div style="font-size:.76rem;color:var(--muted);text-align:center;">MiCuz FC ${h2h.gf} – ${h2h.ga} ${oppName}</div>`;
+
+  // Opp heatmap pills
+  renderOppHeatmapPills(oppPlayers);
+
+  // Scouting notes from Intel DB
+  const dbKey=Object.keys(INTEL_DB).find(k=>k.toLowerCase()===oppName.toLowerCase()||getTeamLogo(k)===getTeamLogo(oppName));
+  const dbData=dbKey?INTEL_DB[dbKey]:null;
+  const notesEl=document.getElementById('intelScoutingNotes');
+  if (dbData&&dbData.tacticalInstructions&&dbData.tacticalInstructions.length) {
+    let html='';
+    if (dbData.tacticalAlert) html+=`<div class="note note-red" style="margin-bottom:10px;">⚠️ <strong>TACTICAL ALERT</strong><br>${dbData.tacticalAlert}</div>`;
+    html+=dbData.tacticalInstructions.map(t=>`<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:.8rem;"><span style="color:var(--gold);flex-shrink:0;">→</span><span>${t}</span></div>`).join('');
+    notesEl.innerHTML=html;
+  } else {
+    notesEl.innerHTML=`<div style="color:var(--muted);font-size:.8rem;">${dbKey?'No tactical instructions on file yet.':'Team not found in Intel DB.'}</div>`;
+  }
+
+  // Auto-update intel DB with live stats
+  if (dbKey && oppPlayers.length) {
+    updateIntelWithLiveStats(dbKey, oppPlayers, m);
+  }
+}
+
+function updateIntelWithLiveStats(teamKey, oppPlayers, m) {
+  // Merge pipeline stats into Intel DB player profiles
+  if (!INTEL_DB[teamKey]) return;
+  const dbPlayers = INTEL_DB[teamKey].squad || [];
+  oppPlayers.forEach(liveP => {
+    if (!liveP.name) return;
+    const dbP = dbPlayers.find(dp => dp.name && dp.name.toLowerCase().includes(liveP.name.toLowerCase().split(' ')[0]));
+    if (dbP) {
+      dbP.liveStats = {
+        rating: liveP.rating, shots: liveP.shots,
+        avgShotQuality: liveP.avgShotQuality,
+        passes: liveP.passes, tackles: liveP.tackles,
+        pressingStyle: liveP.pressingStyle,
+        distanceCovered: liveP.distanceCovered,
+        matchday: m.matchday,
+      };
+    }
+  });
+}
+
+function renderOppHeatmapPills(players) {
+  const wrap=document.getElementById('oppHeatmapPills');
+  if (!players.length){wrap.innerHTML='';return;}
+  wrap.innerHTML=players.map((p,i)=>
+    `<button class="pill opp-pill${i===currentOppPlayer?' active':''}" onclick="selectOppPlayer(${i})">${p.name||(p.track_id?'T'+p.track_id:'P'+(i+1))}</button>`
+  ).join('');
+  drawHeatmapOnCanvas(document.getElementById('oppHeatmapCanvas'),players[currentOppPlayer],'opp');
+  document.getElementById('oppHeatmapLabel').textContent=players[currentOppPlayer]?(players[currentOppPlayer].name||'Opposition Player'):'';
+}
+
+function selectOppPlayer(i) {
+  currentOppPlayer=i;
+  const m=matches[currentIntelMatch];
+  const players=getOppPlayers(m);
+  document.querySelectorAll('.opp-pill').forEach((p,idx)=>p.classList.toggle('active',idx===i));
+  drawHeatmapOnCanvas(document.getElementById('oppHeatmapCanvas'),players[i],'opp');
+  document.getElementById('oppHeatmapLabel').textContent=players[i]?(players[i].name||'Opposition'):'';
+}
+
+// ═══════════════════════════════════════════════════════
+// DATA ENTRY
+// ═══════════════════════════════════════════════════════
+function renderEntry() {
+  const sel=document.getElementById('entryMatchSelect');
+  sel.innerHTML='<option value="">— Select Match —</option>';
+  matches.forEach((m,i)=>sel.innerHTML+=`<option value="${i}">${m.matchday||'MD?'} · ${m.homeTeam||'MiCuz'} vs ${m.awayTeam||'Opp'}</option>`);
+}
+
+function loadEntryMatch() {
+  const i=parseInt(document.getElementById('entryMatchSelect').value);
+  const wrap=document.getElementById('entryFormWrap');
+  if (isNaN(i)){wrap.style.display='none';return;}
+  currentMatchIndex=i;
+  const m=matches[i];
+  entryGoals=JSON.parse(JSON.stringify(m.goals||[]));
+  document.getElementById('ef-home').value=m.homeTeam||'MiCuz FC';
+  document.getElementById('ef-away').value=m.awayTeam||'';
+  document.getElementById('ef-hg').value=m.homeGoals??0;
+  document.getElementById('ef-ag').value=m.awayGoals??0;
+  document.getElementById('ef-md').value=m.matchday||'';
+  document.getElementById('ef-type').value=m.type||'League';
+  document.getElementById('ef-venue').value=m.venue||'';
+  const micuzPs=getMicuzPlayers(m);
+  const oppPs=getOppPlayers(m);
+  const mOpts=micuzPs.map(p=>`<option value="${p.name}">#${p.number||'?'} ${p.name}</option>`).join('');
+  const oOpts=oppPs.map(p=>`<option value="${p.name||'Opp#'+p.number}">#${p.number||'?'} ${p.name||'Unknown'}</option>`).join('');
+  document.getElementById('ef-scorer').innerHTML='<option value="">— Player —</option>'+mOpts+(oOpts?'<optgroup label="── Opposition ──">'+oOpts+'</optgroup>':'');
+  document.getElementById('ef-assist').innerHTML='<option value="">None</option>'+mOpts;
+  document.getElementById('ef-player').innerHTML='<option value="">— Select —</option>'+mOpts;
+  renderEntryGoalList();
+  wrap.style.display='block';
+}
+
+function loadPlayerEntry() {
+  const name=document.getElementById('ef-player').value;
+  if (!name||currentMatchIndex===null)return;
+  const m=matches[currentMatchIndex];
+  const ov=(m.playerOverrides||{})[name]||{};
+  const p=getMicuzPlayers(m).find(pl=>pl.name===name)||{};
+  document.getElementById('eo-goals').value=ov.goals??0;
+  document.getElementById('eo-assists').value=ov.assists??0;
+  document.getElementById('eo-shots').value=ov.shots??p.shots??0;
+  document.getElementById('eo-ont').value=ov.shotsOnTarget??p.shotsOnTarget??0;
+  document.getElementById('eo-passes').value=ov.passes??p.passes??0;
+  document.getElementById('eo-fwdpct').value=ov.forwardPassPct??p.forwardPassPct??0;
+  document.getElementById('eo-tackles').value=ov.tackles??p.tackles??0;
+  document.getElementById('eo-int').value=ov.interceptions??p.interceptions??0;
+  document.getElementById('eo-turn').value=ov.turnovers??p.turnovers??0;
+  const d=ov.distanceCovered??p.distanceCovered??0;
+  document.getElementById('eo-dist').value=d>20?(d/1000).toFixed(2):d;
+  document.getElementById('eo-spd').value=ov.maxSpeed??p.maxSpeed??0;
+  document.getElementById('eo-sprints').value=ov.sprints??p.sprints??0;
+}
+
+function savePlayerEntry() {
+  const name=document.getElementById('ef-player').value;
+  if (!name||currentMatchIndex===null){toast('Select a player first','error');return;}
+  const m=matches[currentMatchIndex];
+  if (!m.playerOverrides)m.playerOverrides={};
+  const d=parseFloat(document.getElementById('eo-dist').value)||0;
+  m.playerOverrides[name]={
+    goals:parseInt(document.getElementById('eo-goals').value)||0,
+    assists:parseInt(document.getElementById('eo-assists').value)||0,
+    shots:parseInt(document.getElementById('eo-shots').value)||0,
+    shotsOnTarget:parseInt(document.getElementById('eo-ont').value)||0,
+    passes:parseInt(document.getElementById('eo-passes').value)||0,
+    forwardPassPct:parseFloat(document.getElementById('eo-fwdpct').value)||0,
+    tackles:parseInt(document.getElementById('eo-tackles').value)||0,
+    interceptions:parseInt(document.getElementById('eo-int').value)||0,
+    turnovers:parseInt(document.getElementById('eo-turn').value)||0,
+    distanceCovered:d,maxSpeed:parseFloat(document.getElementById('eo-spd').value)||0,
+    sprints:parseInt(document.getElementById('eo-sprints').value)||0,
+  };
+  save();toast('✅ '+name+' saved');
+}
+
+function addGoalEntry() {
+  const scorer=document.getElementById('ef-scorer').value;
+  if (!scorer){toast('Select a scorer','error');return;}
+  entryGoals.push({scorer,assist:document.getElementById('ef-assist').value||null,type:document.getElementById('ef-gtype').value,half:parseInt(document.getElementById('ef-ghalf').value)||1});
+  renderEntryGoalList();toast('⚽ Goal added');
+}
+
+function renderEntryGoalList() {
+  const list=document.getElementById('goalEntryList');
+  list.innerHTML=entryGoals.map((g,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--panel);border-radius:6px;font-size:.8rem;">⚽ <strong>${g.scorer}</strong>${g.assist?`<small style="color:var(--muted)">Ast: ${g.assist}</small>`:''}<small style="color:var(--muted)">${g.type} · H${g.half}</small><button style="margin-left:auto;background:none;border:none;color:var(--red);cursor:pointer;" onclick="removeGoal(${i})">✕</button></div>`).join('');
+}
+
+function removeGoal(i){entryGoals.splice(i,1);renderEntryGoalList();}
+
+function saveEntry() {
+  if (currentMatchIndex===null){toast('Select a match first','error');return;}
+  const m=matches[currentMatchIndex];
+  m.homeTeam=document.getElementById('ef-home').value||'MiCuz FC';
+  m.awayTeam=document.getElementById('ef-away').value||'Opponent';
+  m.homeGoals=parseInt(document.getElementById('ef-hg').value)||0;
+  m.awayGoals=parseInt(document.getElementById('ef-ag').value)||0;
+  m.matchday=document.getElementById('ef-md').value||'';
+  m.type=document.getElementById('ef-type').value;
+  m.venue=document.getElementById('ef-venue').value||'';
+  m.goals=entryGoals;
+  save();toast('✅ Match saved');renderMatchList();renderSeason();syncSelects();
+}
+
+// ═══════════════════════════════════════════════════════
+// SEASON / LEADERBOARD
+// ═══════════════════════════════════════════════════════
+function setLeaderTab(tab) {
+  currentLeaderTab=tab;
+  ['goals','assists','rating','shots','distance','tackles','press'].forEach(t=>
+    document.getElementById('lt-'+t)?.classList.toggle('active',t===tab));
+  renderLeaderboard();
+}
+
+function renderSeason() {
+  let p=0,w=0,d=0,l=0,gf=0,ga=0;
+  matches.forEach(m=>{p++;const hg=m.homeGoals??0,ag=m.awayGoals??0;gf+=hg;ga+=ag;if(hg>ag)w++;else if(hg===ag)d++;else l++;});
+  ['p','w','d','l','gf','ga'].forEach((id,i)=>document.getElementById('ss-'+id).textContent=[p,w,d,l,gf,ga][i]);
+  renderLeaderboard();
+}
+
+function renderLeaderboard() {
+  const tab=currentLeaderTab;
+  const headers={goals:'Goals',assists:'Assists',rating:'Avg Rating',shots:'Shots',distance:'Dist',tackles:'Tkl+Int',press:'Pressures'};
+  document.getElementById('lb-col-hdr').textContent=headers[tab]||tab;
+  const agg={};
+  matches.forEach(m=>{
+    getMicuzPlayers(m).forEach(p=>{
+      if(!p.name)return;
+      if(!agg[p.name])agg[p.name]={name:p.name,number:p.number,pos:p.position,mp:0,goals:0,assists:0,ratings:[],distance:0,shots:0,tackles:0,press:0};
+      const a=agg[p.name],ov=(m.playerOverrides||{})[p.name]||{},goals=m.goals||[];
+      a.mp++;a.goals+=goals.filter(g=>g.scorer===p.name).length;
+      a.assists+=goals.filter(g=>g.assist===p.name).length;
+      if(p.rating)a.ratings.push(p.rating);
+      const dist=ov.distanceCovered??p.distanceCovered??0;
+      a.distance+=dist>20?dist/1000:dist;
+      a.shots+=ov.shots??p.shots??0;
+      a.tackles+=(ov.tackles??p.tackles??0)+(ov.interceptions??p.interceptions??0);
+      a.press+=p.pressureCount||0;
+    });
+  });
+  const rows=Object.values(agg);
+  const getV=r=>({goals:r.goals,assists:r.assists,rating:r.ratings.length?(r.ratings.reduce((a,b)=>a+b,0)/r.ratings.length):0,shots:r.shots,distance:r.distance,tackles:r.tackles,press:r.press}[tab]||0);
+  rows.sort((a,b)=>getV(b)-getV(a));
+  if (!rows.length){document.getElementById('leaderboardBody').innerHTML='<tr><td colspan="4" style="color:var(--muted);text-align:center;padding:16px;">No data yet.</td></tr>';return;}
+  document.getElementById('leaderboardBody').innerHTML=rows.map((r,i)=>{
+    const v=getV(r);const disp=tab==='rating'?v.toFixed(1):tab==='distance'?v.toFixed(1):v;
+    return `<tr><td><span class="lb-rank">${i+1}</span></td><td><div style="font-weight:600;">${r.name||'—'}</div><div style="font-size:.58rem;color:var(--muted);">#${r.number||'?'} · ${r.pos||'—'}</div></td><td style="color:var(--muted);">${r.mp}</td><td class="lb-val" style="color:var(--gold);">${disp}</td></tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// HUB
+// ═══════════════════════════════════════════════════════
+function renderHub() { renderLeagueTable(); renderFixtures(); renderSynergyList(); populateHubTeamSel(); }
+
+function renderLeagueTable() {
+  const liveStats={};
+  matches.forEach(m=>{
+    [m.homeTeam,m.awayTeam].forEach((team,ti)=>{
+      if(!liveStats[team])liveStats[team]={played:0,w:0,d:0,l:0,gf:0,ga:0,pts:0};
+      const s=liveStats[team],scored=ti===0?(m.homeGoals||0):(m.awayGoals||0),conc=ti===0?(m.awayGoals||0):(m.homeGoals||0);
+      s.played++;s.gf+=scored;s.ga+=conc;
+      if(scored>conc){s.w++;s.pts+=3;}else if(scored===conc){s.d++;s.pts++;}else s.l++;
+    });
+  });
+  const rows=MFL_TABLE.map(r=>({...r,...(liveStats[r.team]||{})})).sort((a,b)=>(b.pts-a.pts)||((b.gf-b.ga)-(a.gf-a.ga))||b.gf-a.gf);
+  const el=document.getElementById('leagueTableEl');
+  el.innerHTML=`<thead><tr style="border-bottom:1px solid var(--border);">${['#','Team','P','W','D','L','GD','Pts'].map(h=>`<th style="padding:6px 8px;font-size:.5rem;color:var(--muted);letter-spacing:.1em;text-align:${h==='Team'?'left':'center'};">${h}</th>`).join('')}</tr></thead><tbody>`+
+    rows.map((r,i)=>{
+      const logo=getTeamLogo(r.team);const gd=(r.gf||0)-(r.ga||0);const mic=isMicuz(r.team);
+      return `<tr style="${mic?'background:rgba(255,215,0,.05);':''}border-bottom:1px solid var(--border);">
+        <td style="padding:7px 8px;font-family:'Cinzel',serif;font-weight:700;color:${i<4?'var(--gold)':'var(--muted)'};">${i+1}</td>
+        <td style="padding:7px 8px;"><div style="display:flex;align-items:center;gap:6px;">${logo?`<img src="${logo}" style="width:20px;height:20px;object-fit:contain;border-radius:2px;">`:''}  <span style="font-size:.8rem;font-weight:${mic?700:500};color:${mic?'var(--gold)':'var(--text)'};">${r.team}</span></div></td>
+        <td style="padding:7px 8px;text-align:center;">${r.played||0}</td>
+        <td style="padding:7px 8px;text-align:center;color:var(--green);">${r.w||0}</td>
+        <td style="padding:7px 8px;text-align:center;color:var(--gold);">${r.d||0}</td>
+        <td style="padding:7px 8px;text-align:center;color:var(--red);">${r.l||0}</td>
+        <td style="padding:7px 8px;text-align:center;color:var(--muted);">${gd>=0?'+'+gd:gd}</td>
+        <td style="padding:7px 8px;text-align:center;font-family:'Cinzel',serif;font-weight:700;color:var(--gold);">${r.pts||0}</td>
+      </tr>`;
+    }).join('')+'</tbody>';
+}
+
+function renderFixtures() {
+  const resMap={};matches.forEach(m=>resMap[m.matchday]=`${m.homeGoals||0}–${m.awayGoals||0}`);
+  document.getElementById('fixturesList').innerHTML=MFL_FIXTURES.map(f=>{
+    const res=resMap[f.matchday]||f.result;const mic=isMicuz(f.home)||isMicuz(f.away);
+    const hL=getTeamLogo(f.home),aL=getTeamLogo(f.away);
+    return `<div style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--panel);border-radius:8px;border:1px solid ${mic?'var(--gold2)':'var(--border)'};margin-bottom:6px;">
+      <div style="font-size:.62rem;font-weight:700;color:var(--muted);width:34px;">${f.matchday}</div>
+      <div style="display:flex;align-items:center;gap:5px;flex:1;">${hL?`<img src="${hL}" style="width:22px;height:22px;object-fit:contain;">`:''}  <span style="font-size:.78rem;font-weight:600;">${f.home}</span></div>
+      <div style="font-family:'Cinzel',serif;font-weight:700;font-size:.88rem;color:${res?'var(--gold)':'var(--muted)'};min-width:44px;text-align:center;">${res||'vs'}</div>
+      <div style="display:flex;align-items:center;gap:5px;flex:1;justify-content:flex-end;"><span style="font-size:.78rem;font-weight:600;">${f.away}</span>${aL?`<img src="${aL}" style="width:22px;height:22px;object-fit:contain;">`:''}  </div>
+      <div style="font-size:.58rem;color:var(--muted);width:54px;text-align:right;">${f.date||'TBC'}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderSynergyList() {
+  document.getElementById('synergyList').innerHTML=SYNERGY_NETWORKS.map(n=>{
+    const hasMicuz=n.micuzPlayers!=='None';
+    return `<div class="card" style="margin-bottom:8px;border-color:${hasMicuz?'var(--gold2)':'var(--border)'};">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="font-size:.82rem;font-weight:700;color:${hasMicuz?'var(--gold)':'var(--text)'};">🔗 ${n.network}</span>
+        ${hasMicuz?`<span style="font-size:.58rem;background:rgba(255,215,0,.12);color:var(--gold);padding:2px 8px;border-radius:20px;border:1px solid var(--gold2);">MiCuz: ${n.micuzPlayers}</span>`:''}
+      </div>
+      <div style="font-size:.7rem;color:var(--muted);">${n.teams.join(' · ')}</div>
+      ${hasMicuz?`<div class="note" style="margin-top:8px;margin-bottom:0;padding:6px 10px;font-size:.68rem;">⚠️ ${n.micuzPlayers} inside — opposition knows MiCuz patterns</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function populateHubTeamSel() {
+  const sel=document.getElementById('hubTeamSel');
+  sel.innerHTML='<option value="">— Select Team —</option>'+Object.keys(INTEL_DB).map(t=>`<option value="${t}">${t}</option>`).join('');
+}
+
+function loadHubTeam() {
+  const team=document.getElementById('hubTeamSel').value;
+  const content=document.getElementById('hubTeamContent');
+  if (!team){content.style.display='none';return;}
+  content.style.display='block';
+  const data=INTEL_DB[team]||{};const isSelf=isMicuz(team);
+  const logo=getTeamLogo(team);
+  const lEl=document.getElementById('hub-team-logo');
+  if(logo){lEl.src=logo;lEl.style.display='';}else lEl.style.display='none';
+  document.getElementById('hub-team-name').textContent=team;
+  document.getElementById('hub-team-meta').textContent=[data.season1,data.kit,data.instagram].filter(Boolean).join(' | ');
+  const alertEl=document.getElementById('hub-tactical-alert');
+  if(data.tacticalAlert){alertEl.innerHTML='⚠️ <strong>TACTICAL ALERT</strong><br>'+data.tacticalAlert;alertEl.style.display='block';}else alertEl.style.display='none';
+  document.getElementById('hub-manager').innerHTML=data.manager?`<strong>${data.manager}</strong>`:'Unknown';
+  document.getElementById('hub-sub-section').style.display=isSelf?'block':'none';
+  document.getElementById('hub-syn-section').style.display=isSelf?'block':'none';
+  document.getElementById('hub-tac-section').style.display=!isSelf&&(data.tacticalInstructions||[]).length?'block':'none';
+  if(isSelf&&data.rollingSubPlan)document.getElementById('hub-sub-plan').textContent=data.rollingSubPlan;
+  if(isSelf&&data.synergyNotes)document.getElementById('hub-syn-notes').innerHTML=data.synergyNotes.map(n=>`<div style="padding:5px 0;border-bottom:1px solid var(--border);font-size:.78rem;color:${n.startsWith('CORE')?'var(--gold)':n.startsWith('NO')?'var(--red)':'var(--text)'};">${n}</div>`).join('');
+  if(!isSelf&&(data.tacticalInstructions||[]).length)document.getElementById('hub-tactics').innerHTML=data.tacticalInstructions.map(t=>`<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:.8rem;"><span style="color:var(--gold);flex-shrink:0;">→</span><span>${t}</span></div>`).join('');
+  document.getElementById('hub-squad-hdr').textContent=isSelf?'Our Squad — Full Profiles':'Opposition Player Profiles';
+  const tC=t=>{if(!t)return'var(--muted)';if(t.includes('HIGH'))return'#ef9a9a';if(t.includes('MED'))return'#fb8c00';if(t.includes('MEDIUM'))return'var(--gold)';if(t.includes('LOW'))return'#81c784';return'#90caf9';};
+  document.getElementById('hubSquadList').innerHTML=(data.squad||[]).map(p=>`<div class="card" style="margin-bottom:8px;border-left:3px solid ${tC(p.threat)};">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">
+      <div><div style="font-weight:700;font-size:.88rem;color:${isSelf?'var(--gold)':'var(--text)'};">${p.number&&p.number!=='—'?`#${p.number} `:''}${p.name}</div>
+      <div style="font-size:.58rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">${p.position||''}${p.age?` · Age ${p.age}`:''}</div></div>
+      ${p.threat?`<span style="font-size:.62rem;font-weight:700;color:${tC(p.threat)};flex-shrink:0;">${p.threat}</span>`:''}
+      ${p.role?`<span style="font-size:.62rem;color:var(--muted);flex-shrink:0;">${p.role}</span>`:''}
+    </div>
+    <div style="font-size:.76rem;color:#bbb;line-height:1.5;">${p.notes||''}</div>
+    ${p.liveStats?`<div class="note" style="margin-top:6px;margin-bottom:0;padding:5px 8px;font-size:.65rem;">📊 Live MD${p.liveStats.matchday}: Rtg ${p.liveStats.rating?.toFixed(1)} · Shots ${p.liveStats.shots} · Passes ${p.liveStats.passes} · Style: ${p.liveStats.pressingStyle||'—'}</div>`:''}
+  </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// IMPORT
+// ═══════════════════════════════════════════════════════
+function importJSON(event) {
+  const file=event.target.files[0]; if (!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try {
+      const raw=JSON.parse(e.target.result);
+      const m=normaliseMatch(raw);
+      // Check if same matchday already exists — update instead of duplicate
+      const existingIdx=matches.findIndex(ex=>ex.matchday===m.matchday&&ex.homeTeam===m.homeTeam);
+      if (existingIdx>=0) { matches[existingIdx]={...matches[existingIdx],...m}; }
+      else { matches.push(m); }
+      save();syncSelects();renderMatchList();renderEntry();renderSeason();
+      document.getElementById('importStatus').innerHTML=`<span style="color:var(--green)">✅ ${existingIdx>=0?'Updated':'Imported'}: ${m.matchday} · ${m.homeTeam} vs ${m.awayTeam} (${m.players.length} players)</span>`;
+      toast('✅ Match '+(existingIdx>=0?'updated':'imported'));
+    } catch(err) {
+      document.getElementById('importStatus').innerHTML=`<span style="color:var(--red)">❌ ${err.message}</span>`;
+      toast('Import failed','error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function normaliseMatch(raw) {
+  return {
+    homeTeam:raw.homeTeam||raw.home_team||'MiCuz FC',
+    awayTeam:raw.awayTeam||raw.away_team||'Opponent',
+    homeGoals:raw.homeGoals??raw.home_goals??0,
+    awayGoals:raw.awayGoals??raw.away_goals??0,
+    matchday:raw.matchday||raw.match_day||'MD?',
+    type:raw.type||'League',venue:raw.venue||'',date:raw.date||'',
+    teamStats:raw.teamStats||raw.team_stats||{},
+    players:(raw.players||[]).map(p=>({
+      name:p.name||'',number:p.number||'',position:p.position||'Player',
+      team_label:p.team_label||p.teamLabel||'',
+      rating:p.rating||0,fatigue_adjusted_rating:p.fatigue_adjusted_rating||p.rating||0,
+      distanceCovered:p.distanceCovered||p.distance||0,
+      maxSpeed:p.maxSpeed||p.max_speed||0,sprints:p.sprints||0,
+      shots:p.shots||0,shotsOnTarget:p.shotsOnTarget||0,
+      avgShotQuality:p.avgShotQuality||p.avg_shot_quality||0,
+      shot_zones:p.shot_zones||p.shotZones||[],
+      passes:p.passes||0,forwardPassPct:p.forwardPassPct||p.forward_pass_pct||0,
+      tackles:p.tackles||0,interceptions:p.interceptions||0,turnovers:p.turnovers||0,
+      pressureCount:p.pressureCount||p.pressure_count||0,
+      pressingStyle:p.pressingStyle||p.pressing_style||'',
+      pressingZone:p.pressingZone||'',
+      carryCount:p.carryCount||p.carry_count||0,
+      carryTotalPx:p.carryTotalPx||0,secondBallWins:p.secondBallWins||0,
+      possessionZones:p.possessionZones||{},
+      fatigueWindows:p.fatigueWindows||p.fatigue_windows||[],
+      positions:p.positions||p.heatmap||[],
+      track_id:p.track_id||String(p.trackId||p.id||''),
+    })),
+    goals:raw.goals||[],playerOverrides:raw.playerOverrides||{},
+    passNetwork:raw.passNetwork||raw.pass_network||[],
+    heatZoneOverlay:raw.heatZoneOverlay||raw.heat_zone_overlay||{},
+  };
+}
+
+function createNewMatch() {
+  const m={homeTeam:document.getElementById('nm-home').value||'MiCuz FC',awayTeam:document.getElementById('nm-away').value||'Opponent',homeGoals:parseInt(document.getElementById('nm-hg').value)||0,awayGoals:parseInt(document.getElementById('nm-ag').value)||0,matchday:document.getElementById('nm-md').value||'MD?',type:document.getElementById('nm-type').value,venue:document.getElementById('nm-venue').value||'',date:document.getElementById('nm-date').value||'',teamStats:{},players:JSON.parse(JSON.stringify(roster)),goals:[],playerOverrides:{},passNetwork:[],heatZoneOverlay:{}};
+  matches.push(m);save();syncSelects();renderMatchList();renderEntry();renderSeason();
+  toast('✅ Match created: '+m.matchday);
+}
+
+function addRosterPlayer() {
+  const name=document.getElementById('ros-name').value.trim();
+  if (!name){toast('Enter player name','error');return;}
+  if (roster.find(p=>p.name===name)){toast('Already in roster','error');return;}
+  roster.push({number:document.getElementById('ros-num').value,name,position:document.getElementById('ros-pos').value,rating:0,distanceCovered:0,maxSpeed:0,sprints:0,shots:0,shotsOnTarget:0,passes:0,tackles:0,interceptions:0,turnovers:0,team_label:'A'});
+  save();renderRosterList();document.getElementById('ros-name').value='';document.getElementById('ros-num').value='';
+  toast('✅ '+name+' added');
+}
+function removeRosterPlayer(name){roster=roster.filter(p=>p.name!==name);save();renderRosterList();}
+function renderRosterList(){
+  const list=document.getElementById('rosterList');
+  list.innerHTML=roster.length?roster.map(p=>`<div class="rating-row"><div class="p-num">${p.number||'?'}</div><div class="p-info"><div class="p-name">${p.name}</div><div class="p-pos">${p.position}</div></div><button class="btn btn-outline btn-sm" onclick="removeRosterPlayer('${p.name}')">✕</button></div>`).join(''):'';
+}
+
+function clearAllData(){if (!confirm('Delete ALL match data?'))return;matches=[];save();syncSelects();renderMatchList();renderEntry();renderSeason();toast('All data cleared');}
+
+// Track mapping
+let selectedTrackKey=null;
+function loadTrackList(){
+  const i=parseInt(document.getElementById('map-match-sel').value);
+  const wrap=document.getElementById('trackListWrap');
+  document.getElementById('trackAssignForm').style.display='none';selectedTrackKey=null;
+  if (isNaN(i)){wrap.innerHTML='';return;}
+  const players=matches[i].players||[];
+  if (!players.length){wrap.innerHTML='<span style="color:var(--muted);font-size:.8rem;">No players.</span>';return;}
+  wrap.innerHTML=players.map((p,pi)=>{
+    const mapped=p.name&&p.name!=='';const tid=p.track_id||('track_'+pi);
+    return `<div class="track-row"><div class="track-id">${tid}</div><div style="flex:1;">${mapped?`<span class="track-mapped">✅ #${p.number} ${p.name} · ${p.position}</span>`:'<span class="track-unmapped">Unmapped</span>'}</div><button class="btn btn-outline btn-sm" onclick="startTrackAssign(${i},${pi},'${tid}')">${mapped?'✏️':'+ Assign'}</button></div>`;
+  }).join('');
+}
+function startTrackAssign(mi,pi,tid){
+  selectedTrackKey={matchIdx:mi,playerIdx:pi};
+  const p=(matches[mi].players||[])[pi]||{};
+  document.getElementById('map-track-id').value=tid;
+  document.getElementById('map-jersey').value=p.number||'';
+  document.getElementById('map-name').value=p.name||'';
+  document.getElementById('map-pos').value=p.position||'Forward';
+  document.getElementById('trackAssignForm').style.display='block';
+  document.getElementById('trackAssignForm').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function saveTrackMapping(){
+  if (!selectedTrackKey)return;
+  const {matchIdx,playerIdx}=selectedTrackKey;
+  const name=document.getElementById('map-name').value.trim();
+  const number=document.getElementById('map-jersey').value.trim();
+  const pos=document.getElementById('map-pos').value;
+  if (!name||!number){toast('Enter name and number','error');return;}
+  const players=matches[matchIdx].players||[];
+  if (players[playerIdx]){players[playerIdx].name=name;players[playerIdx].number=number;players[playerIdx].position=pos;}
+  save();loadTrackList();document.getElementById('trackAssignForm').style.display='none';
+  toast('✅ '+name+' #'+number+' assigned');
+  if (currentMatchIndex===matchIdx)renderEntry();
+}
+function cancelTrackAssign(){document.getElementById('trackAssignForm').style.display='none';selectedTrackKey=null;}
+
+function syncSelects(){
+  ['entryMatchSelect','map-match-sel','intelMatchSel'].forEach(id=>{
+    const sel=document.getElementById(id);if(!sel)return;
+    const cur=sel.value;
+    sel.innerHTML='<option value="">— Select —</option>';
+    matches.forEach((m,i)=>sel.innerHTML+=`<option value="${i}">${m.matchday||'MD?'} · ${m.homeTeam||'MiCuz'} vs ${m.awayTeam||'Opp'}</option>`);
+    if(cur)sel.value=cur;
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+document.getElementById('hdrLogo').src = getTeamLogo('MiCuz FC');
+load();
+renderRosterList();
+// Init roster from preload if empty
+if (!roster.length) { roster = ROSTER_PRELOAD; save(); renderRosterList(); }
+// Init MD1 if no matches
+if (!matches.length) { matches.push(MD1_PRELOAD); save(); }
+syncSelects();
+renderMatchList();
+renderSeason();
+</script>
+</body>
+</html>
